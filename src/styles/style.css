@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+.inter {
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+}
+
+.bg-linear {
+    min-height: 100vh;
+    overflow: auto;
+    background: linear-gradient(180deg, #5471D8 0%, #2F49AB 100%);
+}
+
+.label>label {
+    display: block;
+}
+
+.p-column-header-content {
+    justify-content: center;
+}
+
+td {
+    text-align: center;
+}
+
+.p-paginator-first,
+.p-paginator-last {
+    display: none;
+}
+
+.p-paginator-bottom {
+    justify-content: start;
+    padding: 20px 0;
+}
+
+.p-paginator-bottom::after {
+    content: "24 результата";
+    position: absolute;
+    right: 0px;
+}
+
+.p-paginator-page {
+    margin: 0 20px;
+    font-size: 14px;
+}
+
+.p-paginator-prev,
+.p-paginator-next {
+    color: #2D54DD;
+}
+
+.p-column-header-content {
+    gap: 0 5px;
+}
+
+.modal {
+    margin-bottom: 32px;
+}
+
+.modal>h5 {
+    font-size: 12px;
+    font-weight: 600;
+    color: #18181B;
+}
+
+.modal>p {
+    font-size: 14px;
+    color: #313237;
+}
