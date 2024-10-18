@@ -14,12 +14,12 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true)
-
     fetch("https://dev.royal-pay.org/api/v1/auth/login/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
+      mode:"no-cors",
       body: JSON.stringify({
         "username": email,
         "password": pass,
@@ -60,7 +60,7 @@ const Login = () => {
           </div>
         </div>
       </div> */}
-      {/* xeta */}
+      {/* Xeta */}
       {err &&
         <div className="px-[20px] pt-1">
           <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
