@@ -1,37 +1,37 @@
-import React, { useState } from 'react'
-
+import React, { useEffect, useState } from 'react'
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
     const customers = [
         {
             id: 1,
             name: <img className='mx-auto' src='/assets/img/ion_eye.svg' />,
-            time: `2024-09-11`,
+            time: `2024-03-11`,
             method: "Гарантекс",
             price: "1200 USDT",
             course: "-",
             price_2: "1000 RUB",
             code: "GRT123456",
-            status: "yellow"
+            status: "success"
         },
         {
             id: 2,
             name: <img className='mx-auto' src='/assets/img/ion_eye.svg' />,
-            time: `2024-09-11`,
+            time: `2024-05-11`,
             method: "Гарантекс",
             price: "1200 USDT",
             course: "93,40 RUB",
             course_2: "535,33 USDT",
             price_2: "1000 RUB",
             code: "NDjns372...",
-            status: "green"
+            status: "reject"
         },
         {
             id: 3,
             name: <img className='mx-auto' src='/assets/img/ion_eye.svg' />,
-            time: `2024-09-11`,
+            time: `2024-06-11`,
             method: "Гарантекс",
             price: "1200 USDT",
             course: "93,40 RUB",
@@ -275,22 +275,87 @@ const Dashboard = () => {
         },
 
     ];
-
+    let navigate = useNavigate()
+    const [data, setData] = useState([])
+    useEffect(() => {
+        const fetchData = () => {
+            fetch("https://dev.royal-pay.org/api/v1/internal/refills/", {
+                method: "GET",
+                headers: {
+                    "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`
+                }
+            }).then(res => res.json()).then(data => setData(data)).catch(err => navigate("/login"))
+        }
+        fetchData()
+    }, [])
     let [open, setOpen] = useState(true)
     let [details, setDetails] = useState([])
-    let [modal, setModal] = useState(false)
+    const [modal, setModal] = useState(false)
     const [searchValue, setSearchValue] = useState('');
+    const [filteredCustomers, setFilteredCustomers] = useState([]);
+    const [startDate, setStartDate] = useState("2024-01-01");
+    const [endDate, setEndDate] = useState("");
+    const [startTime, setStartTime] = useState("");
+    const [endTime, setEndTime] = useState("");
+    let [hash, setHash] = useState("")
+    let [selectStatus, setSelectStatus] = useState("")
 
-    const handleInputChange = (e) => {
-        setSearchValue(e.target.value);
+    const handleStartTimeChange = (e) => {
+        setStartTime(e.target.value);
+    };
+
+    const handleEndTimeChange = (e) => {
+        setEndTime(e.target.value);
     };
     const handleShow = (info) => {
         setDetails([info])
     }
+    useEffect(() => {
+        const filteredData = data?.results?.filter(customer => {
+            const customerDate = new Date(customer?.created_at)
+            let [startHour] = startTime.split(":")
+            let [endHour] = endTime.split(":")
+
+            let hourMatch = true
+            if (startHour && endHour) {
+                hourMatch = customerDate.getHours() - 1 >= startHour && customerDate.getHours() - 1 <= endHour
+            } else if (startHour) {
+                hourMatch = customerDate.getHours() - 1 >= startHour
+            } else if (endHour) {
+                hourMatch = customerDate.getHours() - 1 <= endHour
+            }
+
+            let dateMatch = true;
+            if (startDate && endDate) {
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                dateMatch = customerDate >= start && customerDate <= end;
+            } else if (startDate) {
+                const start = new Date(startDate);
+                dateMatch = customerDate >= start;
+            } else if (endDate) {
+                const end = new Date(endDate);
+                dateMatch = customerDate <= end;
+            }
+
+            let hashMatch = true;
+            if (hash) {
+                hashMatch = customer.hash.includes(hash);
+            }
+
+            let statusMatch = true;
+            if (selectStatus) {
+                statusMatch = customer.status.toLowerCase() === selectStatus.toLowerCase();
+            }
+            return dateMatch && hourMatch && hashMatch && statusMatch;
+        });
+        console.log()
+        setFilteredCustomers(filteredData);
+    }, [startDate, endDate, hash, selectStatus, startTime, endTime]);
     return (
-        <div className="bg-[#E9EBF7] border-[#F4F4F5] border">
+        <div className="bg-[#E9EBF7] min-h-[100vh] border-[#F4F4F5] border">
             <div className='flex'>
-                <div className='bg-white z-20  relative '>
+                <div className='bg-white min-h-[100vh] z-20  relative '>
                     <h3 className='py-[20px] flex items-center justify-start ml-[8px] font-medium px-[8px]'>Лого</h3>
                     <div className={` ${!open && "min-w-[263px]"} `}>
                         <div className="">
@@ -345,14 +410,14 @@ const Dashboard = () => {
                 </div>
                 <div className="flex w-full justify-end bg-white absolute right-0 pr-[16px] py-2 items-center ">
                     <div className="relative max-md:hidden">
-                        <input onChange={handleInputChange} type="text" placeholder='Поиск' className='border placeholder:pl-5 placeholder:text-[#616E90] placeholder:font-medium placeholder:text-xs  relative pl-2 min-w-[252px] py-[3px] mr-[43px] rounded-[8px]' />
+                        <input onChange={(e) => setSearchValue(e.target.value)} type="text" placeholder='Поиск' className='border placeholder:pl-5 placeholder:text-[#616E90] placeholder:font-medium placeholder:text-xs  relative pl-2 min-w-[252px] py-[3px] mr-[43px] rounded-[8px]' />
                         <div className="flex items-center top-[3px] absolute">
-                            {searchValue === '' &&<svg width="14" height="14" viewBox="0 0 14 14" fill="#616E90" className='m-[6px]' xmlns="http://www.w3.org/2000/svg">
+                            {searchValue === '' && <svg width="14" height="14" viewBox="0 0 14 14" fill="#616E90" className='m-[6px]' xmlns="http://www.w3.org/2000/svg">
                                 <path d="M13.1419 14L8.02728 8.88525C7.62011 9.22143 7.15187 9.48452 6.62256 9.67453C6.09324 9.86454 5.54567 9.95955 4.97984 9.95955C3.58802 9.95955 2.41008 9.47767 1.44605 8.51392C0.482017 7.55018 0 6.37253 0 4.98099C0 3.58959 0.481881 2.41154 1.44564 1.44684C2.40941 0.482281 3.58707 0 4.97862 0C6.37005 0 7.54811 0.482009 8.51283 1.44603C9.4774 2.41005 9.95969 3.58796 9.95969 4.97977C9.95969 5.56133 9.86211 6.11677 9.66694 6.64608C9.47163 7.17538 9.21111 7.63575 8.88538 8.02716L14 13.1417L13.1419 14ZM4.97984 8.73827C6.02911 8.73827 6.91782 8.37413 7.64597 7.64586C8.37425 6.91772 8.73839 6.02902 8.73839 4.97977C8.73839 3.93052 8.37425 3.04183 7.64597 2.31369C6.91782 1.58541 6.02911 1.22128 4.97984 1.22128C3.93058 1.22128 3.04187 1.58541 2.31372 2.31369C1.58544 3.04183 1.22129 3.93052 1.22129 4.97977C1.22129 6.02902 1.58544 6.91772 2.31372 7.64586C3.04187 8.37413 3.93058 8.73827 4.97984 8.73827Z" fill="#616E90" />
                             </svg>}
                         </div>
                     </div>
-                    <div className="flex ">
+                    <div className="flex">
                         <div className="mr-[16px]">
                             <h4 className='text-[14px] font-normal text-[#18181B]'>Дмитрий Князев</h4>
                             <p className='text-[14px] font-normal text-[#60626C]'>Админ</p>
@@ -368,81 +433,136 @@ const Dashboard = () => {
                     </div>
                 </div>
 
-                <div className="mt-[94px] w-full rounded-[24px] px-[32px] max-md:px-4 pt-[32px] bg-[#F5F6FC] overflow-x-auto mr-[40px] mx-[32px]  ">
+                <div className="mt-[94px]  w-full rounded-[24px] px-[32px] max-md:px-4 pt-[32px] bg-[#F5F6FC] overflow-x-auto mr-[40px] mx-[32px]  ">
                     <div className="flex max-md:flex-col gap-x-2 justify-between items-center">
                         <h3 className='text-[#3D457C] font-semibold text-[24px]  text-center'>Управления депозитами</h3>
                         <button className='text-[#2D54DD] text-[14px]  font-normal border-[#2D54DD] border-2 px-[24px] rounded-[8px] py-[8px]'>Скачать отчет</button>
                     </div>
                     <div className="flex max-md:justify-center flex-wrap py-[24px] text-[14px] gap-2 text-[#717380]">
-                        <input placeholder='Код' type="text" className='h-[40px] w-[157.9px] pl-[12px] rounded-[4px] bg-[#DFDFEC]' />
-                        <input placeholder='Хеш' type="text" className='pl-[12px] w-[157.9px] h-[40px] rounded-[4px] bg-[#DFDFEC]' />
-                        <select className='bg-[#DFDFEC] pl-[12px] rounded-[4px] w-[157.9px] h-[40px]' name="" id="">
-                            <option value="">Метод</option>
+                        <input onChange={(e) => setHash(e.target.value)} placeholder='Код' type="text" className='h-[40px] w-[157.5px] pl-[12px] rounded-[4px] bg-[#DFDFEC]' />
+                        <input onChange={(e) => setHash(e.target.value)} placeholder='Хеш' type="text" className='pl-[12px] w-[157.5px] h-[40px] rounded-[4px] bg-[#DFDFEC]' />
+                        <select className='bg-[#DFDFEC] pl-[12px] rounded-[4px] w-[157.5px] h-[40px]' name="" id="">
+                            <option value="" disabled>Метод</option>
+                            <option >USDT</option>
                         </select>
-                        <select className='bg-[#DFDFEC] pl-[12px] rounded-[4px] w-[157.9px] h-[40px]' name="" id="">
-                            <option value="">Статус</option>
+                        <select onChange={(e) => setSelectStatus(e.target.value)} className='bg-[#DFDFEC] pl-[12px] rounded-[4px] w-[157.5px] h-[40px]' name="" id="">
+                            <option disabled value={""}>Статус</option>
+                            <option>Success</option>
+                            <option>Processing</option>
+                            <option>Reject</option>
                         </select>
-                        <div className='flex items-center pl-[12px] rounded-[4px] w-[157.9px] h-[40px] bg-[#DFDFEC]'>
+                        <div className='flex  items-center pl-[12px] rounded-[4px] w-[157.5px] h-[40px] bg-[#DFDFEC]'>
                             <svg width="24" height="24" className='' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M20 3H19V2C19 1.45 18.55 1 18 1C17.45 1 17 1.45 17 2V3H7V2C7 1.45 6.55 1 6 1C5.45 1 5 1.45 5 2V3H4C2.9 3 2 3.9 2 5V21C2 22.1 2.9 23 4 23H20C21.1 23 22 22.1 22 21V5C22 3.9 21.1 3 20 3ZM19 21H5C4.45 21 4 20.55 4 20V8H20V20C20 20.55 19.55 21 19 21Z" fill="#252840" />
                             </svg>
-                            <p className='text-[#252840] ml-1'>2024-11-02</p>
+                            <input type="date" name="" id="" min="2023-01-01" className='bg-transparent mt-1 ml-1 ' onChange={(e) => setStartDate(e.target.value)} defaultValue={"2024-10-10"} />
                         </div>
-                        <div className='flex items-center pl-[12px] rounded-[4px] w-[157.9px] h-[40px] bg-[#DFDFEC]'>
+                        <div className='flex items-center pl-[12px] rounded-[4px] w-[157.5px] h-[40px] bg-[#DFDFEC]'>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.78 7H11.72C11.32 7 11 7.32 11 7.72V12.44C11 12.79 11.18 13.12 11.49 13.3L15.64 15.79C15.98 15.99 16.42 15.89 16.62 15.55C16.83 15.21 16.72 14.76 16.37 14.56L12.5 12.26V7.72C12.5 7.32 12.18 7 11.78 7Z" fill="#717380" />
                             </svg>
-                            <p className='ml-1 '>Время начала</p>
+                            <select onChange={handleStartTimeChange} name="" className='bg-transparent' id="">
+                                <option value="">Время начала</option>
+                                {new Array(24).fill("").map((_, index) => index + ":00").map(time => (
+                                    <>
+                                        <option className='text-black'>{time}</option>
+                                    </>
+                                ))}
+                            </select>
                         </div>
-                        <div className='flex items-center pl-[12px] rounded-[4px] w-[157.9px] h-[40px] bg-[#DFDFEC]'>
+                        <div className='flex items-center pl-[12px] rounded-[4px] w-[157.5px] h-[40px] bg-[#DFDFEC]'>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M20 3H19V2C19 1.45 18.55 1 18 1C17.45 1 17 1.45 17 2V3H7V2C7 1.45 6.55 1 6 1C5.45 1 5 1.45 5 2V3H4C2.9 3 2 3.9 2 5V21C2 22.1 2.9 23 4 23H20C21.1 23 22 22.1 22 21V5C22 3.9 21.1 3 20 3ZM19 21H5C4.45 21 4 20.55 4 20V8H20V20C20 20.55 19.55 21 19 21Z" fill="#717380" />
                             </svg>
-                            <p className='ml-[2px]'>Дата конца</p>
+                            <input type="date" name="" id="" min="2024-01-01" className='bg-transparent mt-1 ml-1' onChange={(e) => setEndDate(e.target.value)} defaultValue={"2024-12-12"} />
                         </div>
-                        <div className='flex items-center pl-[12px] rounded-[4px] w-[157.9px] h-[40px] bg-[#DFDFEC]'>
+                        <div className='flex items-center pl-[12px] rounded-[4px] w-[157.5px] h-[40px] bg-[#DFDFEC]'>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.78 7H11.72C11.32 7 11 7.32 11 7.72V12.44C11 12.79 11.18 13.12 11.49 13.3L15.64 15.79C15.98 15.99 16.42 15.89 16.62 15.55C16.83 15.21 16.72 14.76 16.37 14.56L12.5 12.26V7.72C12.5 7.32 12.18 7 11.78 7Z" fill="#717380" />
                             </svg>
-                            <p className='ml-1'>Время конца</p>
+                            <select onChange={handleEndTimeChange} name="" className='bg-transparent' id="">
+                                <option value="">Время начала</option>
+                                {new Array(24).fill("").map((_, index) => index + ":00").map(time => (
+                                    <>
+                                        <option className='text-black'>{time}</option>
+                                    </>
+                                ))}
+                            </select>
                         </div>
                     </div>
-                    <DataTable value={customers} paginator rows={8} tableStyle={{ minWidth: '50rem', }}>
+                    <DataTable value={filteredCustomers || data.results} paginator rows={8} tableStyle={{ minWidth: '50rem', }}>
                         <Column body={(rowData) => {
                             return (
                                 <div onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>
-                                    {rowData.name}
+                                    <img className='mx-auto' src='/assets/img/ion_eye.svg' />
                                 </div>
                             );
                         }} headerStyle={{ color: "#2B347C", fontSize: "12px", borderBottom: '1px solid #D9D9D9' }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: '1px solid #D9D9D9' }} field="name" header="Действия" ></Column>
+
                         <Column body={(rowData) => {
                             return (
                                 <div>
-                                    {rowData.time}
-                                    <p>16:00</p>
+                                    <div>
+                                        <h5>{rowData.created_at.split("T")[0]}</h5>
+                                        <p>{rowData.created_at.split("T")[1].split("+")[0].slice(0, 5)}</p>
+                                    </div>
+
                                 </div>
                             )
-                        }} headerStyle={{ color: "#2B347C", fontSize: "12px", borderBottom: '1px solid #D9D9D9' }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: '1px solid #D9D9D9' }} field="time" header="Дата и время" ></Column>
-                        <Column headerStyle={{ color: "#2B347C", fontSize: "12px", borderBottom: '1px solid #D9D9D9' }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: '1px solid #D9D9D9' }} field="method" header="Метод" ></Column>
-                        <Column headerStyle={{ color: "#2B347C", fontSize: "12px", borderBottom: '1px solid #D9D9D9' }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: '1px solid #D9D9D9' }} field="price" sortable header="Сумма" ></Column>
+                        }} headerStyle={{ color: "#2B347C", fontSize: "12px", borderBottom: '1px solid #D9D9D9' }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: '1px solid #D9D9D9' }} field="time" header="Дата и время"  ></Column>
+
+                        <Column headerStyle={{ color: "#2B347C", fontSize: "12px", borderBottom: '1px solid #D9D9D9' }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: '1px solid #D9D9D9' }} field="method" header="Метод" body={(rowData) => <div>{rowData?.market[0]}</div>} ></Column>
+
+                        <Column headerStyle={{ color: "#2B347C", fontSize: "12px", borderBottom: '1px solid #D9D9D9' }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: '1px solid #D9D9D9' }} field="amount_in_usdt" sortable header="Сумма" body={(rowData) => {
+                            return (
+                                <div>
+                                    <>
+                                        <div>{rowData.amount_in_usdt} USDT</div>
+                                    </>
+                                </div>
+                            )
+
+                        }} ></Column>
+
                         <Column body={(rowData) => {
                             return (
                                 <div>
-                                    {rowData.course}
-                                    <p>{rowData.course_2}</p>
+                                    <>
+                                        <div>{rowData.course} {rowData.currency}</div>
+                                    </>
                                 </div>
                             )
+
                         }} headerStyle={{ color: "#2B347C", fontSize: "12px", borderBottom: '1px solid #D9D9D9' }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: '1px solid #D9D9D9' }} field="course" header="Курс/Крипта" ></Column>
-                        <Column headerStyle={{ color: "#2B347C", fontSize: "12px", borderBottom: '1px solid #D9D9D9' }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: '1px solid #D9D9D9' }} field="price_2" header="Сумма" ></Column>
-                        <Column headerStyle={{ color: "#2B347C", fontSize: "12px", borderBottom: '1px solid #D9D9D9' }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: '1px solid #D9D9D9' }} field="code" header="Код/Xэш" ></Column>
+
+                        <Column headerStyle={{ color: "#2B347C", fontSize: "12px", borderBottom: '1px solid #D9D9D9' }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: '1px solid #D9D9D9' }} field="price_2" header="Сумма" body={(rowData) => {
+                            return (
+                                <div>
+                                    <>
+                                        <div>{rowData.amount} RUB</div>
+                                    </>
+                                </div>
+                            )
+
+                        }} ></Column>
+
+                        <Column headerStyle={{ color: "#2B347C", fontSize: "12px", borderBottom: '1px solid #D9D9D9' }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: '1px solid #D9D9D9' }} body={(rowData) => {
+                            return (
+                                <div>
+                                    <div>{rowData.hash.slice(0, 8)}...</div>
+                                </div>
+                            )
+
+                        }} field="code" header="Код/Xэш" ></Column>
+
                         <Column headerStyle={{ color: "#2B347C", fontSize: "12px", borderBottom: '1px solid #D9D9D9' }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: '1px solid #D9D9D9' }} field="status" header="Статус" body={(rowData) => {
-                            if (rowData.status === "yellow") {
+                            if (rowData.status === "pending") {
                                 return (
                                     <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
                                         В обработке
                                     </div>
                                 );
-                            } else if (rowData.status == "green") {
+                            } else if (rowData.status == "success") {
                                 return (
                                     <div className='bg-[#37B67E]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
                                         Успешно
@@ -469,21 +589,20 @@ const Dashboard = () => {
                                     <div key={index}>
                                         <div className="modal">
                                             <h5>Дата и время пополнения</h5>
-                                            <p>{data.time} 16:00</p>
+                                            <p>{data.created_at.split("T")[0]} {data.created_at.split("T")[1].split("+")[0].slice(0, 5)}</p>
                                         </div>
                                         <div className="modal">
                                             <h5>Метод пополнения</h5>
-                                            <p>{data.price.split(" ")[1]}</p>
+                                            <p>{data.currency}</p>
                                         </div>
                                         <div className="modal">
                                             <h5>Сумма пополнения </h5>
-                                            <p>{data.price}</p>
-                                            <p>{data.price_2}</p>
+                                            <p>{data.amount} RUB</p>
+                                            <p>{data.amount_in_usdt} USDT</p>
                                         </div>
                                         <div className="modal">
                                             <h5>Курс обмена</h5>
                                             <p>{data.course}</p>
-                                            <p>{data.course_2}</p>
                                         </div>
                                         <div className="modal">
                                             <h5>Сумма в фиате (без ставки)</h5>
@@ -491,7 +610,7 @@ const Dashboard = () => {
                                         </div>
                                         <div className="modal">
                                             <h5>Статус</h5>
-                                            <p>{data.status === "yellow" ? "В обработке" : data.status === "green" ? "Успешно" : "Отклонено"}</p>
+                                            <p>{data.status === "pending" ? "В обработке" : data.status === "success" ? "Успешно" : "Отклонено"}</p>
                                         </div>
                                     </div>
                                 ))}
