@@ -312,7 +312,6 @@ const Dashboard = () => {
                         }}></Column>
 
                     </DataTable>
-                    {console.log()}
                     <p className='min-[450px]:text-right text-[14px] font-normal relative bottom-[43px] mr-4 max-[450px]:bottom-3  duration-300'>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p>
 
 
