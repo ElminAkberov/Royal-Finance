@@ -9,9 +9,13 @@
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
-    /* width: 100%; */
     background: transparent;
-    /* position: absolute; */
+}
+
+[data-pc-section="sort"] {
+    order: -1;
+    color: #000;
+    margin-right: 3px;
 }
 
 .bg-linear {
@@ -38,6 +42,8 @@ td {
 }
 
 .p-paginator-bottom {
+    position: relative;
+    z-index: 20;
     justify-content: start;
     padding: 20px 0;
 }
