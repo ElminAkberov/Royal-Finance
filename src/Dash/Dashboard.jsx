@@ -7,7 +7,6 @@ import { Context } from '../context/ContextProvider';
 
 const Dashboard = () => {
     let { isDarkMode, toggleDarkMode } = useContext(Context)
-    console.log(isDarkMode)
     let navigate = useNavigate()
     const [data, setData] = useState([])
     useEffect(() => {
@@ -21,8 +20,6 @@ const Dashboard = () => {
         }
         fetchData()
     }, [])
-
-
 
     let [dropDown, setDropDown] = useState(false)
     const startDateRef = useRef(null);
