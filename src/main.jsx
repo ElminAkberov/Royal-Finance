@@ -5,14 +5,17 @@ import "./styles/style.css"
 import Login from "./Login/Login";
 import Layout from "./Layout";
 import Dashboard from "./Dash/Dashboard";
+import ContextProvider from "./context/ContextProvider";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />, children: [{path: "/login",element: <Login />},{path: "/",element: <Login />},{path:"/dash",element:<Dashboard/>}]
+    element: <Layout />, children: [{ path: "/login", element: <Login /> }, { path: "/", element: <Login /> }, { path: "/dash", element: <Dashboard /> }]
   }
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <RouterProvider router={router} />
+  <ContextProvider>
+    <RouterProvider router={router} />
+  </ContextProvider>
 );

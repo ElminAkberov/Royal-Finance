@@ -12,9 +12,14 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     background: transparent;
 }
 
-[data-pc-section="sort"] {
+.sortable-column [data-pc-section="sort"] {
     order: -1;
     color: #000;
+    margin-right: 3px;
+}
+.sortable-column_dark [data-pc-section="sort"] {
+    order: -1;
+    color: #E7E7E7;
     margin-right: 3px;
 }
 
@@ -23,11 +28,22 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     overflow: auto;
     background: linear-gradient(180deg, #5471D8 0%, #2F49AB 100%);
 }
+.bg-linear_dark {
+    min-height: 100vh;
+    overflow: auto;
+    background: linear-gradient(180deg, #121212 0%, #0D1120 100%);
+}
 
 .label>label {
     display: block;
 }
 
+.custom-switch{
+    transform: scale(0.8);
+}
+.black .ant-switch-handle::before{
+    background-color: #000;
+}
 .p-column-header-content {
     justify-content: center;
 }
@@ -47,12 +63,19 @@ td {
     justify-content: start;
     padding: 20px 0;
 }
-
-
-.p-paginator-page {
-    margin: 0 20px;
-    font-size: 14px;
+.p-paginator .p-highlight {
+    background-color: #D9D9D91F !important;
 }
+.light_mode .p-paginator-page,.dark_mode .p-paginator-page{
+    margin: 0 4px;
+    font-size: 14px;
+    padding: 4px 12px; 
+    border-radius: 4px;
+}
+.dark_mode .p-paginator-page {color: #fff}
+.light_mode .p-paginator-page {color: black}
+.dark_mode tbody .p-datatable-emptymessage {color: #fff}
+.light_mode tbody .p-datatable-emptymessage {color: black}
 
 .p-paginator-prev,
 .p-paginator-next {
@@ -70,10 +93,10 @@ td {
 .modal>h5 {
     font-size: 12px;
     font-weight: 600;
-    color: #18181B;
+   
 }
 
 .modal>p {
     font-size: 14px;
-    color: #313237;
+
 }

@@ -1,10 +1,13 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useContext } from 'react'
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import Dark from '../Dark';
+import { Context } from '../context/ContextProvider';
 
 const Dashboard = () => {
-
+    let { isDarkMode, toggleDarkMode } = useContext(Context)
+    console.log(isDarkMode)
     let navigate = useNavigate()
     const [data, setData] = useState([])
     useEffect(() => {
@@ -19,6 +22,9 @@ const Dashboard = () => {
         fetchData()
     }, [])
 
+
+
+    let [dropDown, setDropDown] = useState(false)
     const startDateRef = useRef(null);
     const endDateRef = useRef(null);
 
@@ -86,17 +92,17 @@ const Dashboard = () => {
         setFilteredCustomers(filteredData);
     }, [startDate, endDate, hash, selectStatus, startTime, endTime]);
     return (
-        <div className="bg-[#E9EBF7] min-h-[100vh] border-[#F4F4F5] border">
+        <div className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border`}>
             <div className='flex'>
-                <div className='bg-white min-h-[100vh] z-20  relative '>
-                    <h3 className='py-[20px] flex items-center justify-start ml-[8px] font-medium px-[8px]'>Лого</h3>
+                <div className={`${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5] border"}  min-h-[100vh] z-20  relative `}>
+                    <h3 className={`py-[20px] flex items-center justify-start ml-[8px] font-medium px-[8px] ${isDarkMode ? "text-white" : "text-black"}`}>Лого</h3>
                     <div className={` ${!open && "min-w-[263px]"} `}>
                         <div className="">
                             <div className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px] bg-[#2D54DD4D]">
                                 <svg width="24" height="24" className='fill-[#2D54DD]' viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M21.4286 15.4286H19.6543C19.0714 16.0886 18.4029 16.6629 17.6743 17.1429C16.0457 18.2314 14.1 18.8571 12 18.8571C9.9 18.8571 7.95429 18.2314 6.32571 17.1429C5.59714 16.6629 4.92857 16.0886 4.34571 15.4286H2.57143C1.15714 15.4286 0 16.5857 0 18V21.4286C0 22.8429 1.15714 24 2.57143 24H21.4286C22.8429 24 24 22.8429 24 21.4286V18C24 16.5857 22.8429 15.4286 21.4286 15.4286ZM18.8571 21.4286H5.14286C4.67143 21.4286 4.28571 21.0429 4.28571 20.5714C4.28571 20.1 4.67143 19.7143 5.14286 19.7143H18.8571C19.3286 19.7143 19.7143 20.1 19.7143 20.5714C19.7143 21.0429 19.3286 21.4286 18.8571 21.4286ZM12 0C7.27714 0 3.42857 3.84857 3.42857 8.57143C3.42857 11.3743 4.78286 13.8686 6.86571 15.4286C8.29714 16.5086 10.0714 17.1429 12 17.1429C13.9286 17.1429 15.7029 16.5086 17.1343 15.4286C18.2011 14.6318 19.0674 13.597 19.664 12.4066C20.2607 11.2162 20.5714 9.903 20.5714 8.57143C20.5714 3.84857 16.7229 0 12 0ZM11.5714 7.71429H12.3771C12.9455 7.71429 13.4905 7.94005 13.8924 8.34191C14.2942 8.74378 14.52 9.28882 14.52 9.85714C14.52 10.9029 13.8086 11.76 12.8571 11.9829V12.8571C12.8571 13.3286 12.4714 13.7143 12 13.7143C11.5286 13.7143 11.1429 13.3286 11.1429 12.8571V12.0343H10.2857C9.81429 12.0343 9.42857 11.6571 9.42857 11.1771C9.42857 10.7057 9.81429 10.32 10.2857 10.32H12.3771C12.6171 10.32 12.8057 10.1314 12.8057 9.89143C12.8057 9.61714 12.6171 9.42857 12.3771 9.42857H11.5714C11.04 9.42911 10.5274 9.23217 10.133 8.87598C9.73863 8.5198 9.49067 8.02979 9.43727 7.50107C9.38386 6.97235 9.52882 6.44265 9.84399 6.0148C10.1592 5.58694 10.6221 5.29146 11.1429 5.18571V4.28571C11.1429 3.81429 11.5286 3.42857 12 3.42857C12.4714 3.42857 12.8571 3.81429 12.8571 4.28571V5.14286H13.6629C14.1343 5.14286 14.52 5.52857 14.52 6C14.52 6.47143 14.1343 6.85714 13.6629 6.85714H11.5714C11.3314 6.85714 11.1429 7.04571 11.1429 7.28571C11.1429 7.52571 11.3314 7.71429 11.5714 7.71429Z" />
                                 </svg>
-                                <p className={`${open && "hidden"} text-[#2D54DD] text-[14px] font-medium ml-[8px]`}>Управления депозитами</p>
+                                <p className={`${open && "hidden"} text-[#2D54DD] text-[14px] font-medium ml-[8px] `}>Управления депозитами</p>
                             </div>
                             <div className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px] ">
                                 <svg width="24" height="24" viewBox="0 0 19 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -141,97 +147,109 @@ const Dashboard = () => {
                         </svg>
                     </div>
                 </div>
-                <div className="flex w-full justify-end bg-white absolute right-0 pr-[16px] py-2 items-center ">
-                    <div className="relative max-md:hidden">
-                        <input onChange={(e) => setSearchValue(e.target.value)} type="text" placeholder='Поиск' className='border border-[#C5C7CD] placeholder:pl-5 placeholder:text-[#616E90] placeholder:font-medium placeholder:text-xs  relative pl-2 min-w-[252px] py-[3px] mr-[43px] rounded-[8px] outline-none ' />
-                        <div className="flex items-center top-[3px] absolute">
-                            {searchValue === '' && <svg width="14" height="14" viewBox="0 0 14 14" fill="#616E90" className='m-[6px]' xmlns="http://www.w3.org/2000/svg">
-                                <path d="M13.1419 14L8.02728 8.88525C7.62011 9.22143 7.15187 9.48452 6.62256 9.67453C6.09324 9.86454 5.54567 9.95955 4.97984 9.95955C3.58802 9.95955 2.41008 9.47767 1.44605 8.51392C0.482017 7.55018 0 6.37253 0 4.98099C0 3.58959 0.481881 2.41154 1.44564 1.44684C2.40941 0.482281 3.58707 0 4.97862 0C6.37005 0 7.54811 0.482009 8.51283 1.44603C9.4774 2.41005 9.95969 3.58796 9.95969 4.97977C9.95969 5.56133 9.86211 6.11677 9.66694 6.64608C9.47163 7.17538 9.21111 7.63575 8.88538 8.02716L14 13.1417L13.1419 14ZM4.97984 8.73827C6.02911 8.73827 6.91782 8.37413 7.64597 7.64586C8.37425 6.91772 8.73839 6.02902 8.73839 4.97977C8.73839 3.93052 8.37425 3.04183 7.64597 2.31369C6.91782 1.58541 6.02911 1.22128 4.97984 1.22128C3.93058 1.22128 3.04187 1.58541 2.31372 2.31369C1.58544 3.04183 1.22129 3.93052 1.22129 4.97977C1.22129 6.02902 1.58544 6.91772 2.31372 7.64586C3.04187 8.37413 3.93058 8.73827 4.97984 8.73827Z" fill="#616E90" />
-                            </svg>}
-                        </div>
-                    </div>
-                    <div className="flex">
+                <div className={`flex w-full justify-end ${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5]"} absolute right-0 pr-[16px] py-2 items-center `}>
+                    <div className="flex ">
                         <div className="mr-[16px]">
-                            <h4 className='text-[14px] font-normal text-[#18181B]'>Дмитрий Князев</h4>
+                            <h4 className={`text-[14px] font-normal ${!isDarkMode ? "text-[#18181B]" : "text-[#E7E7E7]"} `}>Дмитрий Князев</h4>
                             <p className='text-[14px] font-normal text-[#60626C]'>Админ</p>
                         </div>
                         <div className="flex items-center">
                             <div className="bg-[#4CAF50] rounded-[100px] text-white w-[48px] h-[48px] flex items-center justify-center">
                                 ДК
                             </div>
-                            <svg width="12" height="6" viewBox="0 0 12 6" fill="none" className='ml-2' xmlns="http://www.w3.org/2000/svg">
-                                <path d="M5.57143 6C5.39315 6 5.21485 5.93469 5.07905 5.80469L0.204221 1.13817C-0.0680735 0.877514 -0.0680735 0.456152 0.204221 0.195494C0.476514 -0.0651646 0.916685 -0.0651646 1.18898 0.195494L5.57143 4.39068L9.95388 0.195494C10.2262 -0.0651646 10.6663 -0.0651646 10.9386 0.195494C11.2109 0.456152 11.2109 0.877514 10.9386 1.13817L6.06381 5.80469C5.92801 5.93469 5.74971 6 5.57143 6Z" fill="#60626C" />
-                            </svg>
+                            <div onClick={() => setDropDown(!dropDown)} className="cursor-pointer">
+                                <svg width="12" height="6" viewBox="0 0 12 6" fill="none" className='ml-2' xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M5.57143 6C5.39315 6 5.21485 5.93469 5.07905 5.80469L0.204221 1.13817C-0.0680735 0.877514 -0.0680735 0.456152 0.204221 0.195494C0.476514 -0.0651646 0.916685 -0.0651646 1.18898 0.195494L5.57143 4.39068L9.95388 0.195494C10.2262 -0.0651646 10.6663 -0.0651646 10.9386 0.195494C11.2109 0.456152 11.2109 0.877514 10.9386 1.13817L6.06381 5.80469C5.92801 5.93469 5.74971 6 5.57143 6Z" fill="#60626C" />
+                                </svg>
+                            </div>
+                        </div>
+                        {/* darkmode */}
+                        <div style={{ boxShadow: "0px 4px 12px 1px #0000001A" }} className={` absolute text-[14px] font-normal z-20 w-[250px] p-4 ${isDarkMode ? "bg-[#1F1F1F] text-[#E7E7E7]" : "bg-white"}  right-2 top-16 rounded-[12px] h-[84px] duration-300 ${dropDown ? "opacity-100" : "opacity-0"}`}>
+                            <div className="flex mb-[12px] justify-between">
+                                <h4>Тема</h4>
+                                <Dark />
+                            </div>
+                            <NavLink to={"/login"}>Выйти</NavLink>
                         </div>
                     </div>
                 </div>
-
-                <div className="mt-[94px]   w-full rounded-[24px] px-[32px] max-md:px-4 pt-[32px] bg-[#F5F6FC] overflow-x-auto mr-[40px] mx-[32px]  ">
-                    <div className="flex max-md:flex-col gap-x-2 justify-between items-center">
-                        <h3 className='text-[#3D457C] font-semibold text-[24px]  text-center'>Управления депозитами</h3>
-                        <button className='text-[#2D54DD] text-[14px]  font-normal border-[#2D54DD] border-2 px-[24px] rounded-[8px] py-[8px]'>Скачать отчет</button>
+                <div className={`mt-[94px] w-full rounded-[24px] px-[32px] max-md:px-4 pt-[32px] ${isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]"} overflow-x-auto mr-[40px] mx-[32px]  `}>
+                    <div className="flex max-lg:flex-col gap-x-2 justify-between items-center">
+                        <h3 className={`font-semibold text-[24px]  text-center ${isDarkMode ? "text-[#E7E7E7]" : "text-[#3d457c]"}`}>Управления депозитами</h3>
+                        {/* lazim */}
+                        <div className="flex max-lg:flex-col items-center">
+                            <div className="relative max-lg:my-3 max-md:hidden ">
+                                <input onChange={(e) => setSearchValue(e.target.value)} type="text" placeholder='Поиск' style={{ color: isDarkMode ? "#fff" : "#616E90" }} className={`border  ${isDarkMode ? "border-[#D9D9D940]" : "border-[#C5C7CD]"}   bg-transparent  placeholder:pl-5 placeholder:text-[#616E90] placeholder:font-medium placeholder:text-xs  relative pl-2 min-w-[252px] py-[3px] mr-[15px] rounded-[8px] outline-none `} />
+                                <div className="flex items-center top-[3px] absolute">
+                                    {searchValue === '' && <svg width="14" height="14" viewBox="0 0 14 14" fill="#616E90" className='m-[6px]' xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M13.1419 14L8.02728 8.88525C7.62011 9.22143 7.15187 9.48452 6.62256 9.67453C6.09324 9.86454 5.54567 9.95955 4.97984 9.95955C3.58802 9.95955 2.41008 9.47767 1.44605 8.51392C0.482017 7.55018 0 6.37253 0 4.98099C0 3.58959 0.481881 2.41154 1.44564 1.44684C2.40941 0.482281 3.58707 0 4.97862 0C6.37005 0 7.54811 0.482009 8.51283 1.44603C9.4774 2.41005 9.95969 3.58796 9.95969 4.97977C9.95969 5.56133 9.86211 6.11677 9.66694 6.64608C9.47163 7.17538 9.21111 7.63575 8.88538 8.02716L14 13.1417L13.1419 14ZM4.97984 8.73827C6.02911 8.73827 6.91782 8.37413 7.64597 7.64586C8.37425 6.91772 8.73839 6.02902 8.73839 4.97977C8.73839 3.93052 8.37425 3.04183 7.64597 2.31369C6.91782 1.58541 6.02911 1.22128 4.97984 1.22128C3.93058 1.22128 3.04187 1.58541 2.31372 2.31369C1.58544 3.04183 1.22129 3.93052 1.22129 4.97977C1.22129 6.02902 1.58544 6.91772 2.31372 7.64586C3.04187 8.37413 3.93058 8.73827 4.97984 8.73827Z" fill="#616E90" />
+                                    </svg>}
+                                </div>
+                            </div>
+                            <button className='text-[#2D54DD] text-[14px]  font-normal border-[#2D54DD] border-2 px-[24px] rounded-[8px] py-[8px]'>Скачать отчет</button>
+                        </div>
                     </div>
-                    <div className="flex  max-md:justify-center flex-wrap py-[24px] text-[14px] gap-2 text-[#717380]">
-                        <input onChange={(e) => setHash(e.target.value)} placeholder='Код' type="text" className='h-[40px] w-[157.5px] pl-[12px] rounded-[4px] bg-[#DFDFEC]' />
-                        <input onChange={(e) => setHash(e.target.value)} placeholder='Хеш' type="text" className='pl-[12px] w-[157.5px] h-[40px] rounded-[4px] bg-[#DFDFEC]' />
-                        <select className='bg-[#DFDFEC] pl-[12px] rounded-[4px] w-[157.5px] h-[40px]' name="" id="">
+                    <div className="flex max-md:justify-center flex-wrap py-[24px] text-[14px] gap-2 text-[#717380]">
+                        <input onChange={(e) => setHash(e.target.value)} placeholder='Код' type="text" className={` h-[40px] w-[157.5px] pl-[12px] rounded-[4px] ${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
+                        <input onChange={(e) => setHash(e.target.value)} placeholder='Хеш' type="text" className={` pl-[12px] w-[157.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
+                        <select className={`${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] min-w-[157.5px] h-[40px]`} name="" id="">
                             <option value="" disabled>Метод</option>
                             <option >USDT</option>
                         </select>
-                        <select onChange={(e) => setSelectStatus(e.target.value)} className='bg-[#DFDFEC] pl-[12px] rounded-[4px] w-[157.5px] h-[40px]' name="" id="">
+                        <select onChange={(e) => setSelectStatus(e.target.value)} className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] min-w-[157.5px] h-[40px]`} name="" id="">
                             <option disabled value={""}>Статус</option>
-                            <option>Success</option>
-                            <option>Processing</option>
-                            <option>Reject</option>
+                            <option className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>Success</option>
+                            <option className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>Processing</option>
+                            <option className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>Reject</option>
                         </select>
-                        <div className='flex items-center pl-[12px] rounded-[4px] w-[157.5px] h-[40px] bg-[#DFDFEC] cursor-pointer' onClick={() => startDateRef.current && startDateRef.current.showPicker()}>
-                            <svg width="24" height="24" className='' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M20 3H19V2C19 1.45 18.55 1 18 1C17.45 1 17 1.45 17 2V3H7V2C7 1.45 6.55 1 6 1C5.45 1 5 1.45 5 2V3H4C2.9 3 2 3.9 2 5V21C2 22.1 2.9 23 4 23H20C21.1 23 22 22.1 22 21V5C22 3.9 21.1 3 20 3ZM19 21H5C4.45 21 4 20.55 4 20V8H20V20C20 20.55 19.55 21 19 21Z" fill="#252840" />
+                        <div className={`flex items-center pl-[12px] rounded-[4px] min-w-[157.5px] h-[40px] ${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} cursor-pointer`} onClick={() => startDateRef.current && startDateRef.current.showPicker()}>
+                            <svg width="24" height="24" className='' viewBox="0 0 24 24" fill={`${isDarkMode ? "#E7E7E7" : "#252840"}`} xmlns="http://www.w3.org/2000/svg">
+                                <path d="M20 3H19V2C19 1.45 18.55 1 18 1C17.45 1 17 1.45 17 2V3H7V2C7 1.45 6.55 1 6 1C5.45 1 5 1.45 5 2V3H4C2.9 3 2 3.9 2 5V21C2 22.1 2.9 23 4 23H20C21.1 23 22 22.1 22 21V5C22 3.9 21.1 3 20 3ZM19 21H5C4.45 21 4 20.55 4 20V8H20V20C20 20.55 19.55 21 19 21Z" />
                             </svg>
-                            <input ref={startDateRef} type="date" name="" id="date-picker" min="2023-01-01" className='bg-transparent relative mt-1 ml-1 w-full cursor-pointer' onChange={(e) => setStartDate(e.target.value)} defaultValue={"2024-10-10"} />
+                            <input ref={startDateRef} type="date" name="" id="date-picker" min="2023-01-01" className='bg-transparent outline-none relative mt-1 ml-1 w-full cursor-pointer' onChange={(e) => setStartDate(e.target.value)} defaultValue={"2024-10-10"} />
                         </div>
 
-                        <div className='flex items-center pl-[12px] rounded-[4px] w-[157.5px] h-[40px] bg-[#DFDFEC]'>
+                        <div className={`flex items-center pl-[12px] rounded-[4px] min-w-[157.5px] h-[40px] ${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC]"}`}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.78 7H11.72C11.32 7 11 7.32 11 7.72V12.44C11 12.79 11.18 13.12 11.49 13.3L15.64 15.79C15.98 15.99 16.42 15.89 16.62 15.55C16.83 15.21 16.72 14.76 16.37 14.56L12.5 12.26V7.72C12.5 7.32 12.18 7 11.78 7Z" fill="#717380" />
                             </svg>
-                            <select onChange={handleStartTimeChange} name="" className='bg-transparent' id="">
-                                <option value="">Время начала</option>
+                            <select onChange={handleStartTimeChange} name="" className='bg-transparent outline-none' id="">
+                                <option value={""} className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC] text-black"}`}>Время начала</option>
                                 {new Array(24).fill("").map((_, index) => index + ":00").map(time => (
                                     <>
-                                        <option className='text-black'>{time}</option>
+                                        <option className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC] text-black"}`}>{time}</option>
                                     </>
                                 ))}
                             </select>
                         </div>
-                        <div className='flex items-center pl-[12px] rounded-[4px] w-[157.5px] h-[40px] bg-[#DFDFEC]' onClick={() => endDateRef.current && endDateRef.current.showPicker()}>
+                        <div className={`flex items-center pl-[12px] rounded-[4px] min-w-[157.5px] h-[40px] ${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC] text-black"}`} onClick={() => endDateRef.current && endDateRef.current.showPicker()}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M20 3H19V2C19 1.45 18.55 1 18 1C17.45 1 17 1.45 17 2V3H7V2C7 1.45 6.55 1 6 1C5.45 1 5 1.45 5 2V3H4C2.9 3 2 3.9 2 5V21C2 22.1 2.9 23 4 23H20C21.1 23 22 22.1 22 21V5C22 3.9 21.1 3 20 3ZM19 21H5C4.45 21 4 20.55 4 20V8H20V20C20 20.55 19.55 21 19 21Z" fill="#717380" />
                             </svg>
-                            <input ref={endDateRef} type="date" name="" id="" min="2024-01-01" className='bg-transparent mt-1 ml-1' onChange={(e) => setEndDate(e.target.value)} defaultValue={"2024-12-12"} />
+                            <input ref={endDateRef} type="date" name="" id="" min="2024-01-01" className='bg-transparent outline-none mt-1 ml-1' onChange={(e) => setEndDate(e.target.value)} defaultValue={"2024-12-12"} />
                         </div>
-                        <div className='flex items-center pl-[12px] rounded-[4px] w-[157.5px] h-[40px] bg-[#DFDFEC]'>
+                        <div className={`flex items-center pl-[12px] rounded-[4px] min-w-[157.5px] h-[40px] ${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC]"}`}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.78 7H11.72C11.32 7 11 7.32 11 7.72V12.44C11 12.79 11.18 13.12 11.49 13.3L15.64 15.79C15.98 15.99 16.42 15.89 16.62 15.55C16.83 15.21 16.72 14.76 16.37 14.56L12.5 12.26V7.72C12.5 7.32 12.18 7 11.78 7Z" fill="#717380" />
                             </svg>
-                            <select onChange={handleEndTimeChange} name="" className='bg-transparent' id="">
-                                <option value="">Время начала</option>
+                            <select onChange={handleEndTimeChange} name="" className='bg-transparent outline-none' id="">
+                                <option value="" className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC] text-black"}`} >Время начала</option>
                                 {new Array(24).fill("").map((_, index) => index + ":00").map(time => (
                                     <>
-                                        <option className='text-black'>{time}</option>
+                                        <option className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC] text-black"}`}>{time}</option>
                                     </>
                                 ))}
                             </select>
                         </div>
                     </div>
-                    <DataTable value={filteredCustomers || data.results} paginator rows={8} tableStyle={{ minWidth: '50rem', }}>
+                    <DataTable value={filteredCustomers || data.results} paginator rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
                         <Column body={(rowData) => {
                             return (
                                 <div onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>
                                     <img className='mx-auto' src='/assets/img/ion_eye.svg' />
                                 </div>
                             );
-                        }} headerStyle={{ color: "#2B347C", fontSize: "12px", borderBottom: '1px solid #D9D9D9' }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: '1px solid #D9D9D9' }} field="name" header="Действия" ></Column>
+                        }} headerStyle={{ backgroundColor: '#D9D9D90A', color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Действия" ></Column>
 
                         <Column body={(rowData) => {
                             return (
@@ -243,11 +261,11 @@ const Dashboard = () => {
 
                                 </div>
                             )
-                        }} headerStyle={{ color: "#2B347C", fontSize: "12px", borderBottom: '1px solid #D9D9D9' }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: '1px solid #D9D9D9' }} field="time" header="Дата и время"  ></Column>
+                        }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время"  ></Column>
 
-                        <Column headerStyle={{ color: "#2B347C", fontSize: "12px", borderBottom: '1px solid #D9D9D9' }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: '1px solid #D9D9D9' }} field="method" header="Метод" body={(rowData) => <div>{rowData?.market[0]}</div>} ></Column>
+                        <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header="Метод" body={(rowData) => <div>{rowData?.market[0]}</div>} ></Column>
 
-                        <Column headerStyle={{ color: "#2B347C", fontSize: "12px", borderBottom: '1px solid #D9D9D9' }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: '1px solid #D9D9D9' }} field="amount_in_usdt" sortable header={"Сумма"} headerClassName="sortable-column" body={(rowData) => {
+                        <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" sortable header={"Сумма"} headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} `} body={(rowData) => {
                             return (
                                 <div>
                                     <>
@@ -267,9 +285,9 @@ const Dashboard = () => {
                                 </div>
                             )
 
-                        }} headerStyle={{ color: "#2B347C", fontSize: "12px", borderBottom: '1px solid #D9D9D9' }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: '1px solid #D9D9D9' }} field="course" header="Курс/Крипта" ></Column>
+                        }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="course" header="Курс/Крипта" ></Column>
 
-                        <Column headerStyle={{ color: "#2B347C", fontSize: "12px", borderBottom: '1px solid #D9D9D9' }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: '1px solid #D9D9D9' }} field="price_2" header="Сумма" body={(rowData) => {
+                        <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="price_2" header="Сумма" body={(rowData) => {
                             return (
                                 <div>
                                     <>
@@ -280,7 +298,7 @@ const Dashboard = () => {
 
                         }} ></Column>
 
-                        <Column headerStyle={{ color: "#2B347C", fontSize: "12px", borderBottom: '1px solid #D9D9D9' }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: '1px solid #D9D9D9' }} body={(rowData) => {
+                        <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} body={(rowData) => {
                             return (
                                 <div>
                                     <div>{rowData.hash.slice(0, 8)}...</div>
@@ -289,7 +307,7 @@ const Dashboard = () => {
 
                         }} field="code" header="Код/Xэш" ></Column>
 
-                        <Column headerStyle={{ color: "#2B347C", fontSize: "12px", borderBottom: '1px solid #D9D9D9' }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: '1px solid #D9D9D9' }} field="status" header="Статус" body={(rowData) => {
+                        <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
                             if (rowData.status === "pending") {
                                 return (
                                     <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
@@ -312,43 +330,41 @@ const Dashboard = () => {
                         }}></Column>
 
                     </DataTable>
-                    <p className='min-[450px]:text-right text-[14px] font-normal relative bottom-[43px] mr-4 max-[450px]:bottom-3  duration-300'>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p>
-
-
+                    <p className={`min-[450px]:text-right text-[14px] font-normal relative bottom-[43px] mr-4 max-[450px]:bottom-3  duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p>
                     <div className={`${!modal && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
-                    <div className={`${!modal ? "hidden" : ""} bg-white rounded-[24px] z-30 absolute top-40 mx-auto right-0 left-0 max-w-[784px]`}>
+                    <div className={`${!modal ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 absolute top-40 mx-auto right-0 left-0 max-w-[784px]`}>
                         <div className="p-8">
                             <div className="">
                                 <div className="mb-8">
-                                    <h3 className='text-[32px] text-[#18181B]'>Детали пополнения</h3>
+                                    <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Детали пополнения</h3>
                                     <h5 className='text-[14px] text-[#60626C]'>Подробная информация</h5>
                                 </div>
                                 {details?.map((data, index) => (
                                     <div key={index}>
                                         <div className="modal">
-                                            <h5>Дата и время пополнения</h5>
-                                            <p>{data.created_at.split("T")[0]} {data.created_at.split("T")[1].split("+")[0].slice(0, 5)}</p>
+                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Дата и время пополнения</h5>
+                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.created_at.split("T")[0]} {data.created_at.split("T")[1].split("+")[0].slice(0, 5)}</p>
                                         </div>
                                         <div className="modal">
-                                            <h5>Метод пополнения</h5>
-                                            <p>{data.currency}</p>
+                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Метод пополнения</h5>
+                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.currency}</p>
                                         </div>
                                         <div className="modal">
-                                            <h5>Сумма пополнения </h5>
-                                            <p>{data.amount} RUB</p>
-                                            <p>{data.amount_in_usdt} USDT</p>
+                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма пополнения </h5>
+                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.amount} RUB</p>
+                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.amount_in_usdt} USDT</p>
                                         </div>
                                         <div className="modal">
-                                            <h5>Курс обмена</h5>
-                                            <p>{data.course}</p>
+                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Курс обмена</h5>
+                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.course} {data.currency}</p>
                                         </div>
                                         <div className="modal">
-                                            <h5>Сумма в фиате (без ставки)</h5>
-                                            <p>1020</p>
+                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма в фиате (без ставки)</h5>
+                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>1020</p>
                                         </div>
                                         <div className="modal">
-                                            <h5>Статус</h5>
-                                            <p>{data.status === "pending" ? "В обработке" : data.status === "success" ? "Успешно" : "Отклонено"}</p>
+                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Статус</h5>
+                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.status === "pending" ? "В обработке" : data.status === "success" ? "Успешно" : "Отклонено"}</p>
                                         </div>
                                     </div>
                                 ))}
