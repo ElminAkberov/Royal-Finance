@@ -104,16 +104,18 @@ const Dashboard = () => {
         setTime_2(cleanedValue);
         setEndTime(value);
     };
-
+    
     useEffect(() => {
         const filteredData = data?.results?.filter(customer => {
             const customerDate = new Date(customer?.created_at)
             let [startHour, startMinute] = startTime.split(":");
             let [endHour, endMinute] = endTime.split(":");
 
-            let startDateTime = startDate ? new Date(`${startTime}T${startHour || '00:00'}`) : null
-            let endDateTime = endDate ? new Date(`${endTime}T${endHour || '00:00'}`) : null
-            
+            let startDateTime = startDate ? new Date(`${startDate}T${startTime || '00:00'}`) : null
+            let endDateTime = endDate ? new Date(`${endDate}T${endTime || '00:00'}`) : null
+
+         
+
 
 
 
@@ -309,15 +311,15 @@ const Dashboard = () => {
                             return (
                                 <div>
                                     <div>
-                                        <h5>{rowData.created_at.split("T")[0]}</h5>
-                                        <p>{rowData.created_at.split("T")[1].split("+")[0].slice(0, 5)}</p>
+                                        <h5>{rowData?.created_at?.split("T")[0]}</h5>
+                                        <p>{rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
                                     </div>
 
                                 </div>
                             )
                         }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время"  ></Column>
 
-                        <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header="Метод" body={(rowData) => <div>{rowData?.market[0]}</div>} ></Column>
+                        <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header="Метод" body={(rowData) => <div>{rowData?.method_name}</div>} ></Column>
 
                         <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" sortable header={"Сумма"} headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} `} body={(rowData) => {
                             return (
@@ -397,20 +399,20 @@ const Dashboard = () => {
                                     <div key={index}>
                                         <div className="modal">
                                             <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Дата и время пополнения</h5>
-                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.created_at.split("T")[0]} {data.created_at.split("T")[1].split("+")[0].slice(0, 5)}</p>
+                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.created_at?.split("T")[0]} {data?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
                                         </div>
                                         <div className="modal">
                                             <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Метод пополнения</h5>
-                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.currency}</p>
+                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.currency}</p>
                                         </div>
                                         <div className="modal">
                                             <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма пополнения </h5>
-                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.amount} RUB</p>
-                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.amount_in_usdt} USDT</p>
+                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.amount} RUB</p>
+                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.amount_in_usdt} USDT</p>
                                         </div>
                                         <div className="modal">
                                             <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Курс обмена</h5>
-                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.course} {data.currency}</p>
+                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.course} {data?.currency}</p>
                                         </div>
                                         <div className="modal">
                                             <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма в фиате (без ставки)</h5>
@@ -418,7 +420,7 @@ const Dashboard = () => {
                                         </div>
                                         <div className="modal">
                                             <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Статус</h5>
-                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.status === "pending" ? "В обработке" : data.status === "success" ? "Успешно" : "Отклонено"}</p>
+                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.status === "pending" ? "В обработке" : data?.status === "success" ? "Успешно" : "Отклонено"}</p>
                                         </div>
                                     </div>
                                 ))}
