@@ -6,22 +6,37 @@ import Dark from '../Dark';
 import { Context } from '../context/ContextProvider';
 
 const Dashboard = () => {
+    let [dropDown, setDropDown] = useState(false)
     let { isDarkMode, toggleDarkMode } = useContext(Context)
     let navigate = useNavigate()
     const [data, setData] = useState([])
     useEffect(() => {
-        const fetchData = () => {
-            fetch("https://dev.royal-pay.org/api/v1/internal/refills/", {
-                method: "GET",
-                headers: {
-                    "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`
+        const fetchData = async () => {
+            try {
+                const response = await fetch("https://dev.royal-pay.org/api/v1/internal/refills/", {
+                    method: "GET",
+                    headers: {
+                        "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`
+                    }
+                });
+                if (response.status === 401) {
+                    console.log("Unauthorized access, redirecting to login.");
+                    navigate("/login");
+                } else if (response.ok) {
+                    const data = await response.json();
+                    setData(data);
+                } else {
+                    console.log("Unexpected error:", response.status);
                 }
-            }).then(res => res.json()).then(data => setData(data)).catch(err => navigate("/login"))
-        }
-        fetchData()
-    }, [])
+            } catch (error) {
+                console.error("An error occurred:", error);
+                navigate("/login");
+            }
+        };
 
-    let [dropDown, setDropDown] = useState(false)
+        fetchData();
+    }, [navigate]);
+
     const startDateRef = useRef(null);
     const endDateRef = useRef(null);
 
@@ -30,50 +45,110 @@ const Dashboard = () => {
     const [modal, setModal] = useState(false)
     const [searchValue, setSearchValue] = useState('');
     const [filteredCustomers, setFilteredCustomers] = useState([]);
-    const [startDate, setStartDate] = useState("2024-01-01");
+    const [startDate, setStartDate] = useState("2024-10-16");
     const [endDate, setEndDate] = useState("");
-    const [startTime, setStartTime] = useState("");
-    const [endTime, setEndTime] = useState("");
     let [hash, setHash] = useState("")
     let [selectStatus, setSelectStatus] = useState("")
+    const [startTime, setStartTime] = useState("");
+    const [endTime, setEndTime] = useState("");
+
+    const [time, setTime] = useState('');
+    const [time_2, setTime_2] = useState('');
 
     const handleStartTimeChange = (e) => {
-        setStartTime(e.target.value);
+        const value = e.target.value.replace(/[^0-9]/g, ''); // Sadece sayılar kabul edilir.
+        let cleanedValue = value;
+
+        // Eğer 2 karakter yazıldıysa ':' ekle
+        if (cleanedValue.length >= 3) {
+            cleanedValue = cleanedValue.slice(0, 2) + ':' + cleanedValue.slice(2);
+        }
+
+        // Eğer saat kısmı 23'ten büyükse 23'e ayarla
+        const timeParts = cleanedValue.split(':');
+        if (timeParts[0] && parseInt(timeParts[0], 10) > 23) {
+            cleanedValue = '23:' + (timeParts[1] ? timeParts[1] : '00');
+        }
+
+        // Eğer dakika kısmı 59'dan büyükse 59'a ayarla
+        if (timeParts[1] && parseInt(timeParts[1], 10) > 59) {
+            cleanedValue = timeParts[0] + ':59';
+        }
+
+        setTime(cleanedValue);  // Temizlenmiş zamanı ayarla
+        setStartTime(cleanedValue); // Orijinal değeri güncelleyerek set et
     };
 
+
     const handleEndTimeChange = (e) => {
-        setEndTime(e.target.value);
+        const value = e.target.value;
+        let cleanedValue = value.replace(/[^0-9:]/g, '');
+        const parts = cleanedValue.split(':');
+        if (parts.length > 2) {
+            cleanedValue = parts[0] + ':' + parts[1]
+        }
+        if (parts[0].length > 2) {
+            cleanedValue = cleanedValue.slice(0, 2) + ':' + cleanedValue.slice(3)
+        }
+        if (parts[1] && parts[1].length > 2) {
+            cleanedValue = cleanedValue.slice(0, 5)
+        }
+        const timeParts = cleanedValue.split(':');
+        if (timeParts[0] && parseInt(timeParts[0], 10) > 23) {
+            cleanedValue = '23:' + (timeParts[1] ? timeParts[1] : '00')
+        }
+        if (timeParts[1] && parseInt(timeParts[1], 10) > 59) {
+            cleanedValue = timeParts[0] + ':59';
+        }
+
+        setTime_2(cleanedValue);
+        setEndTime(value);
     };
-    const handleShow = (info) => {
-        setDetails([info])
-    }
+
     useEffect(() => {
         const filteredData = data?.results?.filter(customer => {
             const customerDate = new Date(customer?.created_at)
-            let [startHour] = startTime.split(":")
-            let [endHour] = endTime.split(":")
+            let [startHour, startMinute] = startTime.split(":");
+            let [endHour, endMinute] = endTime.split(":");
 
-            let hourMatch = true
-            if (startHour && endHour) {
-                hourMatch = customerDate.getHours() - 1 >= startHour && customerDate.getHours() - 1 <= endHour
-            } else if (startHour) {
-                hourMatch = customerDate.getHours() - 1 >= startHour
-            } else if (endHour) {
-                hourMatch = customerDate.getHours() - 1 <= endHour
-            }
+            let startDateTime = startDate ? new Date(`${startTime}T${startHour || '00:00'}`) : null
+            let endDateTime = endDate ? new Date(`${endTime}T${endHour || '00:00'}`) : null
+            
+            console.log(startTime)
 
-            let dateMatch = true;
-            if (startDate && endDate) {
-                const start = new Date(startDate);
-                const end = new Date(endDate);
-                dateMatch = customerDate >= start && customerDate <= end;
-            } else if (startDate) {
-                const start = new Date(startDate);
-                dateMatch = customerDate >= start;
-            } else if (endDate) {
-                const end = new Date(endDate);
-                dateMatch = customerDate <= end;
-            }
+            // const currentHour = customerDate.getHours() - 1;
+            // const currentMinute = customerDate.getMinutes();
+
+            // const afterStart = currentHour > startHour || (currentHour == startHour && currentMinute >= startMinute);
+            // const beforeEnd = currentHour < endHour || (currentHour == endHour && currentMinute <= endMinute);
+
+            // let dateMatch = true;
+            // const resetTime = (date) => {
+            //     const newDate = new Date(date);
+            //     newDate.setHours(0, 0, 0, 0)
+            //     return newDate;
+            // }
+            // if (startDate && endDate) {
+            //     const start = resetTime(startDate);
+            //     const end = resetTime(endDate);
+            //     const customerDay = resetTime(customerDate);
+            //     dateMatch = customerDay >= start && customerDay <= end;
+            // } else if (startDate) {
+            //     if (startHour && startMinute) {
+            //         let hours = customerDate.getHours() - 1
+            //         let minutes = customerDate.getMinutes()
+            //     } else {
+            //         const start = resetTime(startDate);
+            //         const customerDay = resetTime(customerDate);
+            //         dateMatch = customerDay >= start;
+            //     }
+            // } else if (endDate) {
+            //     const end = resetTime(endDate);
+            //     const customerDay = resetTime(customerDate);
+            //     dateMatch = customerDay <= end;
+            // }
+
+
 
             let hashMatch = true;
             if (hash) {
@@ -84,12 +159,18 @@ const Dashboard = () => {
             if (selectStatus) {
                 statusMatch = customer.status.toLowerCase() === selectStatus.toLowerCase();
             }
-            return dateMatch && hourMatch && hashMatch && statusMatch;
+            return (!startDateTime || customerDate >= startDateTime) && (!endDateTime || customerDate <= endDateTime) && hashMatch && statusMatch;
         });
         setFilteredCustomers(filteredData);
     }, [startDate, endDate, hash, selectStatus, startTime, endTime]);
+
+    const handleShow = (info) => {
+        setDetails([info])
+    }
+
+
     return (
-        <div className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border`}>
+        <div onClick={() => dropDown ? setDropDown(!dropDown) : ""} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border`}>
             <div className='flex'>
                 <div className={`${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5] border"}  min-h-[100vh] z-20  relative `}>
                     <h3 className={`py-[20px] flex items-center justify-start ml-[8px] font-medium px-[8px] ${isDarkMode ? "text-white" : "text-black"}`}>Лого</h3>
@@ -155,13 +236,13 @@ const Dashboard = () => {
                                 ДК
                             </div>
                             <div onClick={() => setDropDown(!dropDown)} className="cursor-pointer">
-                                <svg width="12" height="6" viewBox="0 0 12 6" fill="none" className='ml-2' xmlns="http://www.w3.org/2000/svg">
+                                <svg width="16" height="10" viewBox="0 0 12 6" fill="none" className='ml-2' xmlns="http://www.w3.org/2000/svg">
                                     <path d="M5.57143 6C5.39315 6 5.21485 5.93469 5.07905 5.80469L0.204221 1.13817C-0.0680735 0.877514 -0.0680735 0.456152 0.204221 0.195494C0.476514 -0.0651646 0.916685 -0.0651646 1.18898 0.195494L5.57143 4.39068L9.95388 0.195494C10.2262 -0.0651646 10.6663 -0.0651646 10.9386 0.195494C11.2109 0.456152 11.2109 0.877514 10.9386 1.13817L6.06381 5.80469C5.92801 5.93469 5.74971 6 5.57143 6Z" fill="#60626C" />
                                 </svg>
                             </div>
                         </div>
                         {/* darkmode */}
-                        <div style={{ boxShadow: "0px 4px 12px 1px #0000001A" }} className={` absolute text-[14px] font-normal z-20 w-[250px] p-4 ${isDarkMode ? "bg-[#1F1F1F] text-[#E7E7E7]" : "bg-white"}  right-2 top-16 rounded-[12px] h-[84px] duration-300 ${dropDown ? "opacity-100" : "opacity-0"}`}>
+                        <div style={{ boxShadow: "0px 4px 12px 1px #0000001A" }} className={` absolute text-[14px] font-normal z-50 w-[250px] p-4 ${isDarkMode ? "bg-[#1F1F1F] text-[#E7E7E7]" : "bg-white"}  right-2 top-16 rounded-[12px] h-[84px] duration-300 ${dropDown ? "opacity-100" : "opacity-0"}`}>
                             <div className="flex mb-[12px] justify-between">
                                 <h4>Тема</h4>
                                 <Dark />
@@ -203,40 +284,49 @@ const Dashboard = () => {
                             <svg width="24" height="24" className='' viewBox="0 0 24 24" fill={`${isDarkMode ? "#E7E7E7" : "#252840"}`} xmlns="http://www.w3.org/2000/svg">
                                 <path d="M20 3H19V2C19 1.45 18.55 1 18 1C17.45 1 17 1.45 17 2V3H7V2C7 1.45 6.55 1 6 1C5.45 1 5 1.45 5 2V3H4C2.9 3 2 3.9 2 5V21C2 22.1 2.9 23 4 23H20C21.1 23 22 22.1 22 21V5C22 3.9 21.1 3 20 3ZM19 21H5C4.45 21 4 20.55 4 20V8H20V20C20 20.55 19.55 21 19 21Z" />
                             </svg>
-                            <input ref={startDateRef} type="date" name="" id="date-picker" min="2023-01-01" className='bg-transparent outline-none relative mt-1 ml-1 w-full cursor-pointer' onChange={(e) => setStartDate(e.target.value)} defaultValue={"2024-10-10"} />
+                            <input ref={startDateRef} type="date" name="" id="date-picker" min="2023-01-01" className='bg-transparent outline-none relative mt-1 ml-1 w-full cursor-pointer' onChange={(e) => setStartDate(e.target.value)} defaultValue={"2024-10-16"} />
                         </div>
 
-                        <div className={`flex items-center pl-[12px] rounded-[4px] min-w-[157.5px] h-[40px] ${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC]"}`}>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.78 7H11.72C11.32 7 11 7.32 11 7.72V12.44C11 12.79 11.18 13.12 11.49 13.3L15.64 15.79C15.98 15.99 16.42 15.89 16.62 15.55C16.83 15.21 16.72 14.76 16.37 14.56L12.5 12.26V7.72C12.5 7.32 12.18 7 11.78 7Z" fill="#717380" />
-                            </svg>
-                            <select onChange={handleStartTimeChange} name="" className='bg-transparent outline-none' id="">
+                        <div className={`flex items-center pl-[12px] rounded-[4px] w-[157.5px] relative h-[40px] ${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC]"}`}>
+                            <div className="">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className='absolute top-2' xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.78 7H11.72C11.32 7 11 7.32 11 7.72V12.44C11 12.79 11.18 13.12 11.49 13.3L15.64 15.79C15.98 15.99 16.42 15.89 16.62 15.55C16.83 15.21 16.72 14.76 16.37 14.56L12.5 12.26V7.72C12.5 7.32 12.18 7 11.78 7Z" fill="#717380" />
+                                </svg>
+                            </div>
+                            <input value={time} onChange={handleStartTimeChange} type="text" className='bg-transparent outline-none pl-7' placeholder='00:00' />
+
+                            {/* <select onChange={handleStartTimeChange} name="" className='bg-transparent outline-none' id="">
                                 <option value={""} className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC] text-black"}`}>Время начала</option>
                                 {new Array(24).fill("").map((_, index) => index + ":00").map(time => (
                                     <>
                                         <option className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC] text-black"}`}>{time}</option>
                                     </>
                                 ))}
-                            </select>
+                            </select> */}
                         </div>
-                        <div className={`flex items-center pl-[12px] rounded-[4px] min-w-[157.5px] h-[40px] ${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC] text-black"}`} onClick={() => endDateRef.current && endDateRef.current.showPicker()}>
+                        <div className={`flex items-center  pl-[12px] rounded-[4px] min-w-[157.5px] h-[40px] ${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC] text-black"}`} onClick={() => endDateRef.current && endDateRef.current.showPicker()}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M20 3H19V2C19 1.45 18.55 1 18 1C17.45 1 17 1.45 17 2V3H7V2C7 1.45 6.55 1 6 1C5.45 1 5 1.45 5 2V3H4C2.9 3 2 3.9 2 5V21C2 22.1 2.9 23 4 23H20C21.1 23 22 22.1 22 21V5C22 3.9 21.1 3 20 3ZM19 21H5C4.45 21 4 20.55 4 20V8H20V20C20 20.55 19.55 21 19 21Z" fill="#717380" />
                             </svg>
-                            <input ref={endDateRef} type="date" name="" id="" min="2024-01-01" className='bg-transparent outline-none mt-1 ml-1' onChange={(e) => setEndDate(e.target.value)} defaultValue={"2024-12-12"} />
+                            <div className="">
+                                <input ref={endDateRef} type="date" name="" id="" min="2024-01-01" className='bg-transparent outline-none mt-1 ml-1' onChange={(e) => setEndDate(e.target.value)} defaultValue={"2024-12-12"} />
+                            </div>
                         </div>
-                        <div className={`flex items-center pl-[12px] rounded-[4px] min-w-[157.5px] h-[40px] ${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC]"}`}>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.78 7H11.72C11.32 7 11 7.32 11 7.72V12.44C11 12.79 11.18 13.12 11.49 13.3L15.64 15.79C15.98 15.99 16.42 15.89 16.62 15.55C16.83 15.21 16.72 14.76 16.37 14.56L12.5 12.26V7.72C12.5 7.32 12.18 7 11.78 7Z" fill="#717380" />
-                            </svg>
-                            <select onChange={handleEndTimeChange} name="" className='bg-transparent outline-none' id="">
+                        <div className={`flex items-center pl-[12px] relative rounded-[4px] w-[157.5px] h-[40px] ${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC]"}`}>
+                            <div className="">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className='absolute top-2' xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.78 7H11.72C11.32 7 11 7.32 11 7.72V12.44C11 12.79 11.18 13.12 11.49 13.3L15.64 15.79C15.98 15.99 16.42 15.89 16.62 15.55C16.83 15.21 16.72 14.76 16.37 14.56L12.5 12.26V7.72C12.5 7.32 12.18 7 11.78 7Z" fill="#717380" />
+                                </svg>
+                            </div>
+                            <input value={time_2} onChange={handleEndTimeChange} type="text" className='bg-transparent outline-none pl-7' placeholder='23:59' />
+                            {/* <select onChange={handleEndTimeChange} name="" className='bg-transparent outline-none' id="">
                                 <option value="" className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC] text-black"}`} >Время начала</option>
                                 {new Array(24).fill("").map((_, index) => index + ":00").map(time => (
                                     <>
                                         <option className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC] text-black"}`}>{time}</option>
                                     </>
                                 ))}
-                            </select>
+                            </select> */}
                         </div>
                     </div>
                     <DataTable value={filteredCustomers || data.results} paginator rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
