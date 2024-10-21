@@ -115,16 +115,19 @@ const Dashboard = () => {
             let endDateTime;
             let startDateTime;
 
-            if (startTime) {
+            if (startTime && !startMinute) {
+                startDateTime = new Date(`${startDate}T${((+startHour + 1) + ':' + "00") || '00:00'}`)
+            } else if (startTime) {
                 startDateTime = new Date(`${startDate}T${((+startHour + 1) + ':' + startMinute) || '00:00'}`)
             } else {
                 startDateTime = new Date(`${startDate}T00:00`);
             }
             if (endDate) {
-                if (+endHour === 23) {
+                if (+endHour === 23 && +endMinute > 1) {
                     endDateTime = new Date(`${endDate}T${((+endHour) + ':' + endMinute) || '23:59'}`)
-                }
-                else if (endTime) {
+                } else if (endTime && !endMinute) {
+                    endDateTime = new Date(`${endDate}T${((+endHour + 1) + ':' + "00") || '00:00'}`)
+                } else if (endTime) {
                     endDateTime = new Date(`${endDate}T${((+endHour + 1) + ':' + endMinute) || '00:00'}`)
                 }
                 else {
