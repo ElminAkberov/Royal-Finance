@@ -114,39 +114,6 @@ const Dashboard = () => {
             let startDateTime = startDate ? new Date(`${startTime}T${startHour || '00:00'}`) : null
             let endDateTime = endDate ? new Date(`${endTime}T${endHour || '00:00'}`) : null
             
-            console.log(startTime)
-
-            // const currentHour = customerDate.getHours() - 1;
-            // const currentMinute = customerDate.getMinutes();
-
-            // const afterStart = currentHour > startHour || (currentHour == startHour && currentMinute >= startMinute);
-            // const beforeEnd = currentHour < endHour || (currentHour == endHour && currentMinute <= endMinute);
-
-            // let dateMatch = true;
-            // const resetTime = (date) => {
-            //     const newDate = new Date(date);
-            //     newDate.setHours(0, 0, 0, 0)
-            //     return newDate;
-            // }
-            // if (startDate && endDate) {
-            //     const start = resetTime(startDate);
-            //     const end = resetTime(endDate);
-            //     const customerDay = resetTime(customerDate);
-            //     dateMatch = customerDay >= start && customerDay <= end;
-            // } else if (startDate) {
-            //     if (startHour && startMinute) {
-            //         let hours = customerDate.getHours() - 1
-            //         let minutes = customerDate.getMinutes()
-            //     } else {
-            //         const start = resetTime(startDate);
-            //         const customerDay = resetTime(customerDate);
-            //         dateMatch = customerDay >= start;
-            //     }
-            // } else if (endDate) {
-            //     const end = resetTime(endDate);
-            //     const customerDay = resetTime(customerDate);
-            //     dateMatch = customerDay <= end;
-            // }
 
 
 
