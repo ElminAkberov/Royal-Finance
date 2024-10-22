@@ -1,13 +1,39 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Context } from '../context/ContextProvider'
 import { NavLink, useNavigate } from 'react-router-dom'
 import Dark from '../Dark'
 
 const Deposit = () => {
-  const [modal, setModal] = useState(false)
+  const [modalUsdt, setModalUsdt] = useState(false)
+  const [modalCash, setModalCash] = useState(false)
+  const [method, setMethod] = useState("")
+  const [amount, setAmount] = useState("")
+  const [hash, setHash] = useState("")
   let [dropDown, setDropDown] = useState(false)
   let { isDarkMode, toggleDarkMode } = useContext(Context)
   let [open, setOpen] = useState(true)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      await fetch("https://dev.royal-pay.org/api/v1/internal/refills/", {
+        method: "POST",
+        headers: {
+          "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          hash: hash,
+          method: method,
+          amount: amount
+        })
+      }).then(res=>res.json()).then(res=>console.log(res.code));
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+
   return (
     <div onClick={() => dropDown ? setDropDown(!dropDown) : ""} className='flex '>
       <div className={`${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5] border"}  min-h-[100vh] z-20  relative `}>
@@ -15,14 +41,14 @@ const Deposit = () => {
         <div className={` ${!open && "min-w-[263px]"} `}>
           <div className="">
             <NavLink to={"/dash"} className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px] ">
-              <svg width="24" height="24"  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M21.4286 15.4286H19.6543C19.0714 16.0886 18.4029 16.6629 17.6743 17.1429C16.0457 18.2314 14.1 18.8571 12 18.8571C9.9 18.8571 7.95429 18.2314 6.32571 17.1429C5.59714 16.6629 4.92857 16.0886 4.34571 15.4286H2.57143C1.15714 15.4286 0 16.5857 0 18V21.4286C0 22.8429 1.15714 24 2.57143 24H21.4286C22.8429 24 24 22.8429 24 21.4286V18C24 16.5857 22.8429 15.4286 21.4286 15.4286ZM18.8571 21.4286H5.14286C4.67143 21.4286 4.28571 21.0429 4.28571 20.5714C4.28571 20.1 4.67143 19.7143 5.14286 19.7143H18.8571C19.3286 19.7143 19.7143 20.1 19.7143 20.5714C19.7143 21.0429 19.3286 21.4286 18.8571 21.4286ZM12 0C7.27714 0 3.42857 3.84857 3.42857 8.57143C3.42857 11.3743 4.78286 13.8686 6.86571 15.4286C8.29714 16.5086 10.0714 17.1429 12 17.1429C13.9286 17.1429 15.7029 16.5086 17.1343 15.4286C18.2011 14.6318 19.0674 13.597 19.664 12.4066C20.2607 11.2162 20.5714 9.903 20.5714 8.57143C20.5714 3.84857 16.7229 0 12 0ZM11.5714 7.71429H12.3771C12.9455 7.71429 13.4905 7.94005 13.8924 8.34191C14.2942 8.74378 14.52 9.28882 14.52 9.85714C14.52 10.9029 13.8086 11.76 12.8571 11.9829V12.8571C12.8571 13.3286 12.4714 13.7143 12 13.7143C11.5286 13.7143 11.1429 13.3286 11.1429 12.8571V12.0343H10.2857C9.81429 12.0343 9.42857 11.6571 9.42857 11.1771C9.42857 10.7057 9.81429 10.32 10.2857 10.32H12.3771C12.6171 10.32 12.8057 10.1314 12.8057 9.89143C12.8057 9.61714 12.6171 9.42857 12.3771 9.42857H11.5714C11.04 9.42911 10.5274 9.23217 10.133 8.87598C9.73863 8.5198 9.49067 8.02979 9.43727 7.50107C9.38386 6.97235 9.52882 6.44265 9.84399 6.0148C10.1592 5.58694 10.6221 5.29146 11.1429 5.18571V4.28571C11.1429 3.81429 11.5286 3.42857 12 3.42857C12.4714 3.42857 12.8571 3.81429 12.8571 4.28571V5.14286H13.6629C14.1343 5.14286 14.52 5.52857 14.52 6C14.52 6.47143 14.1343 6.85714 13.6629 6.85714H11.5714C11.3314 6.85714 11.1429 7.04571 11.1429 7.28571C11.1429 7.52571 11.3314 7.71429 11.5714 7.71429Z" fill="#8D8F9B" />
               </svg>
               <p className={`${open && "hidden"} text-[#BFC0C9]  text-[14px] font-medium ml-[8px] `}>Управления депозитами</p>
             </NavLink>
             <NavLink to={"/deposit"} className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px] bg-[#2D54DD4D]">
               <svg width="24" height="24" className='fill-[#2D54DD]' viewBox="0 0 19 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M6.78571 18.2142H12.2143C12.9607 18.2142 13.5714 17.5633 13.5714 16.7678V9.53558H15.7293C16.9371 9.53558 17.5479 7.97343 16.6929 7.06217L10.4636 0.423003C10.338 0.288913 10.1889 0.182531 10.0247 0.109946C9.86053 0.0373615 9.68453 0 9.50679 0C9.32904 0 9.15304 0.0373615 8.98887 0.109946C8.82469 0.182531 8.67555 0.288913 8.55 0.423003L2.32071 7.06217C1.46571 7.97343 2.06286 9.53558 3.27071 9.53558H5.42857V16.7678C5.42857 17.5633 6.03929 18.2142 6.78571 18.2142ZM1.35714 21.1071H17.6429C18.3893 21.1071 19 21.758 19 22.5536C19 23.3491 18.3893 24 17.6429 24H1.35714C0.610714 24 0 23.3491 0 22.5536C0 21.758 0.610714 21.1071 1.35714 21.1071Z"  />
+                <path d="M6.78571 18.2142H12.2143C12.9607 18.2142 13.5714 17.5633 13.5714 16.7678V9.53558H15.7293C16.9371 9.53558 17.5479 7.97343 16.6929 7.06217L10.4636 0.423003C10.338 0.288913 10.1889 0.182531 10.0247 0.109946C9.86053 0.0373615 9.68453 0 9.50679 0C9.32904 0 9.15304 0.0373615 8.98887 0.109946C8.82469 0.182531 8.67555 0.288913 8.55 0.423003L2.32071 7.06217C1.46571 7.97343 2.06286 9.53558 3.27071 9.53558H5.42857V16.7678C5.42857 17.5633 6.03929 18.2142 6.78571 18.2142ZM1.35714 21.1071H17.6429C18.3893 21.1071 19 21.758 19 22.5536C19 23.3491 18.3893 24 17.6429 24H1.35714C0.610714 24 0 23.3491 0 22.5536C0 21.758 0.610714 21.1071 1.35714 21.1071Z" />
               </svg>
               <p className={`${open && "hidden"} text-[#2D54DD] text-[14px] font-medium ml-[8px]`}>Пополнение депозита</p>
 
@@ -94,60 +120,60 @@ const Deposit = () => {
         <div className={`pt-[129px] px-[68px] max-[500px]:px-0 `}>
           <h3 className={`font-semibold max-[500px]:px-5 text-[24px] mb-[26px]  ${isDarkMode ? "text-[#E7E7E7]" : "text-[#3d457c]"}`}>Пополнение депозита</h3>
           <div className="cards flex flex-wrap gap-8  max-[1100px]:justify-center duration-300">
-            <div onClick={() => setModal(true)} className={`card_1 cursor-pointer max-w-[290px]  p-8 ${isDarkMode ? "bg-[#1F1F1F]":"bg-[#F5F6FC]"}  rounded-2xl`}>
+            <div onClick={() => { setModalUsdt(true); setMethod('USDT') }} className={`card_1 cursor-pointer max-w-[290px]  p-8 ${isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]"}  rounded-2xl`}>
               <div className='px-[64px] py-[61px] flex items-center justify-center bg-[#DAE2FF]'>
                 <svg width="100" height="80" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M58.083 44.625C54.6455 44.625 51.7236 43.4219 49.3174 41.0156C46.9111 38.6094 45.708 35.6875 45.708 32.25C45.708 28.8125 46.9111 25.8906 49.3174 23.4844C51.7236 21.0781 54.6455 19.875 58.083 19.875C61.5205 19.875 64.4424 21.0781 66.8486 23.4844C69.2549 25.8906 70.458 28.8125 70.458 32.25C70.458 35.6875 69.2549 38.6094 66.8486 41.0156C64.4424 43.4219 61.5205 44.625 58.083 44.625ZM29.208 57C26.9393 57 24.9978 56.1929 23.3835 54.5786C21.7693 52.9644 20.9608 51.0215 20.958 48.75V15.75C20.958 13.4812 21.7665 11.5397 23.3835 9.9255C25.0005 8.31125 26.942 7.50275 29.208 7.5H86.958C89.2268 7.5 91.1696 8.3085 92.7866 9.9255C94.4036 11.5425 95.2108 13.484 95.208 15.75V48.75C95.208 51.0187 94.4009 52.9616 92.7866 54.5786C91.1724 56.1956 89.2295 57.0028 86.958 57H29.208ZM37.458 48.75H78.708C78.708 46.4813 79.5165 44.5398 81.1335 42.9255C82.7505 41.3113 84.692 40.5028 86.958 40.5V24C84.6893 24 82.7478 23.1929 81.1335 21.5786C79.5193 19.9644 78.7108 18.0215 78.708 15.75H37.458C37.458 18.0188 36.6509 19.9616 35.0366 21.5786C33.4224 23.1956 31.4795 24.0028 29.208 24V40.5C31.4768 40.5 33.4196 41.3085 35.0366 42.9255C36.6536 44.5425 37.4608 46.484 37.458 48.75ZM78.708 73.5H12.708C10.4393 73.5 8.49776 72.6929 6.88351 71.0786C5.26926 69.4644 4.46076 67.5215 4.45801 65.25V24C4.45801 22.8313 4.85401 21.8523 5.64601 21.063C6.43801 20.2738 7.41701 19.8778 8.58301 19.875C9.74901 19.8722 10.7294 20.2683 11.5241 21.063C12.3189 21.8578 12.7135 22.8368 12.708 24V65.25H78.708C79.8768 65.25 80.8571 65.646 81.6491 66.438C82.4411 67.23 82.8358 68.209 82.833 69.375C82.8303 70.541 82.4343 71.5214 81.645 72.3161C80.8558 73.1109 79.8768 73.5055 78.708 73.5Z" fill="#2D54DD" />
                 </svg>
               </div>
-              <div className={` ${isDarkMode ? "text-[#E7E7E7]":"text-[#18181B]"}`}>
+              <div className={` ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>
                 <h4 className={`text-[20px] font-semibold mt-6`}>Криптовалюта</h4>
                 <p className={`text-[14px] mb-[42px]`}>USDT</p>
               </div>
             </div>
-            <div  onClick={() => setModal(true)} className={`card_1 cursor-pointer max-w-[290px]  p-8 ${isDarkMode ? "bg-[#1F1F1F]":"bg-[#F5F6FC]"} rounded-2xl`}>
+            <div onClick={() => { setModalCash(true); setMethod("GARANTEX") }} className={`card_1 cursor-pointer max-w-[290px]  p-8 ${isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]"} rounded-2xl`}>
               <div className='px-[64px] py-[61px] flex items-center justify-center bg-[#DAE2FF]'>
                 <svg width="100" height="80" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M58.083 44.625C54.6455 44.625 51.7236 43.4219 49.3174 41.0156C46.9111 38.6094 45.708 35.6875 45.708 32.25C45.708 28.8125 46.9111 25.8906 49.3174 23.4844C51.7236 21.0781 54.6455 19.875 58.083 19.875C61.5205 19.875 64.4424 21.0781 66.8486 23.4844C69.2549 25.8906 70.458 28.8125 70.458 32.25C70.458 35.6875 69.2549 38.6094 66.8486 41.0156C64.4424 43.4219 61.5205 44.625 58.083 44.625ZM29.208 57C26.9393 57 24.9978 56.1929 23.3835 54.5786C21.7693 52.9644 20.9608 51.0215 20.958 48.75V15.75C20.958 13.4812 21.7665 11.5397 23.3835 9.9255C25.0005 8.31125 26.942 7.50275 29.208 7.5H86.958C89.2268 7.5 91.1696 8.3085 92.7866 9.9255C94.4036 11.5425 95.2108 13.484 95.208 15.75V48.75C95.208 51.0187 94.4009 52.9616 92.7866 54.5786C91.1724 56.1956 89.2295 57.0028 86.958 57H29.208ZM37.458 48.75H78.708C78.708 46.4813 79.5165 44.5398 81.1335 42.9255C82.7505 41.3113 84.692 40.5028 86.958 40.5V24C84.6893 24 82.7478 23.1929 81.1335 21.5786C79.5193 19.9644 78.7108 18.0215 78.708 15.75H37.458C37.458 18.0188 36.6509 19.9616 35.0366 21.5786C33.4224 23.1956 31.4795 24.0028 29.208 24V40.5C31.4768 40.5 33.4196 41.3085 35.0366 42.9255C36.6536 44.5425 37.4608 46.484 37.458 48.75ZM78.708 73.5H12.708C10.4393 73.5 8.49776 72.6929 6.88351 71.0786C5.26926 69.4644 4.46076 67.5215 4.45801 65.25V24C4.45801 22.8313 4.85401 21.8523 5.64601 21.063C6.43801 20.2738 7.41701 19.8778 8.58301 19.875C9.74901 19.8722 10.7294 20.2683 11.5241 21.063C12.3189 21.8578 12.7135 22.8368 12.708 24V65.25H78.708C79.8768 65.25 80.8571 65.646 81.6491 66.438C82.4411 67.23 82.8358 68.209 82.833 69.375C82.8303 70.541 82.4343 71.5214 81.645 72.3161C80.8558 73.1109 79.8768 73.5055 78.708 73.5Z" fill="#2D54DD" />
                 </svg>
               </div>
-              <div className={` ${isDarkMode ? "text-[#E7E7E7]":"text-[#18181B]"}`}>
-                <h4 className={`text-[20px] font-semibold mt-6`}>Криптовалюта</h4>
-                <p className={`text-[14px] mb-[42px]`}>USDT</p>
+              <div className={` ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>
+                <h4 className={`text-[20px] font-semibold mt-6`}>Гарантекс</h4>
+                <p className={`text-[14px] mb-[42px]`}>Код</p>
               </div>
             </div>
-            <div  onClick={() => setModal(true)} className={`card_1 cursor-pointer max-w-[290px]  p-8 ${isDarkMode ? "bg-[#1F1F1F]":"bg-[#F5F6FC]"} rounded-2xl`}>
+            <div onClick={() => { setModalCash(true); setMethod("ABCEX") }} className={`card_1 cursor-pointer max-w-[290px]  p-8 ${isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]"} rounded-2xl`}>
               <div className='px-[64px] py-[61px] flex items-center justify-center bg-[#DAE2FF]'>
                 <svg width="100" height="80" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M58.083 44.625C54.6455 44.625 51.7236 43.4219 49.3174 41.0156C46.9111 38.6094 45.708 35.6875 45.708 32.25C45.708 28.8125 46.9111 25.8906 49.3174 23.4844C51.7236 21.0781 54.6455 19.875 58.083 19.875C61.5205 19.875 64.4424 21.0781 66.8486 23.4844C69.2549 25.8906 70.458 28.8125 70.458 32.25C70.458 35.6875 69.2549 38.6094 66.8486 41.0156C64.4424 43.4219 61.5205 44.625 58.083 44.625ZM29.208 57C26.9393 57 24.9978 56.1929 23.3835 54.5786C21.7693 52.9644 20.9608 51.0215 20.958 48.75V15.75C20.958 13.4812 21.7665 11.5397 23.3835 9.9255C25.0005 8.31125 26.942 7.50275 29.208 7.5H86.958C89.2268 7.5 91.1696 8.3085 92.7866 9.9255C94.4036 11.5425 95.2108 13.484 95.208 15.75V48.75C95.208 51.0187 94.4009 52.9616 92.7866 54.5786C91.1724 56.1956 89.2295 57.0028 86.958 57H29.208ZM37.458 48.75H78.708C78.708 46.4813 79.5165 44.5398 81.1335 42.9255C82.7505 41.3113 84.692 40.5028 86.958 40.5V24C84.6893 24 82.7478 23.1929 81.1335 21.5786C79.5193 19.9644 78.7108 18.0215 78.708 15.75H37.458C37.458 18.0188 36.6509 19.9616 35.0366 21.5786C33.4224 23.1956 31.4795 24.0028 29.208 24V40.5C31.4768 40.5 33.4196 41.3085 35.0366 42.9255C36.6536 44.5425 37.4608 46.484 37.458 48.75ZM78.708 73.5H12.708C10.4393 73.5 8.49776 72.6929 6.88351 71.0786C5.26926 69.4644 4.46076 67.5215 4.45801 65.25V24C4.45801 22.8313 4.85401 21.8523 5.64601 21.063C6.43801 20.2738 7.41701 19.8778 8.58301 19.875C9.74901 19.8722 10.7294 20.2683 11.5241 21.063C12.3189 21.8578 12.7135 22.8368 12.708 24V65.25H78.708C79.8768 65.25 80.8571 65.646 81.6491 66.438C82.4411 67.23 82.8358 68.209 82.833 69.375C82.8303 70.541 82.4343 71.5214 81.645 72.3161C80.8558 73.1109 79.8768 73.5055 78.708 73.5Z" fill="#2D54DD" />
                 </svg>
               </div>
-              <div className={` ${isDarkMode ? "text-[#E7E7E7]":"text-[#18181B]"}`}>
-                <h4 className={`text-[20px] font-semibold mt-6`}>Криптовалюта</h4>
-                <p className={`text-[14px] mb-[42px]`}>USDT</p>
+              <div className={` ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>
+                <h4 className={`text-[20px] font-semibold mt-6`}>ABC</h4>
+                <p className={`text-[14px] mb-[42px]`}>Код</p>
               </div>
             </div>
-            <div  onClick={() => setModal(true)} className={`card_1 cursor-pointer max-w-[290px]  p-8 ${isDarkMode ? "bg-[#1F1F1F]":"bg-[#F5F6FC]"} rounded-2xl`}>
+            <div onClick={() => { setModalCash(true); setMethod("CASH") }} className={`card_1 cursor-pointer max-w-[290px]  p-8 ${isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]"} rounded-2xl`}>
               <div className='px-[64px] py-[61px] flex items-center justify-center bg-[#DAE2FF]'>
                 <svg width="100" height="80" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M58.083 44.625C54.6455 44.625 51.7236 43.4219 49.3174 41.0156C46.9111 38.6094 45.708 35.6875 45.708 32.25C45.708 28.8125 46.9111 25.8906 49.3174 23.4844C51.7236 21.0781 54.6455 19.875 58.083 19.875C61.5205 19.875 64.4424 21.0781 66.8486 23.4844C69.2549 25.8906 70.458 28.8125 70.458 32.25C70.458 35.6875 69.2549 38.6094 66.8486 41.0156C64.4424 43.4219 61.5205 44.625 58.083 44.625ZM29.208 57C26.9393 57 24.9978 56.1929 23.3835 54.5786C21.7693 52.9644 20.9608 51.0215 20.958 48.75V15.75C20.958 13.4812 21.7665 11.5397 23.3835 9.9255C25.0005 8.31125 26.942 7.50275 29.208 7.5H86.958C89.2268 7.5 91.1696 8.3085 92.7866 9.9255C94.4036 11.5425 95.2108 13.484 95.208 15.75V48.75C95.208 51.0187 94.4009 52.9616 92.7866 54.5786C91.1724 56.1956 89.2295 57.0028 86.958 57H29.208ZM37.458 48.75H78.708C78.708 46.4813 79.5165 44.5398 81.1335 42.9255C82.7505 41.3113 84.692 40.5028 86.958 40.5V24C84.6893 24 82.7478 23.1929 81.1335 21.5786C79.5193 19.9644 78.7108 18.0215 78.708 15.75H37.458C37.458 18.0188 36.6509 19.9616 35.0366 21.5786C33.4224 23.1956 31.4795 24.0028 29.208 24V40.5C31.4768 40.5 33.4196 41.3085 35.0366 42.9255C36.6536 44.5425 37.4608 46.484 37.458 48.75ZM78.708 73.5H12.708C10.4393 73.5 8.49776 72.6929 6.88351 71.0786C5.26926 69.4644 4.46076 67.5215 4.45801 65.25V24C4.45801 22.8313 4.85401 21.8523 5.64601 21.063C6.43801 20.2738 7.41701 19.8778 8.58301 19.875C9.74901 19.8722 10.7294 20.2683 11.5241 21.063C12.3189 21.8578 12.7135 22.8368 12.708 24V65.25H78.708C79.8768 65.25 80.8571 65.646 81.6491 66.438C82.4411 67.23 82.8358 68.209 82.833 69.375C82.8303 70.541 82.4343 71.5214 81.645 72.3161C80.8558 73.1109 79.8768 73.5055 78.708 73.5Z" fill="#2D54DD" />
                 </svg>
               </div>
-              <div className={` ${isDarkMode ? "text-[#E7E7E7]":"text-[#18181B]"}`}>
-                <h4 className={`text-[20px] font-semibold mt-6`}>Криптовалюта</h4>
-                <p className={`text-[14px] mb-[42px]`}>USDT</p>
+              <div className={` ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>
+                <h4 className={`text-[20px] font-semibold mt-6`}>Cash</h4>
+                <p className={`text-[14px] mb-[42px]`}>Код</p>
               </div>
             </div>
-
           </div>
         </div>
-        
-        <div className={`${!modal && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
 
-        <div className={`${!modal ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[765px]`}>
+        <div className={`${!modalCash && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+        <div className={`${!modalUsdt && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+        {/* modallar */}
+        <form onSubmit={handleSubmit} className={`${!modalUsdt ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[765px]`}>
           <div className="p-8">
             <div className="relative">
-              <div onClick={() => setModal(false)}  className="absolute right-0 cursor-pointer">
+              <div onClick={() => { setModalUsdt(false); setMethod(""); setAmount(""); setHash(""); }} className="absolute right-0 cursor-pointer">
                 <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" fill="#222222" />
                 </svg>
@@ -156,9 +182,13 @@ const Deposit = () => {
                 <h3 className={`text-[32px] font-semibold ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Пополнить депозит</h3>
                 <h5 className='text-[14px] text-[#60626C]'>Заполните форму</h5>
               </div>
+              <div className="mb-8">
+                <h4 className='text-[12px] mb-2 font-semibold'>Хеш</h4>
+                <input value={hash} onChange={(e) => { setHash(e.target.value) }} placeholder='Хеш' type="text" required className='border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]' />
+              </div>
               <div className="">
-                <h4 className='text-[12px] mb-2 font-normal'>Хеш</h4>
-                <input placeholder='Хеш' type="text" className='border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]' />
+                <h4 className='text-[12px] mb-2 font-semibold'>Amount</h4>
+                <input value={amount} onChange={(e) => { setAmount(e.target.value) }} placeholder='Amount' type="number" required className='border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]' />
               </div>
               <div className="">
                 <h3 className={`text-[24px] mt-8 font-semibold ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сканировать QR код</h3>
@@ -166,17 +196,17 @@ const Deposit = () => {
                 <p className={`text-[14px] text-center ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>0x14ofgm52341of13ofqofekqog1eqrog</p>
               </div>
               <div className="flex w-full text-white justify-end">
-                <button className='bg-[#2E70F5] px-[37.5px] py-[10px] mt-[32px] font-normal text-[14px] rounded-[8px]'>
+                <button type='submit' className='bg-[#2E70F5] px-[37.5px] py-[10px] mt-[32px] font-normal text-[14px] rounded-[8px]'>
                   Пополнить
                 </button>
               </div>
             </div>
           </div>
-        </div>
-        {/* <div className={`${!modal ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[765px]`}>
+        </form>
+        <form onSubmit={handleSubmit} className={`${!modalCash ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[765px]`}>
           <div className="p-8">
             <div className="relative">
-              <div onClick={() => setModal(false)}  className="absolute right-0 cursor-pointer">
+              <div onClick={() => { setModalCash(false); setMethod(""); setAmount(""); setHash(""); }} className="absolute right-0 cursor-pointer">
                 <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" fill="#222222" />
                 </svg>
@@ -185,18 +215,22 @@ const Deposit = () => {
                 <h3 className={`text-[32px] font-semibold ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Пополнить депозит</h3>
                 <h5 className='text-[14px] text-[#60626C]'>Заполните форму</h5>
               </div>
+              <div className="mb-8">
+                <h4 className='text-[12px] mb-2 font-semibold'>Код</h4>
+                <input value={hash} onChange={(e) => { setHash(e.target.value) }} placeholder='Код' type="text" required className='border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]' />
+              </div>
               <div className="">
-                <h4 className='text-[12px] mb-2 font-normal'>Код</h4>
-                <input placeholder='Код' type="text" className='border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]' />
+                <h4 className='text-[12px] mb-2 font-semibold'>Amount</h4>
+                <input value={amount} onChange={(e) => { setAmount(e.target.value) }} placeholder='Amount' type="number" required className='border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]' />
               </div>
               <div className="flex w-full text-white justify-end">
-                <button className='bg-[#2E70F5] px-[37.5px] py-[10px] mt-[32px] font-normal text-[14px] rounded-[8px]'>
+                <button type='submit' className='bg-[#2E70F5] px-[37.5px] py-[10px] mt-[32px] font-normal text-[14px] rounded-[8px]'>
                   Пополнить
                 </button>
               </div>
             </div>
           </div>
-        </div> */}
+        </form>
       </div>
     </div>
   )
