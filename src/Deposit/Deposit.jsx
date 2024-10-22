@@ -12,6 +12,7 @@ const Deposit = () => {
   let [dropDown, setDropDown] = useState(false)
   let { isDarkMode, toggleDarkMode } = useContext(Context)
   let [open, setOpen] = useState(true)
+  let [error, setError] = useState(false)
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -27,9 +28,10 @@ const Deposit = () => {
           method: method,
           amount: amount
         })
-      }).then(res => res.json()).then(res => console.log(res.code));
+      }).then(res => res.json()).then(res => { if (res.code == "token_not_valid") { setError(true) } else { setError(false) } });
     } catch (error) {
       console.error("Error:", error);
+      setError(true)
     }
   };
 
@@ -107,7 +109,7 @@ const Deposit = () => {
             </div>
           </div>
           {/* darkmode */}
-          <div style={{ boxShadow: "0px 4px 12px 1px #0000001A" }} className={` absolute text-[14px] font-normal z-50 w-[250px] p-4 ${isDarkMode ? "bg-[#1F1F1F] text-[#E7E7E7]" : "bg-white"}  right-2 top-16 rounded-[12px] h-[84px] duration-300 ${dropDown ? "opacity-100" : "opacity-0"}`}>
+          <div style={{ boxShadow: "0px 4px 12px 1px #0000001A" }} className={` absolute text-[14px]  font-normal z-50 w-[250px] p-4 ${isDarkMode ? "bg-[#1F1F1F] text-[#E7E7E7]" : "bg-white"}  right-2 top-16 rounded-[12px] h-[84px] duration-300 ${dropDown ? "opacity-100" : "opacity-0 invisible"}`}>
             <div className="flex mb-[12px] justify-between">
               <h4>Тема</h4>
               <Dark />
@@ -128,7 +130,7 @@ const Deposit = () => {
               </div>
               <div className={` ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>
                 <h4 className={`text-[20px] font-semibold mt-6`}>Криптовалюта</h4>
-                <p className={`text-[14px] mb-[42px]`}>USDT</p>
+                <p className={`text-[14px] mb-[10px]`}>USDT</p>
               </div>
             </div>
             <div onClick={() => { setModalCash(true); setMethod("GARANTEX") }} className={`card_1 cursor-pointer max-w-[290px]  p-8 ${isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]"} rounded-2xl`}>
@@ -139,7 +141,7 @@ const Deposit = () => {
               </div>
               <div className={` ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>
                 <h4 className={`text-[20px] font-semibold mt-6`}>Гарантекс</h4>
-                <p className={`text-[14px] mb-[42px]`}>Код</p>
+                <p className={`text-[14px] mb-[10px]`}>Код</p>
               </div>
             </div>
             <div onClick={() => { setModalCash(true); setMethod("ABCEX") }} className={`card_1 cursor-pointer max-w-[290px]  p-8 ${isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]"} rounded-2xl`}>
@@ -150,7 +152,7 @@ const Deposit = () => {
               </div>
               <div className={` ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>
                 <h4 className={`text-[20px] font-semibold mt-6`}>ABC</h4>
-                <p className={`text-[14px] mb-[42px]`}>Код</p>
+                <p className={`text-[14px] mb-[10px]`}>Код</p>
               </div>
             </div>
             <div onClick={() => { setModalCash(true); setMethod("CASH") }} className={`card_1 cursor-pointer max-w-[290px]  p-8 ${isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]"} rounded-2xl`}>
@@ -161,7 +163,7 @@ const Deposit = () => {
               </div>
               <div className={` ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>
                 <h4 className={`text-[20px] font-semibold mt-6`}>Cash</h4>
-                <p className={`text-[14px] mb-[42px]`}>Код</p>
+                <p className={`text-[14px] mb-[10px]`}>Код</p>
               </div>
             </div>
           </div>
@@ -173,15 +175,29 @@ const Deposit = () => {
         <form onSubmit={handleSubmit} className={`${!modalUsdt ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[765px]`}>
           <div className="p-8">
             <div className="relative">
-              <div onClick={() => { setModalUsdt(false); setMethod(""); setAmount(""); setHash(""); }} className="absolute right-0 cursor-pointer">
+              <div onClick={() => { setModalUsdt(false); setMethod(""); setAmount(""); setHash(""); setError(false) }} className="absolute right-0 cursor-pointer">
                 <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${isDarkMode ? "fill-[#fff]" : "fill-[#000]"}`}>
-                  <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z"  />
+                  <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
                 </svg>
               </div>
               <div className="mb-8">
                 <h3 className={`text-[32px] font-semibold ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Пополнить депозит</h3>
                 <h5 className='text-[14px] text-[#60626C]'>Заполните форму</h5>
               </div>
+              {error &&
+                <div className=" pt-1">
+                  <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
+                    <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
+                    <div className="relative mr-[8px] ml-[18px]">
+                      <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
+                    </div>
+                    <div className="">
+                      <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
+                      <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
+                    </div>
+                  </div>
+                </div>
+              }
               <div className="mb-8">
                 <h4 className={`text-[12px] mb-2 font-semibold ${isDarkMode ? "text-[#e7e7e7]" : ""}`}>Хеш</h4>
                 <input value={hash} onChange={(e) => { setHash(e.target.value) }} placeholder='Хеш' type="text" required className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
@@ -204,10 +220,11 @@ const Deposit = () => {
           </div>
         </form>
         <form onSubmit={handleSubmit} className={`${!modalCash ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[765px]`}>
+
           <div className="p-8">
             <div className="relative">
-              <div onClick={() => { setModalCash(false); setMethod(""); setAmount(""); setHash(""); }} className="absolute right-0 cursor-pointer">
-                <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${isDarkMode ? "fill-[#fff]" : "fill-[#000]"}`}>
+              <div onClick={() => { setModalCash(false); setMethod(""); setAmount(""); setHash(""); setError(false) }} className="absolute right-0 cursor-pointer ">
+                <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${isDarkMode ? "fill-[#fff]" : "fill-[#000]"} `}>
                   <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
                 </svg>
               </div>
@@ -215,6 +232,21 @@ const Deposit = () => {
                 <h3 className={`text-[32px] font-semibold ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Пополнить депозит</h3>
                 <h5 className='text-[14px] text-[#60626C]'>Заполните форму</h5>
               </div>
+              {error &&
+                <div className=" pt-1">
+                  <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
+                    <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
+                    <div className="relative mr-[8px] ml-[18px]">
+                      <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
+                    </div>
+                    <div className="">
+                      <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
+                      <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
+                    </div>
+                  </div>
+                </div>
+              }
+
               <div className="mb-8">
                 <h4 className={`text-[12px] mb-2 font-semibold ${isDarkMode ? "text-[#e7e7e7]" : ""}`}>Код</h4>
                 <input value={hash} onChange={(e) => { setHash(e.target.value) }} placeholder='Код' type="text" required className={`${isDarkMode ? " text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
