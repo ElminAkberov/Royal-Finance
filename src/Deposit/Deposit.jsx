@@ -27,7 +27,7 @@ const Deposit = () => {
           method: method,
           amount: amount
         })
-      }).then(res=>res.json()).then(res=>console.log(res.code));
+      }).then(res => res.json()).then(res => console.log(res.code));
     } catch (error) {
       console.error("Error:", error);
     }
@@ -174,8 +174,8 @@ const Deposit = () => {
           <div className="p-8">
             <div className="relative">
               <div onClick={() => { setModalUsdt(false); setMethod(""); setAmount(""); setHash(""); }} className="absolute right-0 cursor-pointer">
-                <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" fill="#222222" />
+                <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${isDarkMode ? "fill-[#fff]" : "fill-[#000]"}`}>
+                  <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z"  />
                 </svg>
               </div>
               <div className="mb-8">
@@ -183,12 +183,12 @@ const Deposit = () => {
                 <h5 className='text-[14px] text-[#60626C]'>Заполните форму</h5>
               </div>
               <div className="mb-8">
-                <h4 className='text-[12px] mb-2 font-semibold'>Хеш</h4>
-                <input value={hash} onChange={(e) => { setHash(e.target.value) }} placeholder='Хеш' type="text" required className='border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]' />
+                <h4 className={`text-[12px] mb-2 font-semibold ${isDarkMode ? "text-[#e7e7e7]" : ""}`}>Хеш</h4>
+                <input value={hash} onChange={(e) => { setHash(e.target.value) }} placeholder='Хеш' type="text" required className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
               </div>
               <div className="">
-                <h4 className='text-[12px] mb-2 font-semibold'>Amount</h4>
-                <input value={amount} onChange={(e) => { setAmount(e.target.value) }} placeholder='Amount' type="number" required className='border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]' />
+                <h4 className={`text-[12px] mb-2 font-semibold ${isDarkMode ? "text-[#e7e7e7]" : ""}`}>Cумма</h4>
+                <input value={amount} onChange={(e) => { setAmount(e.target.value) }} placeholder='Cумма' type="number" required className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
               </div>
               <div className="">
                 <h3 className={`text-[24px] mt-8 font-semibold ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сканировать QR код</h3>
@@ -207,8 +207,8 @@ const Deposit = () => {
           <div className="p-8">
             <div className="relative">
               <div onClick={() => { setModalCash(false); setMethod(""); setAmount(""); setHash(""); }} className="absolute right-0 cursor-pointer">
-                <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" fill="#222222" />
+                <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${isDarkMode ? "fill-[#fff]" : "fill-[#000]"}`}>
+                  <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
                 </svg>
               </div>
               <div className="mb-8">
@@ -216,12 +216,12 @@ const Deposit = () => {
                 <h5 className='text-[14px] text-[#60626C]'>Заполните форму</h5>
               </div>
               <div className="mb-8">
-                <h4 className='text-[12px] mb-2 font-semibold'>Код</h4>
-                <input value={hash} onChange={(e) => { setHash(e.target.value) }} placeholder='Код' type="text" required className='border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]' />
+                <h4 className={`text-[12px] mb-2 font-semibold ${isDarkMode ? "text-[#e7e7e7]" : ""}`}>Код</h4>
+                <input value={hash} onChange={(e) => { setHash(e.target.value) }} placeholder='Код' type="text" required className={`${isDarkMode ? " text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
               </div>
               <div className="">
-                <h4 className='text-[12px] mb-2 font-semibold'>Amount</h4>
-                <input value={amount} onChange={(e) => { setAmount(e.target.value) }} placeholder='Amount' type="number" required className='border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]' />
+                <h4 className={`text-[12px] mb-2 font-semibold ${isDarkMode ? "text-[#e7e7e7]" : ""}`}>Cумма</h4>
+                <input value={amount} onChange={(e) => { setAmount(e.target.value) }} placeholder='Cумма' type="number" required className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
               </div>
               <div className="flex w-full text-white justify-end">
                 <button type='submit' className='bg-[#2E70F5] px-[37.5px] py-[10px] mt-[32px] font-normal text-[14px] rounded-[8px]'>
