@@ -374,8 +374,11 @@ const Dashboard = () => {
                     <div className={`${!modal ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px]`}>
                         <div className="p-8">
                             <div className="">
-                                <div className="mb-8">
+                                <div className="mb-8 relative">
                                     <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Детали пополнения</h3>
+                                    <svg width="14"  onClick={() => setModal(false)} height="15" className='absolute cursor-pointer top-0 right-0' viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" fill="#222222" />
+                                    </svg>
                                     <h5 className='text-[14px] text-[#60626C]'>Подробная информация</h5>
                                 </div>
                                 {details?.map((data, index) => (
@@ -395,7 +398,7 @@ const Dashboard = () => {
                                             </div>
                                             <div className="modal_payout">
                                                 <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Получатель</h5>
-                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.course} {data?.currency}</p>
+                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>-</p>
                                             </div>
                                             <div className="modal_payout">
                                                 <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Метод оплаты</h5>
@@ -452,17 +455,17 @@ const Dashboard = () => {
                                                 <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Реквизиты </h5>
                                                 <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.requisite} </p>
                                             </div>
-                                           
+
                                         </div>
 
                                     </div>
                                 ))}
                                 <div className="flex w-full text-white justify-end gap-x-4">
-                                    <button onClick={() => setModal(false)} className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                    Отклонить
+                                    <button className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                        Отклонить
                                     </button>
-                                    <button onClick={() => setModal(false)} className='bg-[#2E70F5] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                    Взять в работу
+                                    <button className='bg-[#2E70F5] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                        Взять в работу
                                     </button>
                                 </div>
                             </div>
