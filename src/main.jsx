@@ -7,11 +7,12 @@ import Layout from "./Layout";
 import Dashboard from "./Dash/Dashboard";
 import ContextProvider from "./context/ContextProvider";
 import Deposit from "./Deposit/Deposit";
+import Payout from "./Payouts/Payout";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />, children: [{ path: "/login", element: <Login /> },{ path: "/", element: <Login /> },{ path: "/dash", element: <Dashboard /> }, { path: "/deposit", element: <Deposit /> }]
+    element: <Layout />, children: [{ path: "/login", element: <Login /> },{ path: "/", element: <Login /> },{ path: "/dash", element: <Dashboard /> },{ path: "/deposit", element: <Deposit /> },,{ path: "/payout/", element: <Payout /> }]
   },
   
 ]);

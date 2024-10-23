@@ -17,6 +17,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     color: #000;
     margin-right: 3px;
 }
+
 .sortable-column_dark [data-pc-section="sort"] {
     order: -1;
     color: #E7E7E7;
@@ -28,6 +29,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     overflow: auto;
     background: linear-gradient(180deg, #5471D8 0%, #2F49AB 100%);
 }
+
 .bg-linear_dark {
     min-height: 100vh;
     overflow: auto;
@@ -38,12 +40,14 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     display: block;
 }
 
-.custom-switch{
+.custom-switch {
     transform: scale(0.8);
 }
-.black .ant-switch-handle::before{
+
+.black .ant-switch-handle::before {
     background-color: #000;
 }
+
 .p-column-header-content {
     justify-content: center;
 }
@@ -63,19 +67,34 @@ td {
     justify-content: start;
     padding: 20px 0;
 }
+
 .p-paginator .p-highlight {
     background-color: #D9D9D91F !important;
 }
-.light_mode .p-paginator-page,.dark_mode .p-paginator-page{
+
+.light_mode .p-paginator-page,
+.dark_mode .p-paginator-page {
     margin: 0 4px;
     font-size: 14px;
-    padding: 4px 12px; 
+    padding: 4px 12px;
     border-radius: 4px;
 }
-.dark_mode .p-paginator-page {color: #fff}
-.light_mode .p-paginator-page {color: black}
-.dark_mode tbody .p-datatable-emptymessage {color: #fff}
-.light_mode tbody .p-datatable-emptymessage {color: black}
+
+.dark_mode .p-paginator-page {
+    color: #fff
+}
+
+.light_mode .p-paginator-page {
+    color: black
+}
+
+.dark_mode tbody .p-datatable-emptymessage {
+    color: #fff
+}
+
+.light_mode tbody .p-datatable-emptymessage {
+    color: black
+}
 
 .p-paginator-prev,
 .p-paginator-next {
@@ -90,16 +109,23 @@ td {
     margin-bottom: 32px;
 }
 
-.modal>h5 {
-    font-size: 12px;
-    font-weight: 600;
-   
+.modal_payout {
+    margin-bottom: 20px;
 }
 
-.modal>p {
+.modal>h5,
+.modal_payout>h5 {
+    font-size: 12px;
+    font-weight: 600;
+
+}
+
+.modal>p,
+.modal_payout>p {
     font-size: 14px;
 
 }
+
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
