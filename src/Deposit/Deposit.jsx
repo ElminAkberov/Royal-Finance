@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Context } from '../context/ContextProvider'
 import { NavLink, useNavigate } from 'react-router-dom'
 import Dark from '../Dark'
+import { LuCopy } from 'react-icons/lu'
 
 const Deposit = () => {
   const [modalUsdt, setModalUsdt] = useState(false)
@@ -9,10 +10,25 @@ const Deposit = () => {
   const [method, setMethod] = useState("")
   const [amount, setAmount] = useState("")
   const [hash, setHash] = useState("")
+  let [copy, setCopy] = useState(false)
   let [dropDown, setDropDown] = useState(false)
   let { isDarkMode, toggleDarkMode } = useContext(Context)
   let [open, setOpen] = useState(true)
   let [error, setError] = useState(false)
+  const handleCopy = (e) => {
+    const textToCopy = e.currentTarget.nextSibling.innerText;
+    navigator.clipboard.writeText(textToCopy)
+      .then(() => {
+        setCopy(true);
+        setTimeout(() => {
+          setCopy(false)
+        }, 1500);
+      })
+      .catch(err => {
+        setCopy(false);
+        console.error('Metin kopyalanırken bir hata oluştu:', err);
+      });
+  }
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -171,11 +187,18 @@ const Deposit = () => {
 
         <div className={`${!modalCash && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
         <div className={`${!modalUsdt && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+        {/* pop-up */}
+        {
+          <div className={`absolute ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2 -translate-x-1/2 z-50 ${copy ? "top-20" : "top-[-50px] "} duration-300 mx-auto left-1/2 `}>
+            <LuCopy size={18} color={`${isDarkMode ? "#E7E7E7" : "#18181B"}`} />
+            <h4 className={`text-sm ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`} >Ссылка скопирована</h4>
+          </div>
+        }
         {/* modallar */}
         <form onSubmit={handleSubmit} className={`${!modalUsdt ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[765px]`}>
           <div className="p-8">
             <div className="relative">
-              <div onClick={() => { setModalUsdt(false); setMethod(""); setAmount(""); setHash(""); setError(false) }} className="absolute right-0 cursor-pointer">
+              <div onClick={() => { setModalUsdt(false); setMethod(""); setAmount(""); setHash(""); setError(false); setCopy(false) }} className="absolute right-0 cursor-pointer">
                 <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${isDarkMode ? "fill-[#fff]" : "fill-[#000]"}`}>
                   <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
                 </svg>
@@ -209,7 +232,10 @@ const Deposit = () => {
               <div className="">
                 <h3 className={`text-[24px] mt-8 font-semibold ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сканировать QR код</h3>
                 <img className='max-w-[164px] mx-auto ' src="https://s3-alpha-sig.figma.com/img/1c53/97a2/b612206479cef267d121963033b57436?Expires=1730678400&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=m5dOgnwDKaZpvHBp~yqqkvovuhtjzFasTe4~W2rcNeJuhFRZNyMketIUldjEDznp8Z~WLE8e8eEWBfjHYrX9VmeO8K6DDltrRdZyRmw0gG7Nl7NNvc3N6T6h7t6Q4d0x61W~2klcVjP1TY-duKbUwnlONQ6PpJldWBKrssETyjFbSNyuj9WndZEI~BPdLTX6BuA1SPH3~0YUKoJJhg9qdhSLde35DAoUGGa8IElTVp-OJ1X6viTDU~9u2VSkYerAPPjBJutuJXBKM-euCSPdGRWX34pYtH6k5pbJ0bBA4JR9cPFCv1dA6I9wK7sHsy2FmxXmW6dcyq2JzOs~vJ31QA__" alt="" />
-                <p className={`text-[14px] text-center ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>0x14ofgm52341of13ofqofekqog1eqrog</p>
+                <div className="flex justify-center gap-x-2">
+                  <LuCopy size={20} color={`${isDarkMode ? "#E7E7E7" : "#18181B"}`} className='cursor-pointer' onClick={(e) => handleCopy(e)} />
+                  <p className={`text-[14px] text-center ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>0x14ofgm52341of13ofqofekqog1eqrog</p>
+                </div>
               </div>
               <div className="flex w-full text-white justify-end">
                 <button type='submit' className='bg-[#2E70F5] px-[37.5px] py-[10px] mt-[32px] font-normal text-[14px] rounded-[8px]'>
