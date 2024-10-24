@@ -11,11 +11,12 @@ const Dashboard = () => {
     let navigate = useNavigate()
     const [data, setData] = useState([])
     let [page, setPage] = useState(1)
-
+    let [id, setId] = useState(1)
     useEffect(() => {
+        console.log()
         const fetchData = async () => {
             try {
-                const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/${page == 1 ? "" : `?page=${page}`}`, {
+                const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/${page == 1 ? "" : `?page=${+page}`}`, {
                     method: "GET",
                     headers: {
                         "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`
@@ -38,13 +39,49 @@ const Dashboard = () => {
 
         fetchData();
     }, [navigate, page]);
+    
+    let [reason, setReason] = useState("")
+
+    const handleCancel = async (e) => {
+        e.preventDefault()
+        try {
+            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/deny/${id}/`, {
+                method: "POST",
+                headers: {
+                    "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    reason: reason
+                })
+            })
+            if (response.status === 401) {
+                navigate("/login")
+                console.log("Unauthorized access, redirecting to login.");
+            } else if (response.status == 400) {
+
+            } else if (response.ok) {
+                const data = await response.json();
+                window.location.reload();
+            } else {
+                console.log("Unexpected error:", response.status);
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    let [zoom, setZoom] = useState(false)
+
     let methods = []
     data?.results?.map(item => methods.push(item.method.name))
-
     const startDateRef = useRef(null);
     let [open, setOpen] = useState(true)
     let [details, setDetails] = useState([])
+    // 1ci action
     const [modal, setModal] = useState(false)
+    // 2ci action
+    const [modalChek, setModalChek] = useState(false)
+
     const [filteredCustomers, setFilteredCustomers] = useState([]);
     const [startDate, setStartDate] = useState("2024-10-16");
     let [merchant, setMerchant] = useState("")
@@ -53,6 +90,12 @@ const Dashboard = () => {
     let [selectMethod, setSelectMethod] = useState("")
     const [startTime, setStartTime] = useState("");
     const [time, setTime] = useState('');
+
+    // payout
+    let [cancel, setCancel] = useState(false)
+    let [cancelCheck, setCancelCheck] = useState(false)
+
+
 
     const handleStartTimeChange = (e) => {
         const value = e.target.value.replace(/[^0-9]/g, '');
@@ -253,13 +296,17 @@ const Dashboard = () => {
                         <Column body={(rowData) => {
                             return (
                                 <div className='flex gap-x-[10px]'>
-                                    <div onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>
+
+                                    <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
                                         <img className='mx-auto' src='/assets/img/ion_eye.svg' />
                                     </div>
-                                    <div className="">
-                                        <img className='mx-auto' src='/assets/img/Group.svg' />
-                                    </div>
-                                    <div className="">
+                                    {rowData.receipts.length > 0 &&
+                                        <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
+                                            <img className='mx-auto' src='/assets/img/Group.svg' />
+                                        </div>
+                                    }
+
+                                    <div onClick={() => { handleShow(rowData); setModal(true); setCancelCheck(!cancelCheck); setId(rowData.id) }} className="cursor-pointer">
                                         <img className='mx-auto' src='/assets/img/Connect.svg' />
                                     </div>
                                 </div>
@@ -370,13 +417,38 @@ const Dashboard = () => {
                         setPage(e.target.value);
                     }} max={12} className='bg-transparent rounded-lg text-center border h-[32px] w-[35px]' /> из {Math.ceil(data.count / 10)}</p>
                     <p className={`min-[450px]:text-right text-[14px] font-normal relative bottom-[43px] mr-4 max-[450px]:bottom-3  duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p>
-                    <div className={`${!modal && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
-                    <div className={`${!modal ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px]`}>
-                        <div className="p-8">
+                    <div className={`${(!modal) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+                    <div className={`${(!modalChek) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+                    <div className={`${(!zoom) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+
+                    {/* cek tam ekran */}
+                    <div>
+                        {details?.map((img, index) => {
+                            return (
+                                zoom &&
+                                <div className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30'>
+                                    {img.receipts.map(img => {
+                                        return (
+                                            <div className='relative'>
+                                                <img className='mx-auto' src={`${img}`} />
+                                                <svg onClick={() => setZoom(!zoom)} width="14" height="15" viewBox="0 0 14 15" className='absolute top-0 right-[-20px] cursor-pointer' xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" fill="#000" />
+                                                </svg>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+
+                            )
+                        })}
+                    </div>
+
+                    <div className={`${!modal ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px] ${!cancelCheck ? "overflow-y-scroll h-[100vh]" : ""} custom-scroll`}>
+                        <div className="p-8 ">
                             <div className="">
                                 <div className="mb-8 relative">
                                     <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Детали пополнения</h3>
-                                    <svg width="14"  onClick={() => setModal(false)} height="15" className={`${isDarkMode?"fill-white":"fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <svg width="14" onClick={() => setModal(false)} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
                                     </svg>
                                     <h5 className='text-[14px] text-[#60626C]'>Подробная информация</h5>
@@ -455,20 +527,101 @@ const Dashboard = () => {
                                                 <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Реквизиты </h5>
                                                 <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.requisite} </p>
                                             </div>
+                                            {data.receipts.length > 0 &&
+                                                <div className="modal_payout">
+                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Чек </h5>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}><img className='w-[200px] h-[130px] object-cover' src={`${data?.receipts}`} /> </p>
+                                                </div>
+                                            }
 
                                         </div>
 
                                     </div>
                                 ))}
+                                {/* cancel modal */}
+                                <div className={`${!cancel && "hidden"} fixed inset-0 h-[120vh] bg-[#2222224D] z-20`}></div>
+                                <form onSubmit={handleCancel} className={`${!cancel ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} p-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full rounded-[24px]`}>
+                                    <div className="relative mb-8">
+                                        <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Отклонить выплату</h3>
+                                        <svg width="14" onClick={() => setCancel(!cancel)} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
+                                        </svg>
+                                        <h5 className='text-[14px] text-[#60626C]'>Укажите причину</h5>
+                                    </div>
+                                    <div className="modal_payout mb-8">
+                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} mb-2`}>Описание</h5>
+                                        <input onChange={(e) => setReason(e.target.value)} placeholder='Описание' type="text" required className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
+                                    </div>
+                                    <div className="mb-8">
+                                        <button className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                            Прикрепить файл
+                                        </button>
+                                    </div>
+                                    <div className="flex justify-end">
+                                        <button type='submit' className=' bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                            Отклонить
+                                        </button>
+                                    </div>
+                                </form>
+
+                                {/* cek yuklemek ucun */}
+                                <div className={`${!cancelCheck && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+
+                                <div className={`${!cancelCheck ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} p-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full rounded-[24px]`}>
+                                    <div className="relative mb-8">
+                                        <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Завершить</h3>
+                                        <svg width="14" onClick={() => setCancelCheck(!cancelCheck)} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
+                                        </svg>
+                                        <h5 className='text-[14px] text-[#60626C]'>Заполните информацию</h5>
+                                    </div>
+                                    <div className="modal_payout mb-8">
+                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} mb-2`}>Чек</h5>
+                                        <button
+                                            className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'
+                                            onClick={() => document.getElementById('fileInput').click()}
+                                        >
+                                            Прикрепить Чек
+                                        </button>
+                                        <input
+                                            id="fileInput"
+                                            type="file"
+                                            className="hidden"
+                                            onChange={(e) => console.log(e.target.files[0])}
+                                        />
+                                    </div>
+                                    <div className=" flex items-center">
+                                        <img className='' src="https://s3-alpha-sig.figma.com/img/613a/5e86/0ae75619ed18b69de8fd2a3572f8a9bd?Expires=1730678400&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=QgRbKZ7j1eGcDCI7tdJmaxOjSXd7Bfw83YxDLogkh7AmrFoj8iPfIbDWxKjckZjIuFYLFOtdKR8CGTq~v2LvZLy1kMKuG-cyqOeBFyJGXP5C2dUNiUNTF2scTo-XJESCeCJ-y18uEXKA77RFSifFIa00Y2L9v08sqoelMxWKYpnm0Vc8flgdS4OKrcK1wqIJdQRX2jV2AdMvKdD2Yb0UadrMAgOk~czxVNERBhcCjO4O5vv7jPm99CXalRyZCtILQVbfdbmevhaMf3bca5gYVRQKEDsrNSptEgC5kpltvV1HbXb~hTdWqMBct0hVUjDcy4knWefAaCQsQ54D~mMVFw__" alt="" />
+                                        <svg width="24" className='ml-3 cursor-pointer' height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
+                                        </svg>
+                                    </div>
+                                    <div className="flex justify-end">
+                                        <button onClick={() => setCancel(!cancel)} className=' bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                            Завершить
+                                        </button>
+                                    </div>
+                                </div>
+
                                 <div className="flex w-full text-white justify-end gap-x-4">
-                                    <button className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                        Отклонить
-                                    </button>
-                                    <button className='bg-[#2E70F5] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                        Взять в работу
-                                    </button>
+                                    {details?.map((data, index) => {
+                                        return (
+                                            data.status === "pending" &&
+                                            <>
+                                                <button onClick={() => setCancel(!cancel)} className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                                    Отклонить
+                                                </button>
+                                                <button className='bg-[#2E70F5] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                                    Взять в работу
+                                                </button>
+                                            </>
+
+                                        )
+                                    })}
+
                                 </div>
                             </div>
+
                         </div>
                     </div>
 

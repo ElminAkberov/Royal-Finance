@@ -131,3 +131,11 @@ input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
+.custom-scroll::-webkit-scrollbar {
+    display: none; /* Chrome, Safari ve Webkit tarayıcıları için kaydırma çubuğunu gizle */
+  }
+  
+  .custom-scroll {
+    -ms-overflow-style: none; /* IE ve Edge için */
+    scrollbar-width: none; /* Firefox için */
+  }
