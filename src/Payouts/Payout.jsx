@@ -39,7 +39,7 @@ const Dashboard = () => {
 
         fetchData();
     }, [navigate, page]);
-    
+
     let [reason, setReason] = useState("")
 
     const handleCancel = async (e) => {
@@ -75,6 +75,7 @@ const Dashboard = () => {
     let methods = []
     data?.results?.map(item => methods.push(item.method.name))
     const startDateRef = useRef(null);
+    const endDateRef = useRef(null);
     let [open, setOpen] = useState(true)
     let [details, setDetails] = useState([])
     // 1ci action
@@ -89,7 +90,10 @@ const Dashboard = () => {
     let [selectStatus, setSelectStatus] = useState("")
     let [selectMethod, setSelectMethod] = useState("")
     const [startTime, setStartTime] = useState("");
+    const [endTime, setEndTime] = useState("");
+
     const [time, setTime] = useState('');
+    const [time_2, setTime_2] = useState('');
 
     // payout
     let [cancel, setCancel] = useState(false)
@@ -122,11 +126,36 @@ const Dashboard = () => {
         setStartTime(cleanedValue);
 
     };
+    const handleEndTimeChange = (e) => {
+        const value = e.target.value.replace(/[^0-9]/g, '');
+        let cleanedValue = value;
+
+        if (cleanedValue.length >= 3) {
+            cleanedValue = cleanedValue.slice(0, 2) + ':' + cleanedValue.slice(2);
+        }
+
+        const timeParts = cleanedValue.split(':');
+        if (timeParts[0] && parseInt(timeParts[0], 10) > 23) {
+            cleanedValue = '23:' + (timeParts[1] ? timeParts[1] : '00');
+        }
+
+        if (timeParts[1] && parseInt(timeParts[1], 10) > 59) {
+            cleanedValue = timeParts[0] + ':59';
+        }
+        if (cleanedValue.endsWith(':000')) {
+            cleanedValue = cleanedValue.slice(0, -1);
+        }
+
+        setTime_2(cleanedValue);
+        setEndTime(cleanedValue);
+    };
     useEffect(() => {
         const filteredData = data?.results?.filter(customer => {
             const customerDate = new Date(customer?.created_at)
             let [startHour, startMinute] = startTime.split(":");
+            let [endHour, endMinute] = endTime.split(":");
 
+            let endDateTime;
             let startDateTime;
 
             if (startTime && !startMinute) {
@@ -136,6 +165,19 @@ const Dashboard = () => {
             } else {
                 startDateTime = new Date(`${startDate}T00:00`);
             }
+            if (endDate) {
+                if (+endHour === 23 && +endMinute > 1) {
+                    endDateTime = new Date(`${endDate}T${((+endHour) + ':' + endMinute) || '23:59'}`)
+                } else if (endTime && !endMinute) {
+                    endDateTime = new Date(`${endDate}T${((+endHour + 1) + ':' + "00") || '00:00'}`)
+                } else if (endTime) {
+                    endDateTime = new Date(`${endDate}T${((+endHour + 1) + ':' + endMinute) || '00:00'}`)
+                }
+                else {
+                    endDateTime = new Date(`${endDate}T23:59`);
+                }
+            }
+
             let merchantMatch = true;
             if (merchant) {
                 merchantMatch = customer.merchant["username"].toLowerCase().includes(merchant.toLowerCase());
@@ -153,10 +195,10 @@ const Dashboard = () => {
                 methodMatch = customer.method.name.toLowerCase() === selectMethod.toLowerCase();
             }
 
-            return (customerDate >= startDateTime || !startDateTime) && traderMatch && methodMatch && merchantMatch && statusMatch;
+            return (customerDate >= startDateTime || !startDateTime) && (!endDateTime || customerDate <= endDateTime) && traderMatch && methodMatch && merchantMatch && statusMatch;
         });
         setFilteredCustomers(filteredData);
-    }, [startDate, merchant, trader, selectStatus, startTime]);
+    }, [startDate, merchant, trader, selectStatus, startTime, endTime]);
     const handleShow = (info) => {
         setDetails([info])
     }
@@ -288,6 +330,22 @@ const Dashboard = () => {
                                 </svg>
                             </div>
                             <input value={time} onChange={handleStartTimeChange} type="text" className='bg-transparent outline-none pl-7' placeholder='00:00' />
+                        </div>
+                        <div className={`flex overflow-hidden items-center  pl-[12px] rounded-[4px] min-w-[157.5px] h-[40px] ${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC] text-black"}`} onClick={() => endDateRef.current && endDateRef.current.showPicker()}>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M20 3H19V2C19 1.45 18.55 1 18 1C17.45 1 17 1.45 17 2V3H7V2C7 1.45 6.55 1 6 1C5.45 1 5 1.45 5 2V3H4C2.9 3 2 3.9 2 5V21C2 22.1 2.9 23 4 23H20C21.1 23 22 22.1 22 21V5C22 3.9 21.1 3 20 3ZM19 21H5C4.45 21 4 20.55 4 20V8H20V20C20 20.55 19.55 21 19 21Z" fill="#717380" />
+                            </svg>
+                            <div className="">
+                                <input ref={endDateRef} type="date" name="" id="" min="2024-01-01" className='bg-transparent outline-none mt-1 ml-1' onChange={(e) => setEndDate(e.target.value)} defaultValue={"2024-12-12"} />
+                            </div>
+                        </div>
+                        <div className={`flex overflow-hidden items-center pl-[12px] relative rounded-[4px] w-[157.5px] h-[40px] ${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC]"}`}>
+                            <div className="">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className='absolute top-2' xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.78 7H11.72C11.32 7 11 7.32 11 7.72V12.44C11 12.79 11.18 13.12 11.49 13.3L15.64 15.79C15.98 15.99 16.42 15.89 16.62 15.55C16.83 15.21 16.72 14.76 16.37 14.56L12.5 12.26V7.72C12.5 7.32 12.18 7 11.78 7Z" fill="#717380" />
+                                </svg>
+                            </div>
+                            <input value={time_2} onChange={handleEndTimeChange} type="text" className='bg-transparent outline-none pl-7' placeholder='23:59' />
                         </div>
 
 
@@ -602,7 +660,6 @@ const Dashboard = () => {
                                         </button>
                                     </div>
                                 </div>
-
                                 <div className="flex w-full text-white justify-end gap-x-4">
                                     {details?.map((data, index) => {
                                         return (
@@ -618,7 +675,6 @@ const Dashboard = () => {
 
                                         )
                                     })}
-
                                 </div>
                             </div>
 
