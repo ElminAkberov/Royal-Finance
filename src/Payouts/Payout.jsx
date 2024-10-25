@@ -15,12 +15,13 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/${page == 1 ? "" : `?page=${+page}`}`, {
+                const response = await fetch(`/api/payouts/${page == 1 ? "" : `?page=${+page}`}`, {
                     method: "GET",
                     headers: {
-                        "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`
+                      "Authorization": `Bearer ${localStorage.getItem("access")}`,
                     }
-                });
+                  });
+                  
                 if (response.status === 401) {
                     console.log("Unauthorized access, redirecting to login.");
                     navigate("/login")
@@ -199,7 +200,7 @@ const Dashboard = () => {
             return (customerDate >= startDateTime || !startDateTime) && (!endDateTime || customerDate <= endDateTime) && traderMatch && methodMatch && merchantMatch && statusMatch;
         });
         setFilteredCustomers(filteredData);
-    }, [startDate, merchant, trader, selectStatus, startTime, endTime]);
+    }, [startDate,endDate, merchant, trader, selectStatus, startTime, endTime]);
     const handleShow = (info) => {
         setDetails([info])
     }
@@ -332,6 +333,7 @@ const Dashboard = () => {
                             </div>
                             <input value={time} onChange={handleStartTimeChange} type="text" className='bg-transparent outline-none pl-7' placeholder='00:00' />
                         </div>
+
                         <div className={`flex overflow-hidden items-center  pl-[12px] rounded-[4px] min-w-[157.5px] h-[40px] ${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC] text-black"}`} onClick={() => endDateRef.current && endDateRef.current.showPicker()}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M20 3H19V2C19 1.45 18.55 1 18 1C17.45 1 17 1.45 17 2V3H7V2C7 1.45 6.55 1 6 1C5.45 1 5 1.45 5 2V3H4C2.9 3 2 3.9 2 5V21C2 22.1 2.9 23 4 23H20C21.1 23 22 22.1 22 21V5C22 3.9 21.1 3 20 3ZM19 21H5C4.45 21 4 20.55 4 20V8H20V20C20 20.55 19.55 21 19 21Z" fill="#717380" />
@@ -348,7 +350,7 @@ const Dashboard = () => {
                             </div>
                             <input value={time_2} onChange={handleEndTimeChange} type="text" className='bg-transparent outline-none pl-7' placeholder='23:59' />
                         </div>
-
+                        {console.log(endDate)}
 
                     </div>
                     <DataTable value={filteredCustomers || data.results} paginator rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
