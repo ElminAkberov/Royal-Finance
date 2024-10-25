@@ -13,7 +13,6 @@ const Dashboard = () => {
     let [page, setPage] = useState(1)
     let [id, setId] = useState(1)
     useEffect(() => {
-        console.log()
         const fetchData = async () => {
             try {
                 const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/${page == 1 ? "" : `?page=${+page}`}`, {
@@ -23,8 +22,8 @@ const Dashboard = () => {
                     }
                 });
                 if (response.status === 401) {
-                    navigate("/login")
                     console.log("Unauthorized access, redirecting to login.");
+                    navigate("/login")
                 } else if (response.ok) {
                     const data = await response.json();
                     setData(data);
@@ -85,6 +84,8 @@ const Dashboard = () => {
 
     const [filteredCustomers, setFilteredCustomers] = useState([]);
     const [startDate, setStartDate] = useState("2024-10-16");
+    const [endDate, setEndDate] = useState("");
+
     let [merchant, setMerchant] = useState("")
     let [trader, setTrader] = useState("")
     let [selectStatus, setSelectStatus] = useState("")
