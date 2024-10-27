@@ -27,7 +27,7 @@ const Dashboard = () => {
 
                 if (response.status === 401) {
                     console.log("Unauthorized access, redirecting to login.");
-                    // navigate("/login");
+                    navigate("/login");
                 } else if (response.status === 400) {
                     console.log("Bad Request");
                 } else if (response.ok) {
@@ -39,7 +39,7 @@ const Dashboard = () => {
                 }
             } catch (error) {
                 console.error("An error occurred:", error);
-                // navigate("/login");
+                navigate("/login");
             }
         };
 
