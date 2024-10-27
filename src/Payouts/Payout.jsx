@@ -23,6 +23,7 @@ const Payout = () => {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ${localStorage.getItem("access")}`,
+                        'Accept': 'application/json',
                     }
                 });
 

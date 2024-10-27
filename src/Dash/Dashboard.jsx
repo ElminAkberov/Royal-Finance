@@ -21,7 +21,8 @@ const Dashboard = () => {
                 const response = await fetch("/api/v1/internal/refills/", {
                     method: "GET",
                     headers: {
-                        "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`
+                        "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
+                        'Accept': 'application/json',
                     }
                 });
                 if (response.status === 401) {
