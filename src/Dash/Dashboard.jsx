@@ -18,13 +18,13 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("/api/refills/", {
+                const response = await fetch("https://dev.royal-pay.org/api/v1/internal/refills/", {
                     method: "GET",
                     headers: {
                         "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
                     }
                 });
-                console.log(response.status)
+                
                 if (response.status === 401) {
                     console.log("Unauthorized access, redirecting to login.");
                     navigate("/login");
