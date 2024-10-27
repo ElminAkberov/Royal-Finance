@@ -6,7 +6,9 @@ export default defineConfig({
       '/api': {
         target: 'https://dev.royal-pay.org',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '/api/v1/internal')
+        secure: false,
+        // Bu satırı kaldırarak yolu doğrudan kullanabilirsiniz
+        // rewrite: (path) => path.replace(/^\/api/, '/api/v1/internal/refills/')
       }
     }
   }
