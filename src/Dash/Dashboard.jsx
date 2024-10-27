@@ -25,17 +25,18 @@ const Dashboard = () => {
                         'Accept': 'application/json',
                     }
                 });
-                const text = await response.text(); // Read the response as text
-                console.log(text);
-                
+
                 if (response.status === 401) {
                     console.log("Unauthorized access, redirecting to login.");
                     navigate("/login");
-                } else if (response.status == 400) { } else if (response.ok) {
+                } else if (response.status === 400) {
+                    console.log("Bad Request");
+                } else if (response.ok) {
                     const data = await response.json();
                     setData(data);
                 } else {
-                    console.log("Unexpected error:", response.status);
+                    const errorText = await response.text(); 
+                    console.log("Unexpected error:", response.status, errorText);
                 }
             } catch (error) {
                 console.error("An error occurred:", error);
