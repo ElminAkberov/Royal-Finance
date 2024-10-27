@@ -86,7 +86,7 @@ const Login = () => {
           </div>
           <form onSubmit={handleSubmit} className="label">
             <label htmlFor='name'>
-              <input value={"front_superuser"} type="text" onChange={(e => setEmail(e.target.value))} placeholder='Имя пользователя' className={`w-full border-[#6C6E86] border bg-transparent ${isDarkMode ? "text-[#C5C7CD]" : "text-[#000]"}  rounded-[4px]  outline-[#2D54DD] pl-4  py-[10px] placeholder:text-[#C5C7CD] text-[14px] font-normal`} required />
+              <input  type="text" onChange={(e => setEmail(e.target.value))} placeholder='Имя пользователя' className={`w-full border-[#6C6E86] border bg-transparent ${isDarkMode ? "text-[#C5C7CD]" : "text-[#000]"}  rounded-[4px]  outline-[#2D54DD] pl-4  py-[10px] placeholder:text-[#C5C7CD] text-[14px] font-normal`} required />
             </label>
             <label htmlFor="password" className='relative'>
               <input value={"alFGamBELatO"} type={showPassword ? 'text' : 'password'} onChange={(e => setPass(e.target.value))} placeholder='Пароль' className={`w-full border-[#6C6E86] border bg-transparent ${isDarkMode ? "text-[#C5C7CD]" : "text-[#000]"}  rounded-[4px] outline-[#2D54DD] pl-4 my-4 py-[10px] placeholder:text-[#C5C7CD] text-[14px] font-normal`} required />
