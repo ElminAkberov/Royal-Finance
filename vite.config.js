@@ -1,13 +1,15 @@
 import { defineConfig } from 'vite';
-
+import react from '@vitejs/plugin-react';
 export default defineConfig({
-    server: {
-        proxy: {
-            '/api': {
-                target: 'https://dev.royal-pay.org', // API URL
-                changeOrigin: true,
-                rewrite: (path) => path.replace(/^\/api/, ''), // isteği '/api' ile başlayacak şekilde yönlendirin
-            },
-        },
-    },
+  plugins: [react()],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://dev.royal-pay.org/',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, '/api/v1/internal/') 
+      }
+    }
+  }
 });
