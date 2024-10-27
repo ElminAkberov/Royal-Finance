@@ -21,6 +21,7 @@ const Dashboard = () => {
                 const response = await fetch("/api/refills/", {
                     method: "GET",
                     headers: {
+                        "Accept": 'application/json',
                         "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
                     }
                 });

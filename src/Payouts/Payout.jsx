@@ -22,6 +22,7 @@ const Payout = () => {
                 const response = await fetch(`/api/payouts/${page == 1 ? "" : `?page=${+page}`}`, {
                     method: "GET",
                     headers: {
+                        "Accept": 'application/json',
                         "Authorization": `Bearer ${localStorage.getItem("access")}`,
                     }
                 });
