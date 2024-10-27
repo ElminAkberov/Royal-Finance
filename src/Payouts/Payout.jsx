@@ -23,6 +23,7 @@ const Payout = () => {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ${localStorage.getItem("access")}`,
+                        "Content-Type": "application/json",
                     }
                 });
 
@@ -64,7 +65,7 @@ const Payout = () => {
                 console.log("Unauthorized access, redirecting to login.");
             } else if (response.ok) {
                 const data = await response.json();
-               
+
             } else {
                 console.log("Unexpected error:", response.status);
             }
