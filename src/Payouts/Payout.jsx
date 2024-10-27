@@ -202,7 +202,7 @@ const Payout = () => {
             return (customerDate >= startDateTime || !startDateTime) && (!endDateTime || customerDate <= endDateTime) && traderMatch && methodMatch && merchantMatch && statusMatch;
         });
         setFilteredCustomers(filteredData);
-    }, [startDate, endDate, merchant, trader, selectStatus, startTime, endTime]);
+    }, [startDate, endDate, merchant, trader, selectStatus, startTime, endTime,selectMethod]);
     const handleShow = (info) => {
         setDetails([info])
     }
