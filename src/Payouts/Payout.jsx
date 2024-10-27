@@ -19,7 +19,7 @@ const Payout = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`/api/v1/internal/payouts/${page == 1 ? "" : `?page=${+page}`}`, {
+                const response = await fetch(`/api/payouts/${page == 1 ? "" : `?page=${+page}`}`, {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ${localStorage.getItem("access")}`,

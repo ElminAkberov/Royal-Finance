@@ -18,17 +18,16 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("/api/v1/internal/refills/", {
+                const response = await fetch("/api/refills/", {
                     method: "GET",
                     headers: {
                         "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
-                        'Accept': 'application/json',
                     }
                 });
 
                 if (response.status === 401) {
                     console.log("Unauthorized access, redirecting to login.");
-                    navigate("/login");
+                    // navigate("/login");
                 } else if (response.status === 400) {
                     console.log("Bad Request");
                 } else if (response.ok) {
@@ -40,7 +39,7 @@ const Dashboard = () => {
                 }
             } catch (error) {
                 console.error("An error occurred:", error);
-                navigate("/login");
+                // navigate("/login");
             }
         };
 
