@@ -24,6 +24,8 @@ const Dashboard = () => {
                         "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`
                     }
                 });
+                const textResponse = await response.text();
+                console.log("Raw response:", textResponse);
                 if (response.status === 401) {
                     console.log("Unauthorized access, redirecting to login.");
                     navigate("/login");
