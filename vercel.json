@@ -4,5 +4,11 @@
       "source": "/api/(.*)",
       "destination": "https://dev.royal-pay.org/api/v1/internal/$1"
     }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
   ]
 }
