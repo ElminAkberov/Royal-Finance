@@ -22,7 +22,7 @@ const Payout = () => {
                 const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/${page == 1 ? "" : `?page=${+page}`}`, {
                     method: "GET",
                     headers: {
-                        "Authorization": `Bearer ${localStorage.getItem("access")}`,
+                        "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
                     }
                 });
                 if (response.status === 401) {
