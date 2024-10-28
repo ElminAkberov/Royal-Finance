@@ -25,7 +25,6 @@ const Payout = () => {
                         "Authorization": `Bearer ${localStorage.getItem("access")}`,
                     }
                 });
-
                 if (response.status === 401) {
                     console.log("Unauthorized access, redirecting to login.");
                     navigate("/login")
