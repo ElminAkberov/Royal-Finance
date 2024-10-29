@@ -69,6 +69,7 @@ const Payout = () => {
             const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/submit/${id}/`, {
                 method: "POST",
                 headers: {
+                    "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
