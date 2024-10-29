@@ -27,7 +27,7 @@ const Dashboard = () => {
     
                 if (response.status === 401) {
                     console.log("Unauthorized access, attempting to refresh token.");
-                    const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh", {
+                    const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",

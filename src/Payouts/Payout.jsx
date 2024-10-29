@@ -29,7 +29,7 @@ const Payout = () => {
 
                 if (response.status === 401) {
                     console.log("Unauthorized access, attempting to refresh token.");
-                    const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh", {
+                    const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -66,7 +66,7 @@ const Payout = () => {
     const handleUpload = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/submit/${id}`, {
+            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/submit/${id}/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -74,6 +74,7 @@ const Payout = () => {
                 body: JSON.stringify({
                     "receipts": [imageSrc]
                 }),
+                
             })
             const data = await response.json()
         } catch (error) {
