@@ -12,6 +12,7 @@ const Payout = () => {
     const [data, setData] = useState([])
     let [page, setPage] = useState(1)
     let [id, setId] = useState(1)
+    let [reason, setReason] = useState("")
     // mobile
     const [filterBtn, setFilterBtn] = useState(false)
     const [searchBtn, setSearchBtn] = useState(false)
@@ -42,8 +43,24 @@ const Payout = () => {
 
         fetchData();
     }, [navigate, page]);
-
-    let [reason, setReason] = useState("")
+    const handleUpload = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(`http://dev.royal-pay.org/api/v1/internal/payouts/submit/${id}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    "receipts": [imageSrc]
+                }),
+            })
+            const data = await response.json()
+            console.log("success", data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     const handleCancel = async (e) => {
         e.preventDefault()
@@ -201,7 +218,21 @@ const Payout = () => {
             return (customerDate >= startDateTime || !startDateTime) && (!endDateTime || customerDate <= endDateTime) && traderMatch && methodMatch && merchantMatch && statusMatch;
         });
         setFilteredCustomers(filteredData);
-    }, [startDate, endDate, merchant, trader, selectStatus, startTime, endTime,selectMethod]);
+    }, [startDate, endDate, merchant, trader, selectStatus, startTime, endTime, selectMethod]);
+
+    const [imageSrc, setImageSrc] = useState(null);
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImageSrc(reader.result); 
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    console.log(imageSrc)   
     const handleShow = (info) => {
         setDetails([info])
     }
@@ -354,7 +385,7 @@ const Payout = () => {
                             <div className="flex gap-x-2 md:hidden pr-4">
                                 {/* search */}
                                 <svg onClick={() => setSearchBtn(!searchBtn)} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <mask id="mask0_706_24455" style={{ "mask-type": "alpha" }} maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+                                    <mask id="mask0_706_24455" style={{ "maskType": "alpha" }} maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
                                         <rect width="24" height="24" fill="#D9D9D9" />
                                     </mask>
                                     <g mask="url(#mask0_706_24455)">
@@ -461,7 +492,7 @@ const Payout = () => {
                                                             <img className='mx-auto' src='/assets/img/Group.svg' />
                                                         </div>
                                                     }
-                                                    <div onClick={() => { handleShow(rowData); setModal(true); setCancelCheck(!cancelCheck); setId(rowData.id) }} className="cursor-pointer">
+                                                    <div onClick={() => { handleShow(rowData); setCancelCheck(!cancelCheck); setId(rowData.id) }} className="cursor-pointer">
                                                         <img className='mx-auto' src='/assets/img/Connect.svg' />
                                                     </div>
                                                 </>
@@ -726,48 +757,12 @@ const Payout = () => {
                                     </div>
                                 </form>
 
-                                {/* cek yuklemek ucun */}
-                                <div className={`${!cancelCheck && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
 
-                                <div className={`${!cancelCheck ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} p-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full rounded-[24px]`}>
-                                    <div className="relative mb-8">
-                                        <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Завершить</h3>
-                                        <svg width="14" onClick={() => setCancelCheck(!cancelCheck)} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
-                                        </svg>
-                                        <h5 className='text-[14px] text-[#60626C]'>Заполните информацию</h5>
-                                    </div>
-                                    <div className="modal_payout mb-8">
-                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} mb-2`}>Чек</h5>
-                                        <button
-                                            className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'
-                                            onClick={() => document.getElementById('fileInput').click()}
-                                        >
-                                            Прикрепить Чек
-                                        </button>
-                                        <input
-                                            id="fileInput"
-                                            type="file"
-                                            className="hidden"
-                                            onChange={(e) => console.log(e.target.files[0])}
-                                        />
-                                    </div>
-                                    <div className=" flex items-center">
-                                        <img className='w-[200px]' src="https://s3-alpha-sig.figma.com/img/613a/5e86/0ae75619ed18b69de8fd2a3572f8a9bd?Expires=1730678400&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=QgRbKZ7j1eGcDCI7tdJmaxOjSXd7Bfw83YxDLogkh7AmrFoj8iPfIbDWxKjckZjIuFYLFOtdKR8CGTq~v2LvZLy1kMKuG-cyqOeBFyJGXP5C2dUNiUNTF2scTo-XJESCeCJ-y18uEXKA77RFSifFIa00Y2L9v08sqoelMxWKYpnm0Vc8flgdS4OKrcK1wqIJdQRX2jV2AdMvKdD2Yb0UadrMAgOk~czxVNERBhcCjO4O5vv7jPm99CXalRyZCtILQVbfdbmevhaMf3bca5gYVRQKEDsrNSptEgC5kpltvV1HbXb~hTdWqMBct0hVUjDcy4knWefAaCQsQ54D~mMVFw__" alt="" />
-                                        <svg width="24" className='ml-3 cursor-pointer min-w-[24px]' height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
-                                        </svg>
-                                    </div>
-                                    <div className="flex justify-end">
-                                        <button onClick={() => setCancelCheck(!cancelCheck)} className=' bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                            Завершить
-                                        </button>
-                                    </div>
-                                </div>
+
                                 <div className="flex w-full text-white md:justify-end gap-x-4">
                                     {details?.map((data, index) => {
                                         return (
-                                            <>
+                                            <div key={index}>
                                                 {(data.status === "wait_confirm" || data.status === "in_progress") && (
                                                     <>
                                                         <button onClick={() => setCancel(!cancel)} className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
@@ -785,7 +780,7 @@ const Payout = () => {
                                                         </button>
                                                     </>
                                                 )}
-                                            </>
+                                            </div>
                                         )
                                     })}
                                 </div>
@@ -793,7 +788,40 @@ const Payout = () => {
 
                         </div>
                     </div>
+                    {/* cek yuklemek ucun */}
+                    <div className={`${!cancelCheck && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
 
+                    <form onSubmit={handleUpload} className={`${!cancelCheck ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} p-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[763px] rounded-[24px]`}>
+                        <div className="relative mb-8">
+                            <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Завершить</h3>
+                            <svg width="14" onClick={() => {setCancelCheck(!cancelCheck);setImageSrc("")}} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
+                            </svg>
+                            <h5 className='text-[14px] text-[#60626C]'>Заполните информацию</h5>
+                        </div>
+                        <div className="modal_payout mb-8">
+                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} mb-2`}>Чек</h5>
+                            <button
+                                className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'
+                                onClick={() => document.getElementById('fileInput').click()}>
+                                Прикрепить Чек
+                            </button>
+                            <input id="fileInput" type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
+                        </div>
+                        <div className=" flex items-center">
+                            {imageSrc && <img src={imageSrc} alt="Uploaded preview" className="mt-4 max-w-[300px] max-h-[400px]" />}
+                            {imageSrc &&
+                                <svg onClick={() => setImageSrc("")} width="24" className='ml-3 cursor-pointer min-w-[24px]' height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
+                                </svg>
+                            }
+                        </div>
+                        <div className="flex justify-end">
+                            <button type='submit' onClick={() => setCancelCheck(!cancelCheck)} className='bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                Завершить
+                            </button>
+                        </div>
+                    </form>
 
                 </div>
 
