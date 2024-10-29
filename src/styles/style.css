@@ -62,7 +62,6 @@ td {
 }
 
 .p-paginator-bottom {
-    position: relative;
     z-index: 20;
     justify-content: start;
     padding: 20px 0;

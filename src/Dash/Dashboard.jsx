@@ -181,7 +181,7 @@ const Dashboard = () => {
 
 
     return (
-        <div onClick={() => dropDown ? setDropDown(!dropDown) : ""} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border `}>
+        <div onClick={() =>{ dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : "" }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border `}>
             <div className='flex'>
                 <div className="max-md:hidden">
                     <div className={`${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5] border"}  min-h-[100vh] h-full z-20  relative `}>
@@ -419,7 +419,7 @@ const Dashboard = () => {
 }                          
                             `}
                             </style>
-                            <DataTable scrollable scrollHeight="430px" value={filteredCustomers || data.results} paginator rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
+                            <DataTable scrollable scrollHeight="65vh" value={filteredCustomers || data.results} paginator rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
                                 <Column body={(rowData) => {
                                     return (
                                         <div onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>

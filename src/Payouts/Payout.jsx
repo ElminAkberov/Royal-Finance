@@ -6,6 +6,9 @@ import Dark from '../Dark';
 import { Context } from '../context/ContextProvider';
 import axios from 'axios';
 const Payout = () => {
+    const [imageSrc, setImageSrc] = useState(null);
+    const [describeImg, setDescribeImg] = useState(null)
+
     let [dropDown, setDropDown] = useState(false)
     let { isDarkMode, toggleDarkMode } = useContext(Context)
     let navigate = useNavigate()
@@ -68,7 +71,7 @@ const Payout = () => {
         e.preventDefault();
         try {
             const formData = new FormData();
-            formData.append("receipts", imageSrc);
+            formData.append("receipts", describeImg);
 
             const response = await axios.post(`https://dev.royal-pay.org/api/v1/internal/payouts/submit/${id}/`, formData, {
                 headers: {
@@ -79,7 +82,10 @@ const Payout = () => {
 
             console.log(response.data);
         } catch (error) {
-            console.log(error);
+            if (error.response.status === 400) {
+            } else if (error.response.status === 500) {
+                console.error("Internal Server Error: Please try again later.", error.message);
+            }
         }
     };
 
@@ -242,7 +248,6 @@ const Payout = () => {
         setFilteredCustomers(filteredData);
     }, [startDate, endDate, merchant, trader, selectStatus, startTime, endTime, selectMethod]);
 
-    const [imageSrc, setImageSrc] = useState(null);
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -252,6 +257,7 @@ const Payout = () => {
                 setImageSrc(reader.result);
             };
             reader.readAsDataURL(file);
+            setDescribeImg(file)
         }
     };
     const handleShow = (info) => {
@@ -259,7 +265,7 @@ const Payout = () => {
     }
 
     return (
-        <div onClick={() => dropDown ? setDropDown(!dropDown) : ""} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border`}>
+        <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : "" }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border`}>
             <div className='flex'>
                 <div className={`max-md:hidden`}>
                     <div className={`${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5] border"}  min-h-[100vh] h-full z-20  relative `}>
@@ -621,7 +627,7 @@ const Payout = () => {
                             </DataTable>
                         </div>
                         <style>
-                                {`
+                            {`
                             .p-datatable-thead {
                                 background-color: ${isDarkMode ? '#272727' : '#F4F5FB'};
                             }   
@@ -633,7 +639,7 @@ const Payout = () => {
                         </style>
                         <div className="hidden max-md:block">
                             <DataTable value={filteredCustomers || data.results} paginator scrollable
-                                scrollHeight="400px" rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
+                                scrollHeight="65vh" rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
                                 <Column body={(rowData) => {
                                     return (
                                         <>
@@ -765,7 +771,7 @@ const Payout = () => {
                                 }}></Column>
                             </DataTable>
                         </div>
-                        
+
                         <div className="flex relative pages items-center justify-between">
                             <p className={` text-[14px] font-normal md:absolute left-[46%] top-[-50px] duration-300 ${isDarkMode ? "text-[#fff]" : "text-[#252840]"} z-20 `}><input type='number' defaultValue={1} onInput={(e) => {
                                 if (e.target.value > Math.ceil(data.count / 10)) {
@@ -976,7 +982,7 @@ const Payout = () => {
                             </button>
                             <input id="fileInput" type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
                         </div>
-                        <div className=" flex items-center">
+                        <div className=" flex max-[400px]:flex-col items-center">
                             {imageSrc && <img src={imageSrc} alt="Uploaded preview" className="mt-4 max-w-[300px] max-h-[400px]" />}
                             {imageSrc &&
                                 <svg onClick={() => setImageSrc("")} width="24" className='ml-3 cursor-pointer min-w-[24px]' height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -984,7 +990,7 @@ const Payout = () => {
                                 </svg>
                             }
                         </div>
-                        <div className="flex justify-end">
+                        <div className="flex justify-end mt-4">
                             <button type='submit' onClick={() => setCancelCheck(!cancelCheck)} className='bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                 Завершить
                             </button>

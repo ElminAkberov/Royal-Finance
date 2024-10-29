@@ -55,7 +55,7 @@ const Deposit = () => {
 
 
   return (
-    <div onClick={() => dropDown ? setDropDown(!dropDown) : ""} className='flex '>
+    <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : "" }} className='flex '>
       <div className={`max-md:hidden`}>
         <div className={`${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5] border"}  min-h-[100vh] h-full z-20  relative `}>
           <h3 className={`py-[20px] flex items-center justify-start ml-[8px] font-medium px-[8px] ${isDarkMode ? "text-white" : "text-black"}`}>Лого</h3>
