@@ -4,7 +4,7 @@ import { Column } from 'primereact/column';
 import { NavLink, useNavigate } from 'react-router-dom';
 import Dark from '../Dark';
 import { Context } from '../context/ContextProvider';
-
+import axios from 'axios';
 const Payout = () => {
     let [dropDown, setDropDown] = useState(false)
     let { isDarkMode, toggleDarkMode } = useContext(Context)
@@ -17,6 +17,7 @@ const Payout = () => {
     const [filterBtn, setFilterBtn] = useState(false)
     const [searchBtn, setSearchBtn] = useState(false)
     const [navBtn, setNavBtn] = useState(false)
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -66,22 +67,22 @@ const Payout = () => {
     const handleUpload = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/submit/${id}/`, {
-                method: "POST",
+            const formData = new FormData();
+            formData.append("receipts", imageSrc);
+
+            const response = await axios.post(`https://dev.royal-pay.org/api/v1/internal/payouts/submit/${id}/`, formData, {
                 headers: {
                     "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    "receipts": [imageSrc]
-                }),
-                
-            })
-            const data = await response.json()
+                    "Content-Type": "multipart/form-data"
+                }
+            });
+
+            console.log(response.data);
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-    }
+    };
+
 
     const handleCancel = async (e) => {
         e.preventDefault()
@@ -485,139 +486,287 @@ const Payout = () => {
 
                     </div>
 
-                    <div className={`${isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]"} max-md:p-2 max-md:pr-0 max-md:pt-0`}>
-                        <DataTable value={filteredCustomers || data.results} paginator rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
-                            <Column body={(rowData) => {
-                                return (
-                                    <>
-                                        <div className='flex gap-x-[10px]'>
-                                            {(rowData.status == "completed" || rowData.status == "canceled") ?
-                                                <>
-                                                    <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
-                                                        <img className='mx-auto' src='/assets/img/ion_eye.svg' />
-                                                    </div>
-                                                    {rowData.receipts.length > 0 &&
-                                                        <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
-                                                            <img className='mx-auto' src='/assets/img/Group.svg' />
-                                                        </div>
-                                                    }
-                                                </>
-                                                :
-                                                <>
-                                                    <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
-                                                        <img className='mx-auto' src='/assets/img/ion_eye.svg' />
-                                                    </div>
-                                                    {rowData.receipts.length > 0 &&
-                                                        <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
-                                                            <img className='mx-auto' src='/assets/img/Group.svg' />
-                                                        </div>
-                                                    }
-                                                    <div onClick={() => { handleShow(rowData); setCancelCheck(!cancelCheck); setId(rowData.id) }} className="cursor-pointer">
-                                                        <img className='mx-auto' src='/assets/img/Connect.svg' />
-                                                    </div>
-                                                </>
-                                            }
-                                        </div>
-                                    </>
-                                );
-                            }} headerStyle={{ backgroundColor: '#D9D9D90A', color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Действия" ></Column>
-
-                            <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 8px", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header=" ID " body={(rowData) => <div>{rowData.id}</div>} ></Column>
-
-                            <Column body={(rowData) => {
-                                return (
-                                    <div>
-                                        <div>
-                                            <h5>{rowData?.created_at?.split("T")[0]} {rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}/</h5>
-                                            <h5>{rowData?.updated_at?.split("T")[0]} {rowData?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
-                                        </div>
-                                    </div>
-                                )
-                            }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время создания / обновления"  ></Column>
-
-
-                            <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" header={"Мерчант"} headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} `} body={(rowData) => {
-                                return (
-                                    <div>
-                                        <>
-                                            <div>{rowData.merchant["username"]}</div>
-                                        </>
-                                    </div>
-                                )
-
-                            }} ></Column>
-
-                            <Column body={(rowData) => {
-                                return (
-                                    <div>
-                                        <>
-                                            <div>{rowData.trader ? rowData.trader["username"] : "-"}</div>
-                                        </>
-                                    </div>
-                                )
-
-                            }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="course" header="Трейдер" ></Column>
-
-                            <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="price_2" header="Назначенный трейдер" body={(rowData) => {
-                                return (
-                                    <div>
-                                        <>
-                                            <div>{rowData.selected_traders.length > 0 ? rowData.selected_traders.map((person, index) => <p key={index}>{person.username}{index !== rowData.selected_traders.length - 1 && ','}</p>) : "-"}</div>
-                                        </>
-                                    </div>
-                                )
-
-                            }} ></Column>
-
-                            <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} body={(rowData) => {
-                                return (
-                                    <div>
-                                        <div>{rowData.bank} Банк</div>
-                                    </div>
-                                )
-
-                            }} field="code" header="Банк" ></Column>
-
-                            <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Метод" body={(rowData) => {
-                                return <div>{rowData.method["name"]}</div>
-                            }}></Column>
-
-                            <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка мерчанта " body={(rowData) => {
-                                return (<div>{rowData.merchant_rate}</div>)
-                            }}></Column>
-
-                            <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка трейдера" body={(rowData) => {
-                                return (<div>{rowData.trader_rate}</div>)
-                            }}></Column>
-
-                            <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Сумма" body={(rowData) => {
-                                return (<div>{rowData.amount}</div>)
-
-                            }}></Column>
-
-                            <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
-                                if (rowData.status == "wait_confirm" || rowData.status == "in_progress" || rowData.status == "pending") {
+                    <div className={`${isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]"}  max-md:pr-0 max-md:pt-0`}>
+                        <div className="block max-md:hidden">
+                            <DataTable value={filteredCustomers || data.results} paginator rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
+                                <Column headerClassName="custom-column-header" body={(rowData) => {
                                     return (
-                                        <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                            В обработке
-                                        </div>
+                                        <>
+                                            <div className='flex gap-x-[10px]'>
+                                                {(rowData.status == "completed" || rowData.status == "canceled") ?
+                                                    <>
+                                                        <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
+                                                            <img className='mx-auto' src='/assets/img/ion_eye.svg' />
+                                                        </div>
+                                                        {rowData.receipts.length > 0 &&
+                                                            <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
+                                                                <img className='mx-auto' src='/assets/img/Group.svg' />
+                                                            </div>
+                                                        }
+                                                    </>
+                                                    :
+                                                    <>
+                                                        <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
+                                                            <img className='mx-auto' src='/assets/img/ion_eye.svg' />
+                                                        </div>
+                                                        {rowData.receipts.length > 0 &&
+                                                            <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
+                                                                <img className='mx-auto' src='/assets/img/Group.svg' />
+                                                            </div>
+                                                        }
+                                                        <div onClick={() => { handleShow(rowData); setCancelCheck(!cancelCheck); setId(rowData.id) }} className="cursor-pointer">
+                                                            <img className='mx-auto' src='/assets/img/Connect.svg' />
+                                                        </div>
+                                                    </>
+                                                }
+                                            </div>
+                                        </>
                                     );
-                                } else if (rowData.status == "completed") {
+                                }} headerStyle={{ backgroundColor: '#D9D9D90A', color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Действия" ></Column>
+
+                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 8px", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header=" ID " body={(rowData) => <div>{rowData.id}</div>} ></Column>
+
+                                <Column body={(rowData) => {
                                     return (
-                                        <div className='bg-[#37B67E]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                            Успешно
+                                        <div>
+                                            <div>
+                                                <h5>{rowData?.created_at?.split("T")[0]} {rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}/</h5>
+                                                <h5>{rowData?.updated_at?.split("T")[0]} {rowData?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
+                                            </div>
                                         </div>
                                     )
-                                } else {
+                                }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время создания / обновления"  ></Column>
+
+
+                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" header={"Мерчант"} headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} `} body={(rowData) => {
                                     return (
-                                        <div className='bg-[#CE2E2E] flex  justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                            Отклонено
+                                        <div>
+                                            <>
+                                                <div>{rowData.merchant["username"]}</div>
+                                            </>
                                         </div>
                                     )
-                                }
-                            }}></Column>
-                        </DataTable>
-                        <div className="flex relative  items-center justify-between">
+
+                                }} ></Column>
+
+                                <Column body={(rowData) => {
+                                    return (
+                                        <div>
+                                            <>
+                                                <div>{rowData.trader ? rowData.trader["username"] : "-"}</div>
+                                            </>
+                                        </div>
+                                    )
+
+                                }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="course" header="Трейдер" ></Column>
+
+                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="price_2" header="Назначенный трейдер" body={(rowData) => {
+                                    return (
+                                        <div>
+                                            <>
+                                                <div>{rowData.selected_traders.length > 0 ? rowData.selected_traders.map((person, index) => <p key={index}>{person.username}{index !== rowData.selected_traders.length - 1 && ','}</p>) : "-"}</div>
+                                            </>
+                                        </div>
+                                    )
+
+                                }} ></Column>
+
+                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} body={(rowData) => {
+                                    return (
+                                        <div>
+                                            <div>{rowData.bank} Банк</div>
+                                        </div>
+                                    )
+
+                                }} field="code" header="Банк" ></Column>
+
+                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Метод" body={(rowData) => {
+                                    return <div>{rowData.method["name"]}</div>
+                                }}></Column>
+
+                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка мерчанта " body={(rowData) => {
+                                    return (<div>{rowData.merchant_rate}</div>)
+                                }}></Column>
+
+                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка трейдера" body={(rowData) => {
+                                    return (<div>{rowData.trader_rate}</div>)
+                                }}></Column>
+
+                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Сумма" body={(rowData) => {
+                                    return (<div>{rowData.amount}</div>)
+
+                                }}></Column>
+
+                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
+                                    if (rowData.status == "wait_confirm" || rowData.status == "in_progress" || rowData.status == "pending") {
+                                        return (
+                                            <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                В обработке
+                                            </div>
+                                        );
+                                    } else if (rowData.status == "completed") {
+                                        return (
+                                            <div className='bg-[#37B67E]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                Успешно
+                                            </div>
+                                        )
+                                    } else {
+                                        return (
+                                            <div className='bg-[#CE2E2E] flex  justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                Отклонено
+                                            </div>
+                                        )
+                                    }
+                                }}></Column>
+                            </DataTable>
+                        </div>
+                        <style>
+                                {`
+                            .p-datatable-thead {
+                                background-color: ${isDarkMode ? '#272727' : '#F4F5FB'};
+                            }   
+                                @media only screen and (max-width: 768px) {
+    .p-paginator-bottom,.pages {
+      background-color: ${isDarkMode ? '#000' : ' #E9EBF7'};
+    }                       
+                            `}
+                        </style>
+                        <div className="hidden max-md:block">
+                            <DataTable value={filteredCustomers || data.results} paginator scrollable
+                                scrollHeight="400px" rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
+                                <Column body={(rowData) => {
+                                    return (
+                                        <>
+                                            <div className='flex gap-x-[10px]'>
+                                                {(rowData.status == "completed" || rowData.status == "canceled") ?
+                                                    <>
+                                                        <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
+                                                            <img className='mx-auto' src='/assets/img/ion_eye.svg' />
+                                                        </div>
+                                                        {rowData.receipts.length > 0 &&
+                                                            <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
+                                                                <img className='mx-auto' src='/assets/img/Group.svg' />
+                                                            </div>
+                                                        }
+                                                    </>
+                                                    :
+                                                    <>
+                                                        <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
+                                                            <img className='mx-auto' src='/assets/img/ion_eye.svg' />
+                                                        </div>
+                                                        {rowData.receipts.length > 0 &&
+                                                            <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
+                                                                <img className='mx-auto' src='/assets/img/Group.svg' />
+                                                            </div>
+                                                        }
+                                                        <div onClick={() => { handleShow(rowData); setCancelCheck(!cancelCheck); setId(rowData.id) }} className="cursor-pointer">
+                                                            <img className='mx-auto' src='/assets/img/Connect.svg' />
+                                                        </div>
+                                                    </>
+                                                }
+                                            </div>
+                                        </>
+                                    );
+                                }} headerStyle={{ color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Действия" ></Column>
+
+                                <Column headerStyle={{ padding: "16px 8px", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header=" ID " body={(rowData) => <div>{rowData.id}</div>} ></Column>
+
+                                <Column body={(rowData) => {
+                                    return (
+                                        <div>
+                                            <div>
+                                                <h5>{rowData?.created_at?.split("T")[0]} {rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}/</h5>
+                                                <h5>{rowData?.updated_at?.split("T")[0]} {rowData?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
+                                            </div>
+                                        </div>
+                                    )
+                                }} headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время создания / обновления"  ></Column>
+
+
+                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" header={"Мерчант"} headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} `} body={(rowData) => {
+                                    return (
+                                        <div>
+                                            <>
+                                                <div>{rowData.merchant["username"]}</div>
+                                            </>
+                                        </div>
+                                    )
+
+                                }} ></Column>
+
+                                <Column body={(rowData) => {
+                                    return (
+                                        <div>
+                                            <>
+                                                <div>{rowData.trader ? rowData.trader["username"] : "-"}</div>
+                                            </>
+                                        </div>
+                                    )
+
+                                }} headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="course" header="Трейдер" ></Column>
+
+                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="price_2" header="Назначенный трейдер" body={(rowData) => {
+                                    return (
+                                        <div>
+                                            <>
+                                                <div>{rowData.selected_traders.length > 0 ? rowData.selected_traders.map((person, index) => <p key={index}>{person.username}{index !== rowData.selected_traders.length - 1 && ','}</p>) : "-"}</div>
+                                            </>
+                                        </div>
+                                    )
+
+                                }} ></Column>
+
+                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} body={(rowData) => {
+                                    return (
+                                        <div>
+                                            <div>{rowData.bank} Банк</div>
+                                        </div>
+                                    )
+
+                                }} field="code" header="Банк" ></Column>
+
+                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Метод" body={(rowData) => {
+                                    return <div>{rowData.method["name"]}</div>
+                                }}></Column>
+
+                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка мерчанта " body={(rowData) => {
+                                    return (<div>{rowData.merchant_rate}</div>)
+                                }}></Column>
+
+                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка трейдера" body={(rowData) => {
+                                    return (<div>{rowData.trader_rate}</div>)
+                                }}></Column>
+
+                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Сумма" body={(rowData) => {
+                                    return (<div>{rowData.amount}</div>)
+
+                                }}></Column>
+
+                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
+                                    if (rowData.status == "wait_confirm" || rowData.status == "in_progress" || rowData.status == "pending") {
+                                        return (
+                                            <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                В обработке
+                                            </div>
+                                        );
+                                    } else if (rowData.status == "completed") {
+                                        return (
+                                            <div className='bg-[#37B67E]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                Успешно
+                                            </div>
+                                        )
+                                    } else {
+                                        return (
+                                            <div className='bg-[#CE2E2E] flex  justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                Отклонено
+                                            </div>
+                                        )
+                                    }
+                                }}></Column>
+                            </DataTable>
+                        </div>
+                        
+                        <div className="flex relative pages items-center justify-between">
                             <p className={` text-[14px] font-normal md:absolute left-[46%] top-[-50px] duration-300 ${isDarkMode ? "text-[#fff]" : "text-[#252840]"} z-20 `}><input type='number' defaultValue={1} onInput={(e) => {
                                 if (e.target.value > Math.ceil(data.count / 10)) {
                                     e.target.value = Math.ceil(data.count / 10)
@@ -625,8 +774,8 @@ const Payout = () => {
                                     e.target.value = 1;
                                 }
                                 setPage(e.target.value);
-                            }} max={12} className='bg-transparent rounded-lg text-center border h-[32px] w-[35px]' /> из {Math.ceil(data.count / 10)}</p>
-                            <p className={`text-right text-[14px] font-normal mr-4 absolute right-0 top-[-45px]  duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p>
+                            }} max={12} className='bg-transparent rounded-lg text-center border border-[#fff] h-[32px] w-[35px]' /> из {Math.ceil(data.count / 10)}</p>
+                            <p className={`text-right text-[14px] font-normal mr-4 absolute right-0 top-[-45px] z-30 duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p>
                         </div>
                     </div>
 
@@ -643,7 +792,7 @@ const Payout = () => {
                                     {img.receipts.map(img => {
                                         return (
                                             <div className='relative'>
-                                                <img className='mx-auto' src={`${img}`} />
+                                                <img className='mx-auto' src={`/assets/img/check.jpg`} />
                                                 <svg onClick={() => setZoom(!zoom)} width="14" height="15" viewBox="0 0 14 15" className='absolute top-0 right-[-20px] cursor-pointer' xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" fill="#000" />
                                                 </svg>
@@ -699,7 +848,7 @@ const Payout = () => {
                                             </div>
                                             <div className="modal_payout">
                                                 <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Внешний ID</h5>
-                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.outter_id}</p>
+                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.outter_id.slice(0,)}</p>
                                             </div>
                                             <div className="modal_payout">
                                                 <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма</h5>
@@ -743,10 +892,9 @@ const Payout = () => {
                                             {data.receipts.length > 0 &&
                                                 <div className="modal_payout">
                                                     <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Чек </h5>
-                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}><img className='w-[200px] h-[130px] object-cover' src={`${data?.receipts}`} /> </p>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}><img className='w-[200px] h-[150px] object-cover' src={`/assets/img/check.jpg`} /> </p>
                                                 </div>
                                             }
-
                                         </div>
 
                                     </div>

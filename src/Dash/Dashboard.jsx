@@ -24,7 +24,7 @@ const Dashboard = () => {
                         "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
                     }
                 });
-    
+
                 if (response.status === 401) {
                     console.log("Unauthorized access, attempting to refresh token.");
                     const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
@@ -36,11 +36,11 @@ const Dashboard = () => {
                             refresh: localStorage.getItem("refresh"),
                         }),
                     });
-    
+
                     if (refreshResponse.ok) {
                         const refreshData = await refreshResponse.json();
                         localStorage.setItem("access", refreshData.access);
-                        return fetchData(); 
+                        return fetchData();
                     } else {
                         console.log("Failed to refresh token, redirecting to login.");
                         navigate("/login");
@@ -59,10 +59,10 @@ const Dashboard = () => {
                 navigate("/login");
             }
         };
-    
+
         fetchData();
     }, [navigate]);
-    
+
 
     const startDateRef = useRef(null);
     const endDateRef = useRef(null);
@@ -405,94 +405,200 @@ const Dashboard = () => {
                         </div>
                     </div>
                     <div className={`${isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]"}`}>
-                        <DataTable value={filteredCustomers || data.results} paginator rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
-                            <Column body={(rowData) => {
-                                return (
-                                    <div onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>
-                                        <img className='mx-auto' src='/assets/img/ion_eye.svg' />
-                                    </div>
-                                );
-                            }} headerStyle={{ backgroundColor: '#D9D9D90A', color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Действия" ></Column>
-
-                            <Column body={(rowData) => {
-                                return (
-                                    <div>
-                                        <div>
-                                            <h5>{rowData?.created_at?.split("T")[0]}</h5>
-                                            <p>{rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
-                                        </div>
-
-                                    </div>
-                                )
-                            }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время"  ></Column>
-
-                            <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header="Метод" body={(rowData) => <div>{rowData?.method_name}</div>} ></Column>
-
-                            <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" sortable header={"Сумма"} headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} `} body={(rowData) => {
-                                return (
-                                    <div>
-                                        <>
-                                            <div>{rowData.amount_in_usdt} USDT</div>
-                                        </>
-                                    </div>
-                                )
-
-                            }} ></Column>
-
-                            <Column body={(rowData) => {
-                                return (
-                                    <div>
-                                        <>
-                                            <div>{rowData.course} {rowData.currency}</div>
-                                        </>
-                                    </div>
-                                )
-
-                            }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="course" header="Курс/Крипта" ></Column>
-
-                            <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="price_2" header="Сумма" body={(rowData) => {
-                                return (
-                                    <div>
-                                        <>
-                                            <div>{rowData.amount} RUB</div>
-                                        </>
-                                    </div>
-                                )
-
-                            }} ></Column>
-
-                            <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} body={(rowData) => {
-                                return (
-                                    <div>
-                                        <div>{rowData.hash.slice(0, 8)}...</div>
-                                    </div>
-                                )
-
-                            }} field="code" header="Код/Xэш" ></Column>
-
-                            <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
-                                if (rowData.status === "pending") {
+                        <div className="hidden max-md:block">
+                            <style >
+                                {`
+.p-datatable-thead {
+      background-color: ${isDarkMode ? '#272727' : '#F4F5FB'};
+    }
+    @media only screen and (max-width: 768px) {
+    .p-paginator-bottom,.pages {
+      background-color: ${isDarkMode ? '#000' : ' #E9EBF7'};
+    }
+    
+}                          
+                            `}
+                            </style>
+                            <DataTable scrollable scrollHeight="430px" value={filteredCustomers || data.results} paginator rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
+                                <Column body={(rowData) => {
                                     return (
-                                        <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                            В обработке
+                                        <div onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>
+                                            <img className='mx-auto' src='/assets/img/ion_eye.svg' />
                                         </div>
                                     );
-                                } else if (rowData.status == "success") {
-                                    return (
-                                        <div className='bg-[#37B67E]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                            Успешно
-                                        </div>
-                                    )
-                                } else {
-                                    return (
-                                        <div className='bg-[#CE2E2E] flex  justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                            Отклонено
-                                        </div>
-                                    )
-                                }
-                            }}></Column>
+                                }} headerStyle={{ color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Действия" ></Column>
 
-                        </DataTable>
+                                <Column body={(rowData) => {
+                                    return (
+                                        <div>
+                                            <div>
+                                                <h5>{rowData?.created_at?.split("T")[0]}</h5>
+                                                <p>{rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
+                                            </div>
+
+                                        </div>
+                                    )
+                                }} headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время"  ></Column>
+
+                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header="Метод" body={(rowData) => <div>{rowData?.method_name}</div>} ></Column>
+
+                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" sortable header={"Сумма"} headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} `} body={(rowData) => {
+                                    return (
+                                        <div>
+                                            <>
+                                                <div>{rowData.amount_in_usdt} USDT</div>
+                                            </>
+                                        </div>
+                                    )
+
+                                }} ></Column>
+
+                                <Column body={(rowData) => {
+                                    return (
+                                        <div>
+                                            <>
+                                                <div>{rowData.course} {rowData.currency}</div>
+                                            </>
+                                        </div>
+                                    )
+
+                                }} headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="course" header="Курс/Крипта" ></Column>
+
+                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="price_2" header="Сумма" body={(rowData) => {
+                                    return (
+                                        <div>
+                                            <>
+                                                <div>{rowData.amount} RUB</div>
+                                            </>
+                                        </div>
+                                    )
+
+                                }} ></Column>
+
+                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} body={(rowData) => {
+                                    return (
+                                        <div>
+                                            <div>{rowData.hash.slice(0, 8)}...</div>
+                                        </div>
+                                    )
+
+                                }} field="code" header="Код/Xэш" ></Column>
+
+                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
+                                    if (rowData.status === "pending") {
+                                        return (
+                                            <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                В обработке
+                                            </div>
+                                        );
+                                    } else if (rowData.status == "success") {
+                                        return (
+                                            <div className='bg-[#37B67E]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                Успешно
+                                            </div>
+                                        )
+                                    } else {
+                                        return (
+                                            <div className='bg-[#CE2E2E] flex  justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                Отклонено
+                                            </div>
+                                        )
+                                    }
+                                }}></Column>
+
+                            </DataTable>
+                        </div>
+
+                        <div className="block max-md:hidden">
+                            <DataTable value={filteredCustomers || data.results} paginator rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
+                                <Column body={(rowData) => {
+                                    return (
+                                        <div onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>
+                                            <img className='mx-auto' src='/assets/img/ion_eye.svg' />
+                                        </div>
+                                    );
+                                }} headerStyle={{ backgroundColor: '#D9D9D90A', color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Действия" ></Column>
+
+                                <Column body={(rowData) => {
+                                    return (
+                                        <div>
+                                            <div>
+                                                <h5>{rowData?.created_at?.split("T")[0]}</h5>
+                                                <p>{rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
+                                            </div>
+
+                                        </div>
+                                    )
+                                }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время"  ></Column>
+
+                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header="Метод" body={(rowData) => <div>{rowData?.method_name}</div>} ></Column>
+
+                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" sortable header={"Сумма"} headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} `} body={(rowData) => {
+                                    return (
+                                        <div>
+                                            <>
+                                                <div>{rowData.amount_in_usdt} USDT</div>
+                                            </>
+                                        </div>
+                                    )
+
+                                }} ></Column>
+
+                                <Column body={(rowData) => {
+                                    return (
+                                        <div>
+                                            <>
+                                                <div>{rowData.course} {rowData.currency}</div>
+                                            </>
+                                        </div>
+                                    )
+
+                                }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="course" header="Курс/Крипта" ></Column>
+
+                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="price_2" header="Сумма" body={(rowData) => {
+                                    return (
+                                        <div>
+                                            <>
+                                                <div>{rowData.amount} RUB</div>
+                                            </>
+                                        </div>
+                                    )
+
+                                }} ></Column>
+
+                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} body={(rowData) => {
+                                    return (
+                                        <div>
+                                            <div>{rowData.hash.slice(0, 8)}...</div>
+                                        </div>
+                                    )
+
+                                }} field="code" header="Код/Xэш" ></Column>
+
+                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
+                                    if (rowData.status === "pending") {
+                                        return (
+                                            <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                В обработке
+                                            </div>
+                                        );
+                                    } else if (rowData.status == "success") {
+                                        return (
+                                            <div className='bg-[#37B67E]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                Успешно
+                                            </div>
+                                        )
+                                    } else {
+                                        return (
+                                            <div className='bg-[#CE2E2E] flex  justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                Отклонено
+                                            </div>
+                                        )
+                                    }
+                                }}></Column>
+
+                            </DataTable>
+                        </div>
                     </div>
                     <p className={`text-right text-[14px] font-normal relative bottom-[45px] mr-4  duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p>
                     <div className={`${!modal && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
