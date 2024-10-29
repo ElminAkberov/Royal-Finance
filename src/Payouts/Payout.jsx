@@ -231,7 +231,6 @@ const Payout = () => {
             reader.readAsDataURL(file);
         }
     };
-    console.log(imageSrc)   
     const handleShow = (info) => {
         setDetails([info])
     }
