@@ -46,7 +46,7 @@ const Payout = () => {
     const handleUpload = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch(`http://dev.royal-pay.org/api/v1/internal/payouts/submit/${id}`, {
+            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/submit/${id}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -56,7 +56,6 @@ const Payout = () => {
                 }),
             })
             const data = await response.json()
-            console.log("success", data)
         } catch (error) {
             console.log(error)
         }
