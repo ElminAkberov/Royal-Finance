@@ -24,17 +24,34 @@ const Dashboard = () => {
                         "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
                     }
                 });
-
+    
                 if (response.status === 401) {
-                    console.log("Unauthorized access, redirecting to login.");
-                    navigate("/login");
+                    console.log("Unauthorized access, attempting to refresh token.");
+                    const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            refresh: localStorage.getItem("refresh"),
+                        }),
+                    });
+    
+                    if (refreshResponse.ok) {
+                        const refreshData = await refreshResponse.json();
+                        localStorage.setItem("access", refreshData.access);
+                        return fetchData(); 
+                    } else {
+                        console.log("Failed to refresh token, redirecting to login.");
+                        navigate("/login");
+                    }
                 } else if (response.status === 400) {
                     console.log("Bad Request");
                 } else if (response.ok) {
                     const data = await response.json();
                     setData(data);
                 } else {
-                    const errorText = await response.text(); 
+                    const errorText = await response.text();
                     console.log("Unexpected error:", response.status, errorText);
                 }
             } catch (error) {
@@ -42,9 +59,10 @@ const Dashboard = () => {
                 navigate("/login");
             }
         };
-
+    
         fetchData();
     }, [navigate]);
+    
 
     const startDateRef = useRef(null);
     const endDateRef = useRef(null);

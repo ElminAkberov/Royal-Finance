@@ -20,15 +20,33 @@ const Payout = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/${page == 1 ? "" : `?page=${+page}`}`, {
+                const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/${page === 1 ? "" : `?page=${+page}`}`, {
                     method: "GET",
                     headers: {
                         "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
                     }
                 });
+
                 if (response.status === 401) {
-                    console.log("Unauthorized access, redirecting to login.");
-                    navigate("/login")
+                    console.log("Unauthorized access, attempting to refresh token.");
+                    const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            refresh: localStorage.getItem("refresh"),
+                        }),
+                    });
+
+                    if (refreshResponse.ok) {
+                        const refreshData = await refreshResponse.json();
+                        localStorage.setItem("access", refreshData.access);
+                        return fetchData();
+                    } else {
+                        console.log("Failed to refresh token, redirecting to login.");
+                        navigate("/login");
+                    }
                 } else if (response.ok) {
                     const data = await response.json();
                     setData(data);
@@ -37,12 +55,14 @@ const Payout = () => {
                 }
             } catch (error) {
                 console.error("An error occurred:", error);
-                navigate("/login")
+                navigate("/login");
             }
         };
 
         fetchData();
     }, [navigate, page]);
+
+
     const handleUpload = async (e) => {
         e.preventDefault();
         try {
@@ -226,7 +246,7 @@ const Payout = () => {
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                setImageSrc(reader.result); 
+                setImageSrc(reader.result);
             };
             reader.readAsDataURL(file);
         }
@@ -792,7 +812,7 @@ const Payout = () => {
                     <form onSubmit={handleUpload} className={`${!cancelCheck ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} p-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[763px] rounded-[24px]`}>
                         <div className="relative mb-8">
                             <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Завершить</h3>
-                            <svg width="14" onClick={() => {setCancelCheck(!cancelCheck);setImageSrc("")}} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg width="14" onClick={() => { setCancelCheck(!cancelCheck); setImageSrc("") }} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
                             </svg>
                             <h5 className='text-[14px] text-[#60626C]'>Заполните информацию</h5>
