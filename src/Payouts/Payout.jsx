@@ -927,7 +927,7 @@ const Payout = () => {
                         {details?.map((img, index) => {
                             return (
                                 zoom &&
-                                <div className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30'>
+                                <div key={index} className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30'>
                                     {img.receipts.map(img => {
                                         return (
                                             <div className='relative'>

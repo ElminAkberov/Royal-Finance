@@ -123,8 +123,9 @@ const Deposit = () => {
           <div className="flex items-center  cursor-pointer justify-between">
             {/* profile */}
             <div className='max-md:flex items-center justify-between'>
-              <div onClick={() => setDropDown(!dropDown)} className="bg-[#4CAF50] capitalize rounded-[100px] text-white w-[48px] h-[48px] flex items-center justify-center">
-                {localStorage.getItem("username")[0]}
+              <div onClick={() => setDropDown(!dropDown)} className="bg-[#4CAF50] uppercase rounded-[100px] text-white w-[48px] h-[48px] flex items-center justify-center">
+                {localStorage.getItem("username").split("_")[0][0]}
+                {localStorage.getItem("username").split("_")[1][0]}
               </div>
             </div>
             <div onClick={() => setDropDown(!dropDown)} className="cursor-pointer ">

@@ -8,7 +8,7 @@ import { Context } from '../context/ContextProvider';
 const Dashboard = () => {
     let [dropDown, setDropDown] = useState(false)
     let { isDarkMode } = useContext(Context)
-   
+
     let navigate = useNavigate()
     const [data, setData] = useState([])
     let [page, setPage] = useState(1)
@@ -190,7 +190,7 @@ const Dashboard = () => {
 
 
     return (
-        <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : "" }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border `}>
+        <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; modal ? setModal(!modal) : "" }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border `}>
             <div className='flex'>
                 <div className="max-md:hidden">
                     <div className={`${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5] border"}  min-h-[100vh] h-full z-20  relative `}>
@@ -258,8 +258,9 @@ const Dashboard = () => {
                         <div className="flex items-center  cursor-pointer justify-between">
                             {/* profile */}
                             <div className='max-md:flex items-center justify-between'>
-                                <div onClick={() => setDropDown(!dropDown)} className="bg-[#4CAF50] capitalize  rounded-[100px] text-white w-[48px] h-[48px] flex items-center justify-center">
-                                    {localStorage.getItem("username")[0]}
+                                <div onClick={() => setDropDown(!dropDown)} className="bg-[#4CAF50] uppercase  rounded-[100px] text-white w-[48px] h-[48px] flex items-center justify-center">
+                                    {localStorage.getItem("username").split("_")[0][0]}
+                                    {localStorage.getItem("username").split("_")[1][0]}
                                 </div>
                             </div>
                             <div onClick={() => setDropDown(!dropDown)} className="cursor-pointer">
