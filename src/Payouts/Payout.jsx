@@ -989,8 +989,9 @@ const Payout = () => {
                                                 <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} flex items-center gap-x-2`}>Внешний ID
                                                 </h5>
                                                 <div className="text-[14px] mb-0">
-                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id.slice(0, 33)}</p>
-                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id.slice(32)}</p>
+                                                    {console.log(data)}
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(0, 33) : '-'}</p>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(32) : ''}</p>
                                                     <LuCopy className={`text-[16px]  ${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} cursor-pointer`} onClick={(e) => handleCopy(e)} />
                                                 </div>
                                             </div>
