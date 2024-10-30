@@ -408,9 +408,9 @@ const Payout = () => {
                         <div className="flex items-center  cursor-pointer justify-between">
                             {/* profile */}
                             <div className='max-md:flex  items-center justify-between'>
-                                <div onClick={() => setDropDown(!dropDown)} className="bg-[#4CAF50] capitalize rounded-[100px] text-white w-[48px] h-[48px] flex items-center justify-center">
-                                    {localStorage.getItem("username")[0]}
-
+                                <div onClick={() => setDropDown(!dropDown)} className="bg-[#4CAF50] uppercase rounded-[100px] text-white w-[48px] h-[48px] flex items-center justify-center">
+                                    {localStorage.getItem("username").split("_")[0][0]}
+                                    {localStorage.getItem("username").split("_")[1][0]}
                                 </div>
                             </div>
                             <div onClick={() => setDropDown(!dropDown)} className="cursor-pointer ">
@@ -989,7 +989,6 @@ const Payout = () => {
                                                 <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} flex items-center gap-x-2`}>Внешний ID
                                                 </h5>
                                                 <div className="text-[14px] mb-0">
-                                                    {console.log(data)}
                                                     <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(0, 33) : '-'}</p>
                                                     <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(32) : ''}</p>
                                                     <LuCopy className={`text-[16px]  ${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} cursor-pointer`} onClick={(e) => handleCopy(e)} />
