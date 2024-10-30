@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PulseLoader } from 'react-spinners'
 import { Context } from '../context/ContextProvider'
@@ -16,7 +16,8 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setLoading(true)
+    setLoading(true);
+
     fetch("https://dev.royal-pay.org/api/v1/auth/login/", {
       method: "POST",
       headers: {
@@ -32,17 +33,48 @@ const Login = () => {
         if (!res.ok) {
           return Promise.reject(`HTTP error! status: ${res.status}`);
         }
-
         return res.json();
       })
-      .then((data) => { localStorage.setItem("access", data.access); localStorage.setItem("role", data.role); localStorage.setItem("refresh", data.refresh); setErr(false); navigate("/dash") })
-      .catch(() => { setErr(true) })
+      .then(async (data) => {
+        localStorage.setItem("access", data.access);
+        localStorage.setItem("role", data.role);
+        localStorage.setItem("refresh", data.refresh);
+        setErr(false);
+
+        await fetchData(); 
+        navigate("/dash");
+      })
+      .catch(() => {
+        setErr(true);
+      })
       .finally(() => {
         setTimeout(() => {
           setLoading(false);
         }, 3000);
-      })
+      });
   };
+
+  let fetchData = useCallback(async () => {
+    try {
+      let response = await fetch("https://dev.royal-pay.org/api/v1/accounts/me", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("access")}`,
+        }
+      });
+
+      let data = await response.json();
+      localStorage.setItem("username", data.username);
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+
   const togglePasswordVisibility = () => {
     setShowPassword(prev => !prev);
   };

@@ -5,6 +5,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import Dark from '../Dark';
 import { Context } from '../context/ContextProvider';
 import axios from 'axios';
+import { LuCopy } from "react-icons/lu";
 const Payout = () => {
     const [imageSrc, setImageSrc] = useState(null);
     const [describeImg, setDescribeImg] = useState(null)
@@ -20,6 +21,24 @@ const Payout = () => {
     const [filterBtn, setFilterBtn] = useState(false)
     const [searchBtn, setSearchBtn] = useState(false)
     const [navBtn, setNavBtn] = useState(false)
+
+    let [copy, setCopy] = useState(false)
+    let [otkImg, setOtkImg] = useState("")
+    let [otkImgDesc, setOtkImgDesc] = useState("")
+    const handleCopy = (e) => {
+        const textToCopy = e.currentTarget.previousElementSibling.innerText.split('\n\n').join("")
+        navigator.clipboard.writeText(textToCopy)
+            .then(() => {
+                setCopy(true);
+                setTimeout(() => {
+                    setCopy(false)
+                }, 1500);
+            })
+            .catch(err => {
+                setCopy(false);
+                console.error('Metin kopyalanırken bir hata oluştu:', err);
+            });
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -89,31 +108,33 @@ const Payout = () => {
     };
 
     const handleCancel = async (e) => {
-        e.preventDefault()
+        e.preventDefault();
         try {
-            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/deny/${id}/`, {
-                method: "POST",
-                headers: {
-                    "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    reason: reason
-                })
-            })
-            if (response.status === 401) {
-                navigate("/login")
-                console.log("Unauthorized access, redirecting to login.");
-            } else if (response.ok) {
-                const data = await response.json();
+            const formData = new FormData();
+            formData.append('reason', reason);
+            formData.append('receipts', otkImgDesc);
 
+            const response = await axios.post(`https://dev.royal-pay.org/api/v1/internal/payouts/deny/${id}/`, formData, {
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("access")}`,
+                }
+            });
+
+            if (response.status === 401) {
+                navigate("/login");
+                console.log("Unauthorized access, redirecting to login.");
+            } else if (response.status === 200) {
+                const data = response.data;
+                setCancel(!cancel)
+                window.location.reload()
             } else {
                 console.log("Unexpected error:", response.status);
             }
         } catch (error) {
             console.log(error)
         }
-    }
+    };
+
 
     const handleDepositGet = async (e) => {
         e.preventDefault();
@@ -188,8 +209,6 @@ const Payout = () => {
     // payout
     let [cancel, setCancel] = useState(false)
     let [cancelCheck, setCancelCheck] = useState(false)
-
-
 
     const handleStartTimeChange = (e) => {
         const value = e.target.value.replace(/[^0-9]/g, '');
@@ -278,7 +297,11 @@ const Payout = () => {
             }
             let statusMatch = true;
             if (selectStatus) {
-                statusMatch = customer.status.toLowerCase() === selectStatus.toLowerCase();
+                if (selectStatus.toLowerCase() === "pending") {
+                    statusMatch = ["pending", "wait_confirm", "in_progress"].includes(customer.status.toLowerCase());
+                } else {
+                    statusMatch = customer.status.toLowerCase() === selectStatus.toLowerCase();
+                }
             }
             let methodMatch = true;
             if (selectMethod) {
@@ -290,42 +313,54 @@ const Payout = () => {
         setFilteredCustomers(filteredData);
     }, [startDate, endDate, merchant, trader, selectStatus, startTime, endTime, selectMethod]);
 
-
     const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const readers = new FileReader();
+            readers.onloadend = () => {
+                setImageSrc(readers.result);
+            };
+            readers.readAsDataURL(file);
+            setDescribeImg(file)
+        }
+    };
+
+    const handleFileClose = (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                setImageSrc(reader.result);
+                setOtkImg(reader.result);
             };
             reader.readAsDataURL(file);
-            setDescribeImg(file)
+            setOtkImgDesc(file)
         }
-    };
+    }
     const handleShow = (info) => {
         setDetails([info])
     }
 
     return (
-        <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : "" }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border`}>
+        <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; zoom ? setZoom(!zoom) : "" }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border`}>
             <div className='flex'>
                 <div className={`max-md:hidden`}>
                     <div className={`${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5] border"}  min-h-[100vh] h-full z-20  relative `}>
                         <h3 className={`py-[20px] flex items-center justify-start ml-[8px] font-medium px-[8px] ${isDarkMode ? "text-white" : "text-black"}`}>Лого</h3>
                         <div className={` ${!open && "min-w-[263px]"} `}>
                             <div className="">
-                                <NavLink to={"/dash"} className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px] ">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M21.4286 15.4286H19.6543C19.0714 16.0886 18.4029 16.6629 17.6743 17.1429C16.0457 18.2314 14.1 18.8571 12 18.8571C9.9 18.8571 7.95429 18.2314 6.32571 17.1429C5.59714 16.6629 4.92857 16.0886 4.34571 15.4286H2.57143C1.15714 15.4286 0 16.5857 0 18V21.4286C0 22.8429 1.15714 24 2.57143 24H21.4286C22.8429 24 24 22.8429 24 21.4286V18C24 16.5857 22.8429 15.4286 21.4286 15.4286ZM18.8571 21.4286H5.14286C4.67143 21.4286 4.28571 21.0429 4.28571 20.5714C4.28571 20.1 4.67143 19.7143 5.14286 19.7143H18.8571C19.3286 19.7143 19.7143 20.1 19.7143 20.5714C19.7143 21.0429 19.3286 21.4286 18.8571 21.4286ZM12 0C7.27714 0 3.42857 3.84857 3.42857 8.57143C3.42857 11.3743 4.78286 13.8686 6.86571 15.4286C8.29714 16.5086 10.0714 17.1429 12 17.1429C13.9286 17.1429 15.7029 16.5086 17.1343 15.4286C18.2011 14.6318 19.0674 13.597 19.664 12.4066C20.2607 11.2162 20.5714 9.903 20.5714 8.57143C20.5714 3.84857 16.7229 0 12 0ZM11.5714 7.71429H12.3771C12.9455 7.71429 13.4905 7.94005 13.8924 8.34191C14.2942 8.74378 14.52 9.28882 14.52 9.85714C14.52 10.9029 13.8086 11.76 12.8571 11.9829V12.8571C12.8571 13.3286 12.4714 13.7143 12 13.7143C11.5286 13.7143 11.1429 13.3286 11.1429 12.8571V12.0343H10.2857C9.81429 12.0343 9.42857 11.6571 9.42857 11.1771C9.42857 10.7057 9.81429 10.32 10.2857 10.32H12.3771C12.6171 10.32 12.8057 10.1314 12.8057 9.89143C12.8057 9.61714 12.6171 9.42857 12.3771 9.42857H11.5714C11.04 9.42911 10.5274 9.23217 10.133 8.87598C9.73863 8.5198 9.49067 8.02979 9.43727 7.50107C9.38386 6.97235 9.52882 6.44265 9.84399 6.0148C10.1592 5.58694 10.6221 5.29146 11.1429 5.18571V4.28571C11.1429 3.81429 11.5286 3.42857 12 3.42857C12.4714 3.42857 12.8571 3.81429 12.8571 4.28571V5.14286H13.6629C14.1343 5.14286 14.52 5.52857 14.52 6C14.52 6.47143 14.1343 6.85714 13.6629 6.85714H11.5714C11.3314 6.85714 11.1429 7.04571 11.1429 7.28571C11.1429 7.52571 11.3314 7.71429 11.5714 7.71429Z" fill="#8D8F9B" />
-                                    </svg>
-                                    <p className={`${open && "hidden"} text-[#BFC0C9] text-[14px] font-medium ml-[8px] `}>Управления депозитами</p>
-                                </NavLink>
+                                {localStorage.getItem("role") !== "trader" &&
+                                    <NavLink to={"/dash"} className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px] ">
+                                        <svg width="24" height="24" className='fill-[#8D8F9B]' viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M21.4286 15.4286H19.6543C19.0714 16.0886 18.4029 16.6629 17.6743 17.1429C16.0457 18.2314 14.1 18.8571 12 18.8571C9.9 18.8571 7.95429 18.2314 6.32571 17.1429C5.59714 16.6629 4.92857 16.0886 4.34571 15.4286H2.57143C1.15714 15.4286 0 16.5857 0 18V21.4286C0 22.8429 1.15714 24 2.57143 24H21.4286C22.8429 24 24 22.8429 24 21.4286V18C24 16.5857 22.8429 15.4286 21.4286 15.4286ZM18.8571 21.4286H5.14286C4.67143 21.4286 4.28571 21.0429 4.28571 20.5714C4.28571 20.1 4.67143 19.7143 5.14286 19.7143H18.8571C19.3286 19.7143 19.7143 20.1 19.7143 20.5714C19.7143 21.0429 19.3286 21.4286 18.8571 21.4286ZM12 0C7.27714 0 3.42857 3.84857 3.42857 8.57143C3.42857 11.3743 4.78286 13.8686 6.86571 15.4286C8.29714 16.5086 10.0714 17.1429 12 17.1429C13.9286 17.1429 15.7029 16.5086 17.1343 15.4286C18.2011 14.6318 19.0674 13.597 19.664 12.4066C20.2607 11.2162 20.5714 9.903 20.5714 8.57143C20.5714 3.84857 16.7229 0 12 0ZM11.5714 7.71429H12.3771C12.9455 7.71429 13.4905 7.94005 13.8924 8.34191C14.2942 8.74378 14.52 9.28882 14.52 9.85714C14.52 10.9029 13.8086 11.76 12.8571 11.9829V12.8571C12.8571 13.3286 12.4714 13.7143 12 13.7143C11.5286 13.7143 11.1429 13.3286 11.1429 12.8571V12.0343H10.2857C9.81429 12.0343 9.42857 11.6571 9.42857 11.1771C9.42857 10.7057 9.81429 10.32 10.2857 10.32H12.3771C12.6171 10.32 12.8057 10.1314 12.8057 9.89143C12.8057 9.61714 12.6171 9.42857 12.3771 9.42857H11.5714C11.04 9.42911 10.5274 9.23217 10.133 8.87598C9.73863 8.5198 9.49067 8.02979 9.43727 7.50107C9.38386 6.97235 9.52882 6.44265 9.84399 6.0148C10.1592 5.58694 10.6221 5.29146 11.1429 5.18571V4.28571C11.1429 3.81429 11.5286 3.42857 12 3.42857C12.4714 3.42857 12.8571 3.81429 12.8571 4.28571V5.14286H13.6629C14.1343 5.14286 14.52 5.52857 14.52 6C14.52 6.47143 14.1343 6.85714 13.6629 6.85714H11.5714C11.3314 6.85714 11.1429 7.04571 11.1429 7.28571C11.1429 7.52571 11.3314 7.71429 11.5714 7.71429Z" />
+                                        </svg>
+                                        <p className={`${open && "hidden"} text-[#BFC0C9] text-[14px]  font-medium ml-[8px] `}>Управления депозитами</p>
+                                    </NavLink>
+                                }
                                 <NavLink to={"/deposit"} className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px] ">
                                     <svg width="24" height="24" viewBox="0 0 19 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M6.78571 18.2142H12.2143C12.9607 18.2142 13.5714 17.5633 13.5714 16.7678V9.53558H15.7293C16.9371 9.53558 17.5479 7.97343 16.6929 7.06217L10.4636 0.423003C10.338 0.288913 10.1889 0.182531 10.0247 0.109946C9.86053 0.0373615 9.68453 0 9.50679 0C9.32904 0 9.15304 0.0373615 8.98887 0.109946C8.82469 0.182531 8.67555 0.288913 8.55 0.423003L2.32071 7.06217C1.46571 7.97343 2.06286 9.53558 3.27071 9.53558H5.42857V16.7678C5.42857 17.5633 6.03929 18.2142 6.78571 18.2142ZM1.35714 21.1071H17.6429C18.3893 21.1071 19 21.758 19 22.5536C19 23.3491 18.3893 24 17.6429 24H1.35714C0.610714 24 0 23.3491 0 22.5536C0 21.758 0.610714 21.1071 1.35714 21.1071Z" fill="#8D8F9B" />
                                     </svg>
                                     <p className={`${open && "hidden"} text-[#BFC0C9] text-[14px] font-medium ml-[8px]`}>Пополнение депозита</p>
-
                                 </NavLink>
                                 <NavLink to={"/payout"} className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px] bg-[#2D54DD4D]">
                                     <svg width="24" height="24" className='fill-[#2D54DD]' viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -367,14 +402,15 @@ const Payout = () => {
                 <div className={`flex w-full md:justify-end max-md:px-4 ${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5]"} absolute right-0 pr-[16px] py-2 items-center `}>
                     <div className="flex max-md:w-full items-center justify-between">
                         <div className="mr-[16px] max-md:hidden">
-                            <h4 className={`text-[14px] font-normal ${!isDarkMode ? "text-[#18181B]" : "text-[#E7E7E7]"} `}>Дмитрий Князев</h4>
-                            <p className='text-[14px] font-normal text-[#60626C]'>Админ</p>
+                            <h4 className={`text-[14px] font-normal ${!isDarkMode ? "text-[#18181B]" : "text-[#E7E7E7]"} capitalize `}>{localStorage.getItem("username").split("_").join(' ')}</h4>
+                            <p className='text-[14px] font-normal text-[#60626C]'>{localStorage.getItem("role") == "admin" ? "Админ" : localStorage.getItem("role") == "merchant" ? "Мерчант" : "Трейдер"}</p>
                         </div>
                         <div className="flex items-center  cursor-pointer justify-between">
                             {/* profile */}
-                            <div className='max-md:flex items-center justify-between'>
-                                <div onClick={() => setDropDown(!dropDown)} className="bg-[#4CAF50]  rounded-[100px] text-white w-[48px] h-[48px] flex items-center justify-center">
-                                    ДК
+                            <div className='max-md:flex  items-center justify-between'>
+                                <div onClick={() => setDropDown(!dropDown)} className="bg-[#4CAF50] capitalize rounded-[100px] text-white w-[48px] h-[48px] flex items-center justify-center">
+                                    {localStorage.getItem("username")[0]}
+
                                 </div>
                             </div>
                             <div onClick={() => setDropDown(!dropDown)} className="cursor-pointer ">
@@ -404,16 +440,18 @@ const Payout = () => {
                                 <h4>Тема</h4>
                                 <Dark />
                             </div>
-                            <NavLink to={"/login"} onClick={() => { localStorage.removeItem("access"); localStorage.removeItem("refresh"); localStorage.removeItem("role") }}>Выйти</NavLink>
+                            <NavLink to={"/login"} onClick={() => { localStorage.removeItem("access"); localStorage.removeItem("username"); localStorage.removeItem("refresh"); localStorage.removeItem("role") }}>Выйти</NavLink>
                         </div>
                         {/* links */}
                         <div className={` w-full absolute text-[14px] font-normal z-50 p-4 ${isDarkMode ? "bg-[#1F1F1F] text-[#E7E7E7]" : "bg-white shadow-xl"} right-0 top-16 rounded-[12px]  duration-300 ${navBtn ? "opacity-100" : "opacity-0 invisible"}  `}>
-                            <NavLink to={"/dash"} className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px]  ">
-                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M21.4286 15.4286H19.6543C19.0714 16.0886 18.4029 16.6629 17.6743 17.1429C16.0457 18.2314 14.1 18.8571 12 18.8571C9.9 18.8571 7.95429 18.2314 6.32571 17.1429C5.59714 16.6629 4.92857 16.0886 4.34571 15.4286H2.57143C1.15714 15.4286 0 16.5857 0 18V21.4286C0 22.8429 1.15714 24 2.57143 24H21.4286C22.8429 24 24 22.8429 24 21.4286V18C24 16.5857 22.8429 15.4286 21.4286 15.4286ZM18.8571 21.4286H5.14286C4.67143 21.4286 4.28571 21.0429 4.28571 20.5714C4.28571 20.1 4.67143 19.7143 5.14286 19.7143H18.8571C19.3286 19.7143 19.7143 20.1 19.7143 20.5714C19.7143 21.0429 19.3286 21.4286 18.8571 21.4286ZM12 0C7.27714 0 3.42857 3.84857 3.42857 8.57143C3.42857 11.3743 4.78286 13.8686 6.86571 15.4286C8.29714 16.5086 10.0714 17.1429 12 17.1429C13.9286 17.1429 15.7029 16.5086 17.1343 15.4286C18.2011 14.6318 19.0674 13.597 19.664 12.4066C20.2607 11.2162 20.5714 9.903 20.5714 8.57143C20.5714 3.84857 16.7229 0 12 0ZM11.5714 7.71429H12.3771C12.9455 7.71429 13.4905 7.94005 13.8924 8.34191C14.2942 8.74378 14.52 9.28882 14.52 9.85714C14.52 10.9029 13.8086 11.76 12.8571 11.9829V12.8571C12.8571 13.3286 12.4714 13.7143 12 13.7143C11.5286 13.7143 11.1429 13.3286 11.1429 12.8571V12.0343H10.2857C9.81429 12.0343 9.42857 11.6571 9.42857 11.1771C9.42857 10.7057 9.81429 10.32 10.2857 10.32H12.3771C12.6171 10.32 12.8057 10.1314 12.8057 9.89143C12.8057 9.61714 12.6171 9.42857 12.3771 9.42857H11.5714C11.04 9.42911 10.5274 9.23217 10.133 8.87598C9.73863 8.5198 9.49067 8.02979 9.43727 7.50107C9.38386 6.97235 9.52882 6.44265 9.84399 6.0148C10.1592 5.58694 10.6221 5.29146 11.1429 5.18571V4.28571C11.1429 3.81429 11.5286 3.42857 12 3.42857C12.4714 3.42857 12.8571 3.81429 12.8571 4.28571V5.14286H13.6629C14.1343 5.14286 14.52 5.52857 14.52 6C14.52 6.47143 14.1343 6.85714 13.6629 6.85714H11.5714C11.3314 6.85714 11.1429 7.04571 11.1429 7.28571C11.1429 7.52571 11.3314 7.71429 11.5714 7.71429Z" fill="#8D8F9B" />
-                                </svg>
-                                <p className={`text-[#BFC0C9] text-[14px] font-medium ml-[8px] `}>Управления депозитами</p>
-                            </NavLink>
+                            {localStorage.getItem("role") !== "trader" &&
+                                <NavLink to={"/dash"} className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px]  bg-[#2D54DD4D]">
+                                    <svg width="24" height="24" className='fill-[#2D54DD]' viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M21.4286 15.4286H19.6543C19.0714 16.0886 18.4029 16.6629 17.6743 17.1429C16.0457 18.2314 14.1 18.8571 12 18.8571C9.9 18.8571 7.95429 18.2314 6.32571 17.1429C5.59714 16.6629 4.92857 16.0886 4.34571 15.4286H2.57143C1.15714 15.4286 0 16.5857 0 18V21.4286C0 22.8429 1.15714 24 2.57143 24H21.4286C22.8429 24 24 22.8429 24 21.4286V18C24 16.5857 22.8429 15.4286 21.4286 15.4286ZM18.8571 21.4286H5.14286C4.67143 21.4286 4.28571 21.0429 4.28571 20.5714C4.28571 20.1 4.67143 19.7143 5.14286 19.7143H18.8571C19.3286 19.7143 19.7143 20.1 19.7143 20.5714C19.7143 21.0429 19.3286 21.4286 18.8571 21.4286ZM12 0C7.27714 0 3.42857 3.84857 3.42857 8.57143C3.42857 11.3743 4.78286 13.8686 6.86571 15.4286C8.29714 16.5086 10.0714 17.1429 12 17.1429C13.9286 17.1429 15.7029 16.5086 17.1343 15.4286C18.2011 14.6318 19.0674 13.597 19.664 12.4066C20.2607 11.2162 20.5714 9.903 20.5714 8.57143C20.5714 3.84857 16.7229 0 12 0ZM11.5714 7.71429H12.3771C12.9455 7.71429 13.4905 7.94005 13.8924 8.34191C14.2942 8.74378 14.52 9.28882 14.52 9.85714C14.52 10.9029 13.8086 11.76 12.8571 11.9829V12.8571C12.8571 13.3286 12.4714 13.7143 12 13.7143C11.5286 13.7143 11.1429 13.3286 11.1429 12.8571V12.0343H10.2857C9.81429 12.0343 9.42857 11.6571 9.42857 11.1771C9.42857 10.7057 9.81429 10.32 10.2857 10.32H12.3771C12.6171 10.32 12.8057 10.1314 12.8057 9.89143C12.8057 9.61714 12.6171 9.42857 12.3771 9.42857H11.5714C11.04 9.42911 10.5274 9.23217 10.133 8.87598C9.73863 8.5198 9.49067 8.02979 9.43727 7.50107C9.38386 6.97235 9.52882 6.44265 9.84399 6.0148C10.1592 5.58694 10.6221 5.29146 11.1429 5.18571V4.28571C11.1429 3.81429 11.5286 3.42857 12 3.42857C12.4714 3.42857 12.8571 3.81429 12.8571 4.28571V5.14286H13.6629C14.1343 5.14286 14.52 5.52857 14.52 6C14.52 6.47143 14.1343 6.85714 13.6629 6.85714H11.5714C11.3314 6.85714 11.1429 7.04571 11.1429 7.28571C11.1429 7.52571 11.3314 7.71429 11.5714 7.71429Z" />
+                                    </svg>
+                                    <p className={` text-[#2D54DD] text-[14px]  font-medium ml-[8px] `}>Управления депозитами</p>
+                                </NavLink>
+                            }
                             <NavLink to={"/deposit"} className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px]  ">
                                 <svg width="24" height="24" viewBox="0 0 19 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M6.78571 18.2142H12.2143C12.9607 18.2142 13.5714 17.5633 13.5714 16.7678V9.53558H15.7293C16.9371 9.53558 17.5479 7.97343 16.6929 7.06217L10.4636 0.423003C10.338 0.288913 10.1889 0.182531 10.0247 0.109946C9.86053 0.0373615 9.68453 0 9.50679 0C9.32904 0 9.15304 0.0373615 8.98887 0.109946C8.82469 0.182531 8.67555 0.288913 8.55 0.423003L2.32071 7.06217C1.46571 7.97343 2.06286 9.53558 3.27071 9.53558H5.42857V16.7678C5.42857 17.5633 6.03929 18.2142 6.78571 18.2142ZM1.35714 21.1071H17.6429C18.3893 21.1071 19 21.758 19 22.5536C19 23.3491 18.3893 24 17.6429 24H1.35714C0.610714 24 0 23.3491 0 22.5536C0 21.758 0.610714 21.1071 1.35714 21.1071Z" fill="#8D8F9B" />
@@ -485,8 +523,12 @@ const Payout = () => {
                         </div>
                     </div>
                     <div className={`${!filterBtn && "max-md:hidden"} flex max-md:justify-center flex-wrap py-[24px] pr-4 text-[14px] gap-2 text-[#717380]`}>
-                        <input onChange={(e) => setMerchant(e.target.value)} placeholder='Мерчант' type="text" className={` h-[40px] w-[155px] pl-[12px] rounded-[4px] ${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
-                        <input onChange={(e) => setTrader(e.target.value)} placeholder='Трейдер' type="text" className={` pl-[12px] w-[155px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
+                        {localStorage.getItem("role") !== "trader" &&
+                            <input onChange={(e) => setMerchant(e.target.value)} placeholder='Мерчант' type="text" className={` h-[40px] w-[155px] pl-[12px] rounded-[4px] ${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
+                        }
+                        {localStorage.getItem("role") !== "merchant" &&
+                            <input onChange={(e) => setTrader(e.target.value)} placeholder='Трейдер' type="text" className={` pl-[12px] w-[155px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
+                        }
                         <select onChange={(e) => setSelectMethod(e.target.value)} className={`${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] min-w-[155px] h-[40px]`} name="" id="">
                             <option value="" selected>Метод</option>
                             {[...new Set(methods)].map(item => (
@@ -495,7 +537,7 @@ const Payout = () => {
                         </select>
                         <select onChange={(e) => setSelectStatus(e.target.value)} className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] min-w-[155px] h-[40px]`} name="" id="">
                             <option selected value={""} >Статус</option>
-                            <option value={"wait_confirm"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>Успешно</option>
+                            <option value={"completed"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>Успешно</option>
                             <option value={"pending"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>В обработке</option>
                             <option value={"canceled"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>Отклонено</option>
                         </select>
@@ -580,11 +622,11 @@ const Payout = () => {
                                 <Column headerClassName="custom-column-header" body={(rowData) => {
                                     return (
                                         <>
-                                            <div className='flex gap-x-[10px]'>
+                                            <div className='flex justify-center gap-x-[10px]'>
                                                 {(rowData.status == "completed" || rowData.status == "canceled") ?
                                                     <>
                                                         <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
-                                                            <img className='mx-auto' src='/assets/img/ion_eye.svg' />
+                                                            <img className='mx-auto ' src='/assets/img/ion_eye.svg' />
                                                         </div>
                                                         {rowData.receipts.length > 0 &&
                                                             <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
@@ -595,7 +637,7 @@ const Payout = () => {
                                                     :
                                                     <>
                                                         <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
-                                                            <img className='mx-auto' src='/assets/img/ion_eye.svg' />
+                                                            <img className='mx-auto ' src='/assets/img/ion_eye.svg' />
                                                         </div>
                                                         {rowData.receipts.length > 0 &&
                                                             <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
@@ -625,28 +667,30 @@ const Payout = () => {
                                     )
                                 }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время создания / обновления"  ></Column>
 
+                                {localStorage.getItem("role") !== "trader" &&
+                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" header={"Мерчант"} headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} `} body={(rowData) => {
+                                        return (
+                                            <div>
+                                                <>
+                                                    <div>{rowData.merchant["username"]}</div>
+                                                </>
+                                            </div>
+                                        )
 
-                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" header={"Мерчант"} headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} `} body={(rowData) => {
-                                    return (
-                                        <div>
-                                            <>
-                                                <div>{rowData.merchant["username"]}</div>
-                                            </>
-                                        </div>
-                                    )
+                                    }} ></Column>
+                                }
+                                {localStorage.getItem("role") !== "merchant" &&
+                                    <Column body={(rowData) => {
+                                        return (
+                                            <div>
+                                                <>
+                                                    <div>{rowData.trader ? rowData.trader["username"] : "-"}</div>
+                                                </>
+                                            </div>
+                                        )
 
-                                }} ></Column>
-
-                                <Column body={(rowData) => {
-                                    return (
-                                        <div>
-                                            <>
-                                                <div>{rowData.trader ? rowData.trader["username"] : "-"}</div>
-                                            </>
-                                        </div>
-                                    )
-
-                                }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="course" header="Трейдер" ></Column>
+                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="course" header="Трейдер" ></Column>
+                                }
 
                                 <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="price_2" header="Назначенный трейдер" body={(rowData) => {
                                     return (
@@ -671,14 +715,16 @@ const Payout = () => {
                                 <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Метод" body={(rowData) => {
                                     return <div>{rowData.method["name"]}</div>
                                 }}></Column>
-
-                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка мерчанта " body={(rowData) => {
-                                    return (<div>{rowData.merchant_rate}</div>)
-                                }}></Column>
-
-                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка трейдера" body={(rowData) => {
-                                    return (<div>{rowData.trader_rate}</div>)
-                                }}></Column>
+                                {localStorage.getItem("role") !== "trader" &&
+                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка мерчанта " body={(rowData) => {
+                                        return (<div>{rowData.merchant_rate}</div>)
+                                    }}></Column>
+                                }
+                                {localStorage.getItem("role") !== "merchant" &&
+                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка трейдера" body={(rowData) => {
+                                        return (<div>{rowData.trader_rate}</div>)
+                                    }}></Column>
+                                }
 
                                 <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Сумма" body={(rowData) => {
                                     return (<div>{rowData.amount}</div>)
@@ -770,28 +816,31 @@ const Payout = () => {
                                     )
                                 }} headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время создания / обновления"  ></Column>
 
+                                {localStorage.getItem("role") !== "trader" &&
+                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" header={"Мерчант"} headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} `} body={(rowData) => {
+                                        return (
+                                            <div>
+                                                <>
+                                                    <div>{rowData.merchant["username"]}</div>
+                                                </>
+                                            </div>
+                                        )
 
-                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" header={"Мерчант"} headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} `} body={(rowData) => {
-                                    return (
-                                        <div>
-                                            <>
-                                                <div>{rowData.merchant["username"]}</div>
-                                            </>
-                                        </div>
-                                    )
+                                    }} ></Column>
+                                }
 
-                                }} ></Column>
+                                {localStorage.getItem("role") !== "merchant" &&
+                                    <Column body={(rowData) => {
+                                        return (
+                                            <div>
+                                                <>
+                                                    <div>{rowData.trader ? rowData.trader["username"] : "-"}</div>
+                                                </>
+                                            </div>
+                                        )
 
-                                <Column body={(rowData) => {
-                                    return (
-                                        <div>
-                                            <>
-                                                <div>{rowData.trader ? rowData.trader["username"] : "-"}</div>
-                                            </>
-                                        </div>
-                                    )
-
-                                }} headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="course" header="Трейдер" ></Column>
+                                    }} headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="course" header="Трейдер" ></Column>
+                                }
 
                                 <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="price_2" header="Назначенный трейдер" body={(rowData) => {
                                     return (
@@ -816,14 +865,16 @@ const Payout = () => {
                                 <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Метод" body={(rowData) => {
                                     return <div>{rowData.method["name"]}</div>
                                 }}></Column>
-
-                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка мерчанта " body={(rowData) => {
-                                    return (<div>{rowData.merchant_rate}</div>)
-                                }}></Column>
-
-                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка трейдера" body={(rowData) => {
-                                    return (<div>{rowData.trader_rate}</div>)
-                                }}></Column>
+                                {localStorage.getItem("role") !== "trader" &&
+                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка мерчанта " body={(rowData) => {
+                                        return (<div>{rowData.merchant_rate}</div>)
+                                    }}></Column>
+                                }
+                                {localStorage.getItem("role") !== "merchant" &&
+                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка трейдера" body={(rowData) => {
+                                        return (<div>{rowData.trader_rate}</div>)
+                                    }}></Column>
+                                }
 
                                 <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Сумма" body={(rowData) => {
                                     return (<div>{rowData.amount}</div>)
@@ -880,7 +931,7 @@ const Payout = () => {
                                     {img.receipts.map(img => {
                                         return (
                                             <div className='relative'>
-                                                <img className='mx-auto' src={`/assets/img/check.jpg`} />
+                                                <img className='mx-auto' src={img && img.endsWith('.pdf') ? '/assets/img/check.jpg' : img} />
                                                 <svg onClick={() => setZoom(!zoom)} width="14" height="15" viewBox="0 0 14 15" className='absolute top-0 right-[-20px] cursor-pointer' xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" fill="#000" />
                                                 </svg>
@@ -933,10 +984,22 @@ const Payout = () => {
                                                 <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Ставка трейдера</h5>
                                                 <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.trader_rate}</p>
                                             </div>
-                                            <div className="modal_payout">
-                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Внешний ID</h5>
-                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.outter_id.slice(0,)}</p>
+                                            <div className="modal_payout ">
+                                                {/* slice metodu */}
+                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} flex items-center gap-x-2`}>Внешний ID
+                                                </h5>
+                                                <div className="text-[14px] mb-0">
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id.slice(0, 33)}</p>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id.slice(32)}</p>
+                                                    <LuCopy className={`text-[16px]  ${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} cursor-pointer`} onClick={(e) => handleCopy(e)} />
+                                                </div>
                                             </div>
+                                            {
+                                                <div className={`absolute ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2 -translate-x-1/2 z-50 ${copy ? "top-20" : "top-[-50px] "} duration-300 mx-auto left-1/2 `}>
+                                                    <LuCopy size={18} color={`${isDarkMode ? "#E7E7E7" : "#18181B"}`} />
+                                                    <h4 className={`text-sm ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`} >Ссылка скопирована</h4>
+                                                </div>
+                                            }
                                             <div className="modal_payout">
                                                 <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма</h5>
                                                 <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.amount}</p>
@@ -946,7 +1009,7 @@ const Payout = () => {
                                         <div className="">
                                             <div className="modal_payout">
                                                 <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Статус</h5>
-                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.status === "pending" ? "В обработке" : data?.status === "wait_confirm" ? "Успешно" : "Отклонено"}</p>
+                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{(data?.status === "pending" || data?.status === "wait_confirm" || data?.status == "in_progress") ? "В обработке" : data?.status === "completed" ? "Успешно" : "Отклонено"}</p>
                                             </div>
                                             <div className="modal_payout">
                                                 <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Трейдеры на выбор</h5>
@@ -979,7 +1042,7 @@ const Payout = () => {
                                             {data.receipts.length > 0 &&
                                                 <div className="modal_payout">
                                                     <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Чек </h5>
-                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}><img className='w-[200px] h-[150px] object-cover' src={`/assets/img/check.jpg`} /> </p>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}><img className='w-[200px] h-[150px] object-contain' src={data.receipts[0] && data.receipts[0].endsWith('.pdf') ? '/assets/img/check.jpg' : data.receipts[0]} /> </p>
                                                 </div>
                                             }
                                         </div>
@@ -991,19 +1054,30 @@ const Payout = () => {
                                 <form onSubmit={handleCancel} className={`${!cancel ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} p-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full rounded-[24px]`}>
                                     <div className="relative mb-8">
                                         <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Отклонить выплату</h3>
-                                        <svg width="14" onClick={() => setCancel(!cancel)} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <svg width="14" onClick={() => { setCancel(!cancel); setOtkImg("") }} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
                                         </svg>
                                         <h5 className='text-[14px] text-[#60626C]'>Укажите причину</h5>
                                     </div>
                                     <div className="modal_payout mb-8">
                                         <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} mb-2`}>Описание</h5>
-                                        <input onChange={(e) => setReason(e.target.value)} placeholder='Описание' type="text" required className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
+                                        <input onChange={(e) => setReason(e.target.value)} required placeholder='Описание' type="text" className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
+                                    </div>
+                                    <div className=" flex max-[400px]:flex-col items-center">
+                                        {otkImg && <img src={otkImg} alt="Uploaded preview" className="mt-4 max-w-[300px] max-h-[400px]" />}
+                                        {otkImg &&
+                                            <svg onClick={() => setOtkImg("")} width="24" className='ml-3 cursor-pointer min-w-[24px]' height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
+                                            </svg>
+                                        }
                                     </div>
                                     <div className="mb-8">
-                                        <button className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                            Прикрепить файл
-                                        </button>
+                                        <div
+                                            className='w-max text-[#2E70F5] cursor-pointer border-[#2E70F5] mt-4 border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'
+                                            onClick={() => document.getElementById('fileInputs').click()}>
+                                            Прикрепить Чек
+                                        </div>
+                                        <input id="fileInputs" type="file" className="hidden" onChange={handleFileClose} accept="image/*" />
                                     </div>
                                     <div className="flex justify-end">
                                         <button type='submit' className=' bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
@@ -1019,14 +1093,14 @@ const Payout = () => {
                                         return (
                                             <div key={index}>
                                                 {(data.status === "wait_confirm" || data.status === "in_progress") && (
-                                                    <>
+                                                    <div className='flex gap-x-4'>
                                                         <button onClick={() => setCancel(!cancel)} className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                                             Отклонить
                                                         </button>
                                                         <button className='bg-[#2E70F5] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                                             Взять в работу
                                                         </button>
-                                                    </>
+                                                    </div>
                                                 )}
                                                 {data.status === "pending" && (
                                                     <>
@@ -1056,11 +1130,11 @@ const Payout = () => {
                         </div>
                         <div className="modal_payout mb-8">
                             <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} mb-2`}>Чек</h5>
-                            <button
-                                className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'
+                            <div
+                                className='w-max text-[#2E70F5] cursor-pointer border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'
                                 onClick={() => document.getElementById('fileInput').click()}>
                                 Прикрепить Чек
-                            </button>
+                            </div>
                             <input id="fileInput" type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
                         </div>
                         <div className=" flex max-[400px]:flex-col items-center">
