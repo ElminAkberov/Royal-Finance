@@ -12,7 +12,6 @@ const Dashboard = () => {
     let navigate = useNavigate()
     const [data, setData] = useState([])
     let [page, setPage] = useState(1)
-    let [id, setId] = useState(1)
     // mobile
     const [filterBtn, setFilterBtn] = useState(false)
     const [searchBtn, setSearchBtn] = useState(false)
@@ -241,9 +240,9 @@ const Dashboard = () => {
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
     };
-
+    
     return (
-        <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; modal ? setModal(!modal) : "" }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border `}>
+        <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border `}>
             <div className='flex'>
                 <div className="max-md:hidden">
                     <div className={`${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5] border"}  min-h-[100vh] h-full z-20  relative `}>
@@ -681,7 +680,7 @@ const Dashboard = () => {
                         </div>
                     </div>
                     {/* <p className={`text-right text-[14px] font-normal relative bottom-[45px] mr-4  duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p> */}
-                    <div className={`${!modal && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+                    <div onClick={()=>setModal(!modal)} className={`${!modal && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
                     <div className={`${!modal ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px]`}>
                         <div className="p-8">
                             <div className="">

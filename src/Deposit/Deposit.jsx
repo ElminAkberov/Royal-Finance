@@ -249,8 +249,8 @@ const Deposit = () => {
           </div>
         </div>
 
-        <div className={`${!modalCash && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
-        <div className={`${!modalUsdt && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+        <div onClick={()=>setModalCash(!modalCash)} className={`${!modalCash && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+        <div onClick={()=>setModalUsdt(!modalUsdt)} className={`${!modalUsdt && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
         {/* pop-up */}
         {
           <div className={`absolute ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2 -translate-x-1/2 z-50 ${copy ? "top-20" : "top-[-50px] "} duration-300 mx-auto left-1/2 `}>

@@ -342,7 +342,7 @@ const Payout = () => {
     }
 
     return (
-        <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; zoom ? setZoom(!zoom) : "" }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border`}>
+        <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border`}>
             <div className='flex'>
                 <div className={`max-md:hidden`}>
                     <div className={`${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5] border"}  min-h-[100vh] h-full z-20  relative `}>
@@ -919,9 +919,9 @@ const Payout = () => {
                         </div>
                     </div>
 
-                    <div className={`${(!modal) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
-                    <div className={`${(!modalChek) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
-                    <div className={`${(!zoom) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+                    <div onClick={() => { setModal(!modal); setCancel("") }} className={`${(!modal) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+                    <div onClick={() => { setModal(!modal); setCancel("") }} className={`${(!modalChek) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+                    <div onClick={() => { setZoom(!zoom) }} className={`${(!zoom) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
 
                     {/* cek tam ekran */}
                     <div>
@@ -945,7 +945,7 @@ const Payout = () => {
                     </div>
 
                     <div className={`${!modal ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px] ${!cancelCheck ? "overflow-y-scroll h-[100vh]" : ""} custom-scroll`}>
-                        <div  className="p-8 ">
+                        <div className="p-8 ">
                             <div className="">
                                 <div className="mb-8 relative">
                                     <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Детали пополнения</h3>
@@ -993,7 +993,7 @@ const Payout = () => {
                                                     <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(0, 33) : '-'}</p>
                                                     <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(32) : ''}</p>
                                                 </div>
-                                                    <LuCopy className={`text-[16px]  ${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} cursor-pointer`} onClick={(e) => handleCopy(e)} />
+                                                <LuCopy className={`text-[16px]  ${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} cursor-pointer`} onClick={(e) => handleCopy(e)} />
                                             </div>
                                             {
                                                 <div className={`absolute ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2 -translate-x-1/2 z-50 ${copy ? "top-20" : "top-[-50px] "} duration-300 mx-auto left-1/2 `}>
