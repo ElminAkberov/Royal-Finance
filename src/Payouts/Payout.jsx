@@ -945,7 +945,7 @@ const Payout = () => {
                     </div>
 
                     <div className={`${!modal ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px] ${!cancelCheck ? "overflow-y-scroll h-[100vh]" : ""} custom-scroll`}>
-                        <div className="p-8 ">
+                        <div  className="p-8 ">
                             <div className="">
                                 <div className="mb-8 relative">
                                     <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Детали пополнения</h3>
