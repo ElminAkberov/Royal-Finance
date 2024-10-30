@@ -27,6 +27,7 @@ const Payout = () => {
     let [otkImgDesc, setOtkImgDesc] = useState("")
     const handleCopy = (e) => {
         const textToCopy = e.currentTarget.previousElementSibling.innerText.split('\n\n').join("")
+        console.log(e.currentTarget)
         navigator.clipboard.writeText(textToCopy)
             .then(() => {
                 setCopy(true);
@@ -991,8 +992,8 @@ const Payout = () => {
                                                 <div className="text-[14px] mb-0">
                                                     <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(0, 33) : '-'}</p>
                                                     <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(32) : ''}</p>
-                                                    <LuCopy className={`text-[16px]  ${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} cursor-pointer`} onClick={(e) => handleCopy(e)} />
                                                 </div>
+                                                    <LuCopy className={`text-[16px]  ${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} cursor-pointer`} onClick={(e) => handleCopy(e)} />
                                             </div>
                                             {
                                                 <div className={`absolute ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2 -translate-x-1/2 z-50 ${copy ? "top-20" : "top-[-50px] "} duration-300 mx-auto left-1/2 `}>
