@@ -10,15 +10,16 @@ const Dashboard = () => {
     let { isDarkMode, toggleDarkMode } = useContext(Context)
     let navigate = useNavigate()
     const [data, setData] = useState([])
+    let [page, setPage] = useState(1)
+    let [id, setId] = useState(1)
     // mobile
     const [filterBtn, setFilterBtn] = useState(false)
     const [searchBtn, setSearchBtn] = useState(false)
     const [navBtn, setNavBtn] = useState(false)
-
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("https://dev.royal-pay.org/api/v1/internal/refills/", {
+                const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/refills/${(page === 1 || page == 0 || page == "") ? "" : `?page=${+page}`}`, {
                     method: "GET",
                     headers: {
                         "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
@@ -47,7 +48,7 @@ const Dashboard = () => {
                     }
                 } else if (response.status === 400) {
                     console.log("Bad Request");
-                } else if (response.ok) {
+                } else if (response.status === 404) { console.log("Error 404") } else if (response.ok) {
                     const data = await response.json();
                     setData(data);
                 } else {
@@ -61,8 +62,8 @@ const Dashboard = () => {
         };
 
         fetchData();
-    }, [navigate]);
-
+    }, [navigate, page]);
+    console.log(data)
 
     const startDateRef = useRef(null);
     const endDateRef = useRef(null);
@@ -181,7 +182,7 @@ const Dashboard = () => {
 
 
     return (
-        <div onClick={() =>{ dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : "" }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border `}>
+        <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : "" }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border `}>
             <div className='flex'>
                 <div className="max-md:hidden">
                     <div className={`${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5] border"}  min-h-[100vh] h-full z-20  relative `}>
@@ -278,7 +279,7 @@ const Dashboard = () => {
                                 <h4>Тема</h4>
                                 <Dark />
                             </div>
-                            <NavLink to={"/login"} onClick={() => localStorage.removeItem("access")}>Выйти</NavLink>
+                            <NavLink to={"/login"} onClick={() => { localStorage.removeItem("access"); localStorage.removeItem("refresh"); localStorage.removeItem("role") }}>Выйти</NavLink>
                         </div>
                         {/* links */}
                         <div className={` w-full absolute text-[14px] font-normal z-50 p-4 ${isDarkMode ? "bg-[#1F1F1F] text-[#E7E7E7]" : "bg-white shadow-xl"} right-0 top-16 rounded-[12px]  duration-300 ${navBtn ? "opacity-100" : "opacity-0 invisible"}  `}>
@@ -599,8 +600,19 @@ const Dashboard = () => {
 
                             </DataTable>
                         </div>
+                        <div className="flex relative pages items-center justify-between">
+                            <p className={` text-[14px] font-normal md:absolute left-[46%] top-[-50px] duration-300 ${isDarkMode ? "text-[#fff]" : "text-[#252840]"} z-20 `}><input type='number' defaultValue={1} onInput={(e) => {
+                                if (e.target.value > Math.ceil(data.count / 10)) {
+                                    e.target.value = Math.ceil(data.count / 10)
+                                } if (e.target.value < 0) {
+                                    e.target.value = 1;
+                                }
+                                setPage(e.target.value);
+                            }} max={12} className='bg-transparent rounded-lg text-center border border-[#fff] h-[32px] w-[35px]' /> из {Math.ceil(data.count / 10)}</p>
+                            <p className={`text-right text-[14px] font-normal mr-4 absolute right-0 top-[-45px] z-30 duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p>
+                        </div>
                     </div>
-                    <p className={`text-right text-[14px] font-normal relative bottom-[45px] mr-4  duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p>
+                    {/* <p className={`text-right text-[14px] font-normal relative bottom-[45px] mr-4  duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p> */}
                     <div className={`${!modal && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
                     <div className={`${!modal ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px]`}>
                         <div className="p-8">

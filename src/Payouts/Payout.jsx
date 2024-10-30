@@ -24,7 +24,7 @@ const Payout = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/${page === 1 ? "" : `?page=${+page}`}`, {
+                const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/${(page === 1 || page == 0 || page == "") ? "" : `?page=${+page}`}`, {
                     method: "GET",
                     headers: {
                         "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
@@ -51,7 +51,7 @@ const Payout = () => {
                         console.log("Failed to refresh token, redirecting to login.");
                         navigate("/login");
                     }
-                } else if (response.ok) {
+                } else if (response.status === 404) { console.log("Error 404") } else if (response.ok) {
                     const data = await response.json();
                     setData(data);
                 } else {
@@ -65,7 +65,6 @@ const Payout = () => {
 
         fetchData();
     }, [navigate, page]);
-
 
     const handleUpload = async (e) => {
         e.preventDefault();
@@ -88,7 +87,6 @@ const Payout = () => {
             }
         }
     };
-
 
     const handleCancel = async (e) => {
         e.preventDefault()
@@ -116,6 +114,50 @@ const Payout = () => {
             console.log(error)
         }
     }
+
+    const handleDepositGet = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/retransfer/`, {
+                method: "GET",
+                headers: {
+                    "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
+                }
+            });
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} ${response.statusText}`);
+            }
+            const data = await response.json();
+            console.log("Data received:", data);
+        } catch (error) {
+            console.error("An error occurred:", error);
+        }
+    };
+
+    let [depositAmount, setDepositAmount] = useState("")
+    let [depositModal, setDepositModal] = useState(false)
+    const handleDepositPost = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/retransfer/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
+                },
+                body: JSON.stringify({
+                    "sent_amount": `${depositAmount}`
+                }),
+            });
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} ${response.statusText}`);
+            }
+            const data = await response.json();
+            console.log("Data received:", data);
+        } catch (error) {
+            console.error("An error occurred:", error);
+        }
+    };
     let [zoom, setZoom] = useState(false)
 
     let methods = []
@@ -362,7 +404,7 @@ const Payout = () => {
                                 <h4>Тема</h4>
                                 <Dark />
                             </div>
-                            <NavLink to={"/login"} onClick={() => localStorage.removeItem("access")}>Выйти</NavLink>
+                            <NavLink to={"/login"} onClick={() => { localStorage.removeItem("access"); localStorage.removeItem("refresh"); localStorage.removeItem("role") }}>Выйти</NavLink>
                         </div>
                         {/* links */}
                         <div className={` w-full absolute text-[14px] font-normal z-50 p-4 ${isDarkMode ? "bg-[#1F1F1F] text-[#E7E7E7]" : "bg-white shadow-xl"} right-0 top-16 rounded-[12px]  duration-300 ${navBtn ? "opacity-100" : "opacity-0 invisible"}  `}>
@@ -491,8 +533,48 @@ const Payout = () => {
                         </div>
 
                     </div>
+                    {localStorage.getItem("role") == "merchant" &&
+                        <div className="flex justify-between flex-wrap gap-x-3">
 
+                            <form onSubmit={handleDepositGet}>
+                                <button type='submit' className='bg-[#2E70F5] mb-3 text-[#fff]  px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                    Пополнить депозит
+                                </button>
+                            </form>
+
+                            <div className=' justify-end' >
+                                <button onClick={() => setDepositModal(!depositModal)} className='bg-[#2E70F5] mb-3 text-[#fff]  px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                    Пополнить депозит
+                                </button>
+                            </div>
+
+                        </div>
+                    }
+                    <div className={`${!depositModal && "hidden"} fixed inset-0 bg-[#2222224D] z-40`}></div>
+                    <form onSubmit={handleDepositPost} className={`${!depositModal ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-50 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px]`}>
+                        <div className="p-8 relative">
+                            <div className="">
+                                <div className="mb-8">
+                                    <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}> Пополнить депозит</h3>
+                                    <svg className={`${isDarkMode ? "fill-[#fff]" : "fill-[#000]"} absolute right-5 top-8`} onClick={() => { setDepositModal(false); setDepositAmount("") }} width="14" height="15" viewBox="0 0 14 15" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
+                                    </svg>
+                                    <h5 className='text-[14px] text-[#60626C]'>Подробная информация</h5>
+                                </div>
+                                <div className="">
+                                    <h3 className={`${isDarkMode ? "text-white" : ""} text-[12px] font-semibold mb-4`}>Чек</h3>
+                                    <input value={depositAmount} onChange={(e) => setDepositAmount(e.target.value)} type="text" className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
+                                </div>
+                                <div className="flex w-full text-white justify-end">
+                                    <button type='submit' className='bg-[#2E70F5] mt-4 px-[37.5px] py-[10px]   font-normal text-[14px] rounded-[8px]'>
+                                        Пополнить депозит
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                     <div className={`${isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]"}  max-md:pr-0 max-md:pt-0`}>
+
                         <div className="block max-md:hidden">
                             <DataTable value={filteredCustomers || data.results} paginator rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
                                 <Column headerClassName="custom-column-header" body={(rowData) => {
@@ -806,7 +888,6 @@ const Payout = () => {
                                         )
                                     })}
                                 </div>
-
                             )
                         })}
                     </div>

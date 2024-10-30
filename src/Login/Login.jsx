@@ -32,9 +32,10 @@ const Login = () => {
         if (!res.ok) {
           return Promise.reject(`HTTP error! status: ${res.status}`);
         }
+
         return res.json();
       })
-      .then((data) => { localStorage.setItem("access", data.access); localStorage.setItem("refresh", data.refresh); setErr(false); navigate("/dash") })
+      .then((data) => { localStorage.setItem("access", data.access); localStorage.setItem("role", data.role); localStorage.setItem("refresh", data.refresh); setErr(false); navigate("/dash") })
       .catch(() => { setErr(true) })
       .finally(() => {
         setTimeout(() => {
