@@ -166,19 +166,19 @@ const Dashboard = () => {
             }
             let hashMatch = true;
             if (hash) {
-                hashMatch = customer.hash.includes(hash);
+                hashMatch = customer.hash && customer.hash.includes(hash);
             }
 
             let statusMatch = true;
             if (selectStatus) {
-                statusMatch = customer.status.toLowerCase() === selectStatus.toLowerCase();
+                statusMatch = customer.status && customer.status.toLowerCase() === selectStatus.toLowerCase();
             }
             let methodMatch = true;
             if (selectMethod) {
-                methodMatch = customer.method.name.toLowerCase() === selectMethod.toLowerCase();
+                methodMatch = customer?.method_name?.toLowerCase() === selectMethod.toLowerCase();
             }
 
-            return (customerDate >= startDateTime || !startDateTime) && (!endDateTime || customerDate <= endDateTime) && hashMatch && statusMatch;
+            return (customerDate >= startDateTime || !startDateTime) && (!endDateTime || customerDate <= endDateTime) && hashMatch && statusMatch && methodMatch;
         });
         setFilteredCustomers(filteredData);
     }, [startDate, endDate, hash, selectStatus, startTime, endTime]);
@@ -240,7 +240,7 @@ const Dashboard = () => {
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
     };
-    
+
     return (
         <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border `}>
             <div className='flex'>
@@ -403,7 +403,7 @@ const Dashboard = () => {
                                     </g>
                                 </svg>
                                 {/* download */}
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <svg onClick={handleDownload} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M12 16L7 11L8.4 9.55L11 12.15V4H13V12.15L15.6 9.55L17 11L12 16ZM6 20C5.45 20 4.97933 19.8043 4.588 19.413C4.19667 19.0217 4.00067 18.5507 4 18V15H6V18H18V15H20V18C20 18.55 19.8043 19.021 19.413 19.413C19.0217 19.805 18.5507 20.0007 18 20H6Z" fill="#2552F2" />
                                 </svg>
                                 {/* filter */}
@@ -680,7 +680,7 @@ const Dashboard = () => {
                         </div>
                     </div>
                     {/* <p className={`text-right text-[14px] font-normal relative bottom-[45px] mr-4  duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p> */}
-                    <div onClick={()=>setModal(!modal)} className={`${!modal && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+                    <div onClick={() => setModal(!modal)} className={`${!modal && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
                     <div className={`${!modal ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px]`}>
                         <div className="p-8">
                             <div className="">
