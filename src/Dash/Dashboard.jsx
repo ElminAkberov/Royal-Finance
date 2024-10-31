@@ -624,19 +624,6 @@ const Dashboard = () => {
                             </DataTable>
                         </div>
                         {/* izz */}
-
-
-                        {/* <div className="flex relative pages items-center justify-between">
-                            <p className={` text-[14px] font-normal md:absolute left-[46%] top-[-50px] duration-300 ${isDarkMode ? "text-[#fff]" : "text-[#252840]"} z-20 `}><input type='number' defaultValue={1} onInput={(e) => {
-                                if (e.target.value > Math.ceil(data.count / 10)) {
-                                    e.target.value = Math.ceil(data.count / 10)
-                                } if (e.target.value < 0) {
-                                    e.target.value = 1;
-                                }
-                                setPage(e.target.value);
-                            }} max={12} className='bg-transparent rounded-lg text-center border border-[#fff] h-[32px] w-[35px]' /> из {Math.ceil(data.count / 10)}</p>
-                            <p className={`text-right text-[14px] font-normal mr-4 absolute right-0 top-[-45px] z-30 duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p>
-                        </div> */}
                     </div>
                     <div className="flex items-center justify-between">
                         {data?.count >= 10 &&

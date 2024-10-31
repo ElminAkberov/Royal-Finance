@@ -273,6 +273,7 @@ const Payout = () => {
             readers.readAsDataURL(file);
             setDescribeImg(file)
         }
+        e.target.value = '';
     };
 
     const handleFileClose = (e) => {
@@ -285,6 +286,7 @@ const Payout = () => {
             reader.readAsDataURL(file);
             setOtkImgDesc(file)
         }
+        e.target.value = ""
     }
     const handleShow = (info) => {
         setDetails([info])
@@ -596,11 +598,7 @@ const Payout = () => {
                                                         <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
                                                             <img className='mx-auto min-w-[24px]' src='/assets/img/ion_eye.svg' />
                                                         </div>
-                                                        {rowData.status == "completed" &&
-                                                            <div onClick={() => { handleShow(rowData); setCancelCheck(!cancelCheck); setId(rowData.id) }} className="cursor-pointer">
-                                                                <img className='mx-auto min-w-[24px]' src='/assets/img/Connect.svg' />
-                                                            </div>
-                                                        }
+
                                                         {rowData.receipts.length > 0 &&
                                                             <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
                                                                 <img className='mx-auto min-w-[20px]' src='/assets/img/Group.svg' />
@@ -610,11 +608,16 @@ const Payout = () => {
                                                     :
                                                     <>
                                                         <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
-                                                            <img className='mx-auto ' src='/assets/img/ion_eye.svg' />
+                                                            <img className='mx-auto min-w-[24px]' src='/assets/img/ion_eye.svg' />
                                                         </div>
+                                                        {rowData.status == "in_progress" &&
+                                                            <div onClick={() => { handleShow(rowData); setCancelCheck(!cancelCheck); setId(rowData.id) }} className="cursor-pointer">
+                                                                <img className='mx-auto min-w-[24px]' src='/assets/img/Connect.svg' />
+                                                            </div>
+                                                        }
                                                         {rowData.receipts.length > 0 &&
                                                             <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
-                                                                <img className='mx-auto' src='/assets/img/Group.svg' />
+                                                                <img className='mx-auto min-w-[20px]' src='/assets/img/Group.svg' />
                                                             </div>
                                                         }
 
@@ -711,13 +714,13 @@ const Payout = () => {
                                         );
                                     } else if (rowData.status == "wait_confirm") {
                                         return (
-                                            <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                            <div className='bg-[#37B67E] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
                                                 Ожидает <br /> подтверждения
                                             </div>
                                         );
                                     } else if (rowData.status == "pending") {
                                         return (
-                                            <div className='bg-[#37B67E]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                            <div className=' bg-[#FFC107]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
                                                 В ожидании
                                             </div>
                                         )
@@ -760,11 +763,6 @@ const Payout = () => {
                                                         <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
                                                             <img className='mx-auto min-w-[20px]' src='/assets/img/ion_eye.svg' />
                                                         </div>
-                                                        {rowData.status == "completed" &&
-                                                            <div onClick={() => { handleShow(rowData); setCancelCheck(!cancelCheck); setId(rowData.id) }} className="cursor-pointer">
-                                                                <img className='mx-auto min-w-[20px]' src='/assets/img/Connect.svg' />
-                                                            </div>
-                                                        }
                                                         {rowData.receipts.length > 0 &&
                                                             <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
                                                                 <img className='mx-auto min-w-[18px]' src='/assets/img/Group.svg' />
@@ -774,11 +772,16 @@ const Payout = () => {
                                                     :
                                                     <>
                                                         <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
-                                                            <img className='mx-auto' src='/assets/img/ion_eye.svg' />
+                                                            <img className='mx-auto min-w-[20px]' src='/assets/img/ion_eye.svg' />
                                                         </div>
+                                                        {rowData.status == "in_progress" &&
+                                                            <div onClick={() => { handleShow(rowData); setCancelCheck(!cancelCheck); setId(rowData.id) }} className="cursor-pointer">
+                                                                <img className='mx-auto min-w-[24px]' src='/assets/img/Connect.svg' />
+                                                            </div>
+                                                        }
                                                         {rowData.receipts.length > 0 &&
                                                             <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
-                                                                <img className='mx-auto' src='/assets/img/Group.svg' />
+                                                                <img className='mx-auto min-w-[18px]' src='/assets/img/Group.svg' />
                                                             </div>
                                                         }
 
@@ -876,13 +879,13 @@ const Payout = () => {
                                         );
                                     } else if (rowData.status == "wait_confirm") {
                                         return (
-                                            <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                            <div className='bg-[#37B67E] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
                                                 Ожидает <br /> подтверждения
                                             </div>
                                         );
                                     } else if (rowData.status == "pending") {
                                         return (
-                                            <div className='bg-[#37B67E]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                            <div className=' bg-[#FFC107]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
                                                 В ожидании
                                             </div>
                                         )
@@ -903,17 +906,7 @@ const Payout = () => {
                             </DataTable>
                         </div>
 
-                        {/* <div className="flex relative pages items-center justify-between">
-                            <p className={` text-[14px] font-normal md:absolute left-[46%] top-[-50px] duration-300 ${isDarkMode ? "text-[#fff]" : "text-[#252840]"} z-20 `}><input type='number' defaultValue={1} onInput={(e) => {
-                                if (e.target.value > Math.ceil(data.count / 10)) {
-                                    e.target.value = Math.ceil(data.count / 10)
-                                } if (e.target.value < 0) {
-                                    e.target.value = 1;
-                                }
-                                setPage(e.target.value);
-                            }} max={12} className='bg-transparent rounded-lg text-center border border-[#fff] h-[32px] w-[35px]' /> из {Math.ceil(data.count / 10)}</p>
-                            <p className={`text-right text-[14px] font-normal mr-4 absolute right-0 top-[-45px] z-30 duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p>
-                        </div> */}
+
                     </div>
                     <div className="flex items-center justify-between">
 
@@ -1160,7 +1153,6 @@ const Payout = () => {
                     </div>
                     {/* cek yuklemek ucun */}
                     <div onClick={() => { setCancelCheck(!cancelCheck); setImageSrc("") }} className={`${!cancelCheck && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
-
                     <form onSubmit={handleUpload} className={`${!cancelCheck ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} p-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[763px] rounded-[24px]`}>
                         <div className="relative mb-8">
                             <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Завершить</h3>
@@ -1187,7 +1179,7 @@ const Payout = () => {
                             }
                         </div>
                         <div className="flex justify-end mt-4">
-                            <button type='submit' onClick={() => setCancelCheck(!cancelCheck)} className='bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                            <button type='submit' onClick={() =>{ setCancelCheck(!cancelCheck);setImageSrc("")}} className='bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                 Завершить
                             </button>
                         </div>
