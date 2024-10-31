@@ -1136,13 +1136,7 @@ const Payout = () => {
                                                         </button>
                                                     </form>
                                                 )}
-                                                {data.status == "completed" &&
-                                                    <form >
-                                                        <button type='submit' className='bg-[#2E70F5] max-md:mx-auto px-[37.5px]  py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                                            Submit
-                                                        </button>
-                                                    </form>
-                                                }
+                                                
                                             </div>
                                         )
                                     })}
