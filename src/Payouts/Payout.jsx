@@ -1117,7 +1117,7 @@ const Payout = () => {
                                     {details?.map((data, index) => {
                                         return (
                                             <div key={index}>
-                                                {(data.status === "wait_confirm" || data.status === "in_progress") && (
+                                                {(data.status === "pending") && (
                                                     <div className='flex gap-x-4'>
                                                         <button onClick={() => setCancel(!cancel)} className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                                             Отклонить
@@ -1129,13 +1129,7 @@ const Payout = () => {
                                                         </form>
                                                     </div>
                                                 )}
-                                                {data.status === "pending" && (
-                                                    <form onSubmit={handleAccept}>
-                                                        <button type='submit' className='bg-[#2E70F5] max-md:mx-auto px-[37.5px]  py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                                            Взять в работу
-                                                        </button>
-                                                    </form>
-                                                )}
+                                                
                                                 
                                             </div>
                                         )
