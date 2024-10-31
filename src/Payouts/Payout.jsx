@@ -340,6 +340,21 @@ const Payout = () => {
     const handleShow = (info) => {
         setDetails([info])
     }
+    const handleAccept = async (e) => {
+        e.preventDefault()
+        try {
+            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/accept/${id}/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`
+                }
+            });
+            const data = await response.json();
+        } catch (error) {
+            console.error("An error occurred:", error);
+        }
+    }
 
     return (
         <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border`}>
@@ -370,7 +385,7 @@ const Payout = () => {
                                     </svg>
                                     <p className={`${open && "hidden"} text-[#2D54DD] text-[14px] font-medium ml-[8px]`}>Выплаты</p>
                                 </NavLink>
-                                <div className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px] ">
+                                {/* <div className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px] ">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <g clipPath="url(#clip0_289_6049)">
                                             <path d="M19.2656 0.414062V4.68991H23.5411L19.2656 0.414062Z" fill="#8D8F9B" />
@@ -384,7 +399,7 @@ const Payout = () => {
                                         </defs>
                                     </svg>
                                     <p className={`${open && "hidden"} text-[#BFC0C9] text-[14px] font-medium ml-[8px]`}>Саппорт Транзакций</p>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                         <div onClick={() => { setOpen(true) }} className={`bg-[#1773F1] cursor-pointer absolute top-2 right-[-19px]  h-[45px] ${open ? "hidden" : "flex justify-center items-center"}  rounded-r-[4px] w-[19px]`}>
@@ -467,7 +482,7 @@ const Payout = () => {
                                 </svg>
                                 <p className={`text-[#2D54DD] text-[14px] font-medium ml-[8px]`}>Выплаты</p>
                             </NavLink>
-                            <div className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px]  ">
+                            {/* <div className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px]  ">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clipPath="url(#clip0_289_6049)">
                                         <path d="M19.2656 0.414062V4.68991H23.5411L19.2656 0.414062Z" fill="#8D8F9B" />
@@ -481,7 +496,7 @@ const Payout = () => {
                                     </defs>
                                 </svg>
                                 <p className={`text-[#BFC0C9] text-[14px] font-medium ml-[8px]`}>Саппорт Транзакций</p>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>
@@ -523,6 +538,7 @@ const Payout = () => {
                             <button className='text-[#2D54DD] text-[14px] max-md:hidden mr-4 font-normal border-[#2D54DD] border-2 px-[24px] rounded-[8px] py-[8px] min-w-[145px]'>Скачать отчет</button>
                         </div>
                     </div>
+                    {/* filterler */}
                     <div className={`${!filterBtn && "max-md:hidden"} flex max-md:justify-center flex-wrap py-[24px] pr-4 text-[14px] gap-2 text-[#717380]`}>
                         {localStorage.getItem("role") !== "trader" &&
                             <input onChange={(e) => setMerchant(e.target.value)} placeholder='Мерчант' type="text" className={` h-[40px] w-[155px] pl-[12px] rounded-[4px] ${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
@@ -1087,8 +1103,6 @@ const Payout = () => {
                                     </div>
                                 </form>
 
-
-
                                 <div className="flex w-full text-white md:justify-end gap-x-4">
                                     {details?.map((data, index) => {
                                         return (
@@ -1098,17 +1112,19 @@ const Payout = () => {
                                                         <button onClick={() => setCancel(!cancel)} className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                                             Отклонить
                                                         </button>
-                                                        <button className='bg-[#2E70F5] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                                            Взять в работу
-                                                        </button>
+                                                        <form onSubmit={handleAccept}>
+                                                            <button type='submit' className='bg-[#2E70F5] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                                                Взять в работу
+                                                            </button>
+                                                        </form>
                                                     </div>
                                                 )}
                                                 {data.status === "pending" && (
-                                                    <>
-                                                        <button className='bg-[#2E70F5] max-md:mx-auto px-[37.5px]  py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                                    <form onSubmit={handleAccept}>
+                                                        <button type='submit' className='bg-[#2E70F5] max-md:mx-auto px-[37.5px]  py-[10px] font-normal text-[14px] rounded-[8px]'>
                                                             Взять в работу
                                                         </button>
-                                                    </>
+                                                    </form>
                                                 )}
                                             </div>
                                         )

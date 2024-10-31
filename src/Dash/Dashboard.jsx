@@ -4,11 +4,26 @@ import { Column } from 'primereact/column';
 import { Navigate, NavLink, useNavigate } from 'react-router-dom';
 import Dark from '../Dark';
 import { Context } from '../context/ContextProvider';
+import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
 // import * as XLSX from 'xlsx';
 const Dashboard = () => {
     let [dropDown, setDropDown] = useState(false)
     let { isDarkMode } = useContext(Context)
 
+    const startDateRef = useRef(null);
+    const endDateRef = useRef(null);
+
+    let [open, setOpen] = useState(true)
+    let [details, setDetails] = useState([])
+    const [modal, setModal] = useState(false)
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    let [selectMethod, setSelectMethod] = useState("")
+    let [hash, setHash] = useState("")
+    let [selectStatus, setSelectStatus] = useState("")
+
+    const [time, setTime] = useState('');
+    const [time_2, setTime_2] = useState('');
     let navigate = useNavigate()
     const [data, setData] = useState([])
     let [page, setPage] = useState(1)
@@ -17,10 +32,25 @@ const Dashboard = () => {
     const [searchBtn, setSearchBtn] = useState(false)
     const [navBtn, setNavBtn] = useState(false)
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const totalPages = Math.ceil((data?.count || 1) / 10);
+    console.log(data?.count)
+
+    const getPageRange = () => {
+        if (totalPages <= 3) {
+            return Array.from({ length: totalPages }, (_, i) => i + 1);
+        } else if (currentPage === 1) {
+            return [1, 2, 3];
+        } else if (currentPage === totalPages) {
+            return [totalPages - 2, totalPages - 1, totalPages];
+        } else {
+            return [currentPage - 1, currentPage, currentPage + 1];
+        }
+    };
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/refills/${(page === 1 || page == 0 || page == "") ? "" : `?page=${+page}`}`, {
+                const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/refills/?method=${selectMethod && selectMethod}&status=${selectStatus && selectStatus}&created_at_before=${time_2 ? endDate + "T" + time_2 : endDate}&created_at_after=${time ? startDate + "T" + time : startDate}&hash=${hash && hash}&page=${currentPage && currentPage}`, {
                     method: "GET",
                     headers: {
                         "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
@@ -63,27 +93,8 @@ const Dashboard = () => {
         };
 
         fetchData();
-    }, [navigate, page]);
-    let methods = []
-    data?.results?.map(item => methods.push(item.method_name))
-
-    const startDateRef = useRef(null);
-    const endDateRef = useRef(null);
-
-    let [open, setOpen] = useState(true)
-    let [details, setDetails] = useState([])
-    const [modal, setModal] = useState(false)
-    const [filteredCustomers, setFilteredCustomers] = useState([]);
-    const [startDate, setStartDate] = useState("2024-10-16");
-    const [endDate, setEndDate] = useState("");
-    let [selectMethod, setSelectMethod] = useState("")
-    let [hash, setHash] = useState("")
-    let [selectStatus, setSelectStatus] = useState("")
-    const [startTime, setStartTime] = useState("");
-    const [endTime, setEndTime] = useState("");
-
-    const [time, setTime] = useState('');
-    const [time_2, setTime_2] = useState('');
+        console.log(time)
+    }, [navigate, currentPage, selectMethod, selectStatus, hash, startDate, endDate, time, time_2]);
 
     const handleStartTimeChange = (e) => {
         const value = e.target.value.replace(/[^0-9]/g, '');
@@ -110,8 +121,6 @@ const Dashboard = () => {
         setStartTime(cleanedValue);
 
     };
-
-
     const handleEndTimeChange = (e) => {
         const value = e.target.value.replace(/[^0-9]/g, '');
         let cleanedValue = value;
@@ -136,52 +145,6 @@ const Dashboard = () => {
         setEndTime(cleanedValue);
     };
 
-    useEffect(() => {
-        const filteredData = data?.results?.filter(customer => {
-            const customerDate = new Date(customer?.created_at)
-            let [startHour, startMinute] = startTime.split(":");
-            let [endHour, endMinute] = endTime.split(":");
-
-            let endDateTime;
-            let startDateTime;
-
-            if (startTime && !startMinute) {
-                startDateTime = new Date(`${startDate}T${((+startHour + 1) + ':' + "00") || '00:00'}`)
-            } else if (startTime) {
-                startDateTime = new Date(`${startDate}T${((+startHour + 1) + ':' + startMinute) || '00:00'}`)
-            } else {
-                startDateTime = new Date(`${startDate}T00:00`);
-            }
-            if (endDate) {
-                if (+endHour === 23 && +endMinute > 1) {
-                    endDateTime = new Date(`${endDate}T${((+endHour) + ':' + endMinute) || '23:59'}`)
-                } else if (endTime && !endMinute) {
-                    endDateTime = new Date(`${endDate}T${((+endHour + 1) + ':' + "00") || '00:00'}`)
-                } else if (endTime) {
-                    endDateTime = new Date(`${endDate}T${((+endHour + 1) + ':' + endMinute) || '00:00'}`)
-                }
-                else {
-                    endDateTime = new Date(`${endDate}T23:59`);
-                }
-            }
-            let hashMatch = true;
-            if (hash) {
-                hashMatch = customer.hash && customer.hash.includes(hash);
-            }
-
-            let statusMatch = true;
-            if (selectStatus) {
-                statusMatch = customer.status && customer.status.toLowerCase() === selectStatus.toLowerCase();
-            }
-            let methodMatch = true;
-            if (selectMethod) {
-                methodMatch = customer?.method_name?.toLowerCase() === selectMethod.toLowerCase();
-            }
-
-            return (customerDate >= startDateTime || !startDateTime) && (!endDateTime || customerDate <= endDateTime) && hashMatch && statusMatch && methodMatch;
-        });
-        setFilteredCustomers(filteredData);
-    }, [startDate, endDate, hash, selectStatus, startTime, endTime]);
 
     const handleShow = (info) => {
         setDetails([info])
@@ -271,7 +234,7 @@ const Dashboard = () => {
                                     </svg>
                                     <p className={`${open && "hidden"} text-[#BFC0C9] text-[14px] font-medium ml-[8px]`}>Выплаты</p>
                                 </NavLink>
-                                <div className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px] ">
+                                {/* <div className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px] ">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <g clipPath="url(#clip0_289_6049)">
                                             <path d="M19.2656 0.414062V4.68991H23.5411L19.2656 0.414062Z" fill="#8D8F9B" />
@@ -285,7 +248,7 @@ const Dashboard = () => {
                                         </defs>
                                     </svg>
                                     <p className={`${open && "hidden"} text-[#BFC0C9] text-[14px] font-medium ml-[8px]`}>Саппорт Транзакций</p>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                         <div onClick={() => { setOpen(true) }} className={`bg-[#1773F1] cursor-pointer absolute top-2 right-[-19px]  h-[45px] ${open ? "hidden" : "flex justify-center items-center"}  rounded-r-[4px] w-[19px]`}>
@@ -368,7 +331,7 @@ const Dashboard = () => {
                                 </svg>
                                 <p className={`text-[#BFC0C9] text-[14px] font-medium ml-[8px]`}>Выплаты</p>
                             </NavLink>
-                            <div className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px]  ">
+                            {/* <div className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px]  ">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clipPath="url(#clip0_289_6049)">
                                         <path d="M19.2656 0.414062V4.68991H23.5411L19.2656 0.414062Z" fill="#8D8F9B" />
@@ -382,7 +345,7 @@ const Dashboard = () => {
                                     </defs>
                                 </svg>
                                 <p className={`text-[#BFC0C9] text-[14px] font-medium ml-[8px]`}>Саппорт Транзакций</p>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>
@@ -424,15 +387,16 @@ const Dashboard = () => {
                             <button onClick={handleDownload} className='text-[#2D54DD] text-[14px] max-md:hidden font-normal border-[#2D54DD] border-2 px-[24px] rounded-[8px] py-[8px] min-w-[145px]'>Скачать отчет</button>
                         </div>
                     </div>
-
+                    {/* filter */}
                     <div className={`${!filterBtn && "max-md:hidden"} flex max-md:justify-center pr-4 flex-wrap py-[24px] text-[14px] gap-2 text-[#717380]`}>
                         <input onChange={(e) => setHash(e.target.value)} placeholder='Код' type="text" className={` h-[40px] w-[155px] pl-[12px] rounded-[4px] ${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
                         <input onChange={(e) => setHash(e.target.value)} placeholder='Хеш' type="text" className={` pl-[12px] w-[155px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
                         <select onChange={(e) => setSelectMethod(e.target.value)} className={`${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] min-w-[155px] h-[40px]`} name="" id="">
                             <option value="" selected>Метод</option>
-                            {[...new Set(methods)].map(item => (
-                                <option key={item}>{item}</option>
-                            ))}
+                            <option>ABCEX</option>
+                            <option>GARANTEX</option>
+                            <option>USDT</option>
+                            <option>CASH</option>
                         </select>
                         <select onChange={(e) => setSelectStatus(e.target.value)} className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] min-w-[155px] h-[40px]`} name="" id="">
                             <option selected value={""} >Статус</option>
@@ -487,7 +451,7 @@ const Dashboard = () => {
 }                          
                             `}
                             </style>
-                            <DataTable scrollable scrollHeight="65vh" value={filteredCustomers || data.results} paginator rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
+                            <DataTable scrollable scrollHeight="65vh" value={data?.results} rows={10} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
                                 <Column body={(rowData) => {
                                     return (
                                         <div onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>
@@ -578,7 +542,7 @@ const Dashboard = () => {
                         </div>
 
                         <div className="block max-md:hidden">
-                            <DataTable value={filteredCustomers || data.results} paginator rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
+                            <DataTable value={data?.results} rows={10} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
                                 <Column body={(rowData) => {
                                     return (
                                         <div onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>
@@ -667,7 +631,10 @@ const Dashboard = () => {
 
                             </DataTable>
                         </div>
-                        <div className="flex relative pages items-center justify-between">
+                        {/* izz */}
+
+
+                        {/* <div className="flex relative pages items-center justify-between">
                             <p className={` text-[14px] font-normal md:absolute left-[46%] top-[-50px] duration-300 ${isDarkMode ? "text-[#fff]" : "text-[#252840]"} z-20 `}><input type='number' defaultValue={1} onInput={(e) => {
                                 if (e.target.value > Math.ceil(data.count / 10)) {
                                     e.target.value = Math.ceil(data.count / 10)
@@ -677,8 +644,33 @@ const Dashboard = () => {
                                 setPage(e.target.value);
                             }} max={12} className='bg-transparent rounded-lg text-center border border-[#fff] h-[32px] w-[35px]' /> из {Math.ceil(data.count / 10)}</p>
                             <p className={`text-right text-[14px] font-normal mr-4 absolute right-0 top-[-45px] z-30 duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p>
-                        </div>
+                        </div> */}
                     </div>
+                    {data?.count >= 10 &&
+                    <div className="pagination-buttons bg-transparent flex items-center my-4">
+                        {currentPage > 1 && (
+                            <button className={`text-[#2D54DD]`} onClick={() => setCurrentPage(currentPage - 1)}>
+                                <FaAngleLeft />
+                            </button>
+                        )}
+
+                        {getPageRange().map((page) => (
+                            <button
+                                key={page}
+                                className={`page-button px-[12px] py-1  ${isDarkMode ? "text-[#fff]" : ""} ${currentPage === page ? 'bg-[#D9D9D91F]' : ''}`}
+                                onClick={() => setCurrentPage(page)}
+                            >
+                                {page}
+                            </button>
+                        ))}
+
+                        {currentPage < totalPages && (
+                            <button className={`text-[#2D54DD]`} onClick={() => setCurrentPage(currentPage + 1)}>
+                                <FaAngleRight />
+                            </button>
+                        )}
+                    </div>
+                    }
                     {/* <p className={`text-right text-[14px] font-normal relative bottom-[45px] mr-4  duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p> */}
                     <div onClick={() => setModal(!modal)} className={`${!modal && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
                     <div className={`${!modal ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px]`}>

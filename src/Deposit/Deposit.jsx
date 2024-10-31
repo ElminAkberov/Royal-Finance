@@ -83,7 +83,7 @@ const Deposit = () => {
                 </svg>
                 <p className={`${open && "hidden"} text-[#BFC0C9] text-[14px] font-medium ml-[8px]`}>Выплаты</p>
               </NavLink>
-              <div className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px] ">
+              {/* <div className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px] ">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <g clipPath="url(#clip0_289_6049)">
                     <path d="M19.2656 0.414062V4.68991H23.5411L19.2656 0.414062Z" fill="#8D8F9B" />
@@ -97,7 +97,7 @@ const Deposit = () => {
                   </defs>
                 </svg>
                 <p className={`${open && "hidden"} text-[#BFC0C9] text-[14px] font-medium ml-[8px]`}>Саппорт Транзакций</p>
-              </div>
+              </div> */}
             </div>
           </div>
           <div onClick={() => { setOpen(true) }} className={`bg-[#1773F1] cursor-pointer absolute top-2 right-[-19px]  h-[45px] ${open ? "hidden" : "flex justify-center items-center"}  rounded-r-[4px] w-[19px]`}>
@@ -180,7 +180,7 @@ const Deposit = () => {
               </svg>
               <p className={`text-[#BFC0C9] text-[14px] font-medium ml-[8px]`}>Выплаты</p>
             </NavLink>
-            <div className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px]  ">
+            {/* <div className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px]  ">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g clipPath="url(#clip0_289_6049)">
                   <path d="M19.2656 0.414062V4.68991H23.5411L19.2656 0.414062Z" fill="#8D8F9B" />
@@ -194,7 +194,7 @@ const Deposit = () => {
                 </defs>
               </svg>
               <p className={`text-[#BFC0C9] text-[14px] font-medium ml-[8px]`}>Саппорт Транзакций</p>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
