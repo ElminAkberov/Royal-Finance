@@ -13,10 +13,9 @@ const Payout = () => {
     const [describeImg, setDescribeImg] = useState(null)
 
     let [dropDown, setDropDown] = useState(false)
-    let { isDarkMode, toggleDarkMode } = useContext(Context)
+    let { isDarkMode } = useContext(Context)
     let navigate = useNavigate()
     const [data, setData] = useState([])
-    let [page, setPage] = useState(1)
     let [id, setId] = useState(1)
     let [reason, setReason] = useState("")
 
