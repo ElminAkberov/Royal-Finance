@@ -11,7 +11,7 @@ import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
 const Payout = () => {
     const [imageSrc, setImageSrc] = useState(null);
     const [describeImg, setDescribeImg] = useState(null)
-
+    let [method_name, setMethod_name] = useState("")
     let [dropDown, setDropDown] = useState(false)
     let { isDarkMode } = useContext(Context)
     let navigate = useNavigate()
@@ -208,7 +208,7 @@ const Payout = () => {
 
     let methods = []
     data?.results?.map(item => methods.push(item.method.name))
-
+    localStorage.setItem("method", [...new Set(methods)])
 
     // payout
     let [cancel, setCancel] = useState(false)
@@ -497,7 +497,7 @@ const Payout = () => {
                         {localStorage.getItem("role") !== "merchant" &&
                             <input onChange={(e) => setTrader(e.target.value)} placeholder='Трейдер' type="text" className={` pl-[12px] w-[155px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
                         }
-                        <select onChange={(e) => setSelectMethod(e.target.value)} className={`${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] max-w-[155px] h-[40px]`} name="" id="">
+                        <select onChange={(e) => setSelectMethod(e.target.value)} className={`${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] max-w-[155px] min-w-[155px] h-[40px]`} name="" id="">
                             <option value="" selected>Метод</option>
                             {[...new Set(methods)].map(item => (
                                 <option key={item}>{item}</option>
@@ -1036,7 +1036,7 @@ const Payout = () => {
                                         <div className="">
                                             <div className="modal_payout">
                                                 <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Статус</h5>
-                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{(data?.status === "pending" || data?.status === "wait_confirm" || data?.status == "in_progress") ? "В обработке" : data?.status === "completed" ? "Успешно" : "Отклонено"}</p>
+                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.status === "pending" ? "В ожидании" : data?.status == "wait_confirm" ? "Ожидает подтверждения" : data?.status == "in_progress" ? "В обработке" : data?.status === "completed" ? "Завершено" : "Отклонено"}</p>
                                             </div>
                                             <div className="modal_payout">
                                                 <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Трейдеры на выбор</h5>
@@ -1179,7 +1179,7 @@ const Payout = () => {
                             }
                         </div>
                         <div className="flex justify-end mt-4">
-                            <button type='submit' onClick={() =>{ setCancelCheck(!cancelCheck);setImageSrc("")}} className='bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                            <button type='submit' onClick={() => { setCancelCheck(!cancelCheck); setImageSrc("") }} className='bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                 Завершить
                             </button>
                         </div>
