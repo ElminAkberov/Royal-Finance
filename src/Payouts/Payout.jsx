@@ -1129,6 +1129,13 @@ const Payout = () => {
                                                         </form>
                                                     </div>
                                                 )}
+                                                {(data.status === "in_progress") && (
+                                                    <div className='flex gap-x-4'>
+                                                        <button onClick={() => setCancel(!cancel)} className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                                            Отклонить
+                                                        </button>
+                                                    </div>
+                                                )}
                                                 
                                                 
                                             </div>
