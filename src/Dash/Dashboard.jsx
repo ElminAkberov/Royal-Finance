@@ -79,7 +79,7 @@ const Dashboard = () => {
                     }
                 } else if (response.status === 400) {
                     console.log("Bad Request");
-                } else if (response.status === 404) { console.log("Error 404") } else if (response.ok) {
+                } else if (response.status === 404) {setData(0) } else if (response.ok) {
                     const data = await response.json();
                     setData(data);
                 } else {
@@ -652,7 +652,7 @@ const Dashboard = () => {
                             <button className={`text-[#2D54DD]`} onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage)}>
                                 <FaAngleLeft />
                             </button>
-                           
+
 
                             <input
                                 type="number"
