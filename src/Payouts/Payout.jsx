@@ -6,6 +6,8 @@ import Dark from '../Dark';
 import { Context } from '../context/ContextProvider';
 import axios from 'axios';
 import { LuCopy } from "react-icons/lu";
+import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
+
 const Payout = () => {
     const [imageSrc, setImageSrc] = useState(null);
     const [describeImg, setDescribeImg] = useState(null)
@@ -17,6 +19,27 @@ const Payout = () => {
     let [page, setPage] = useState(1)
     let [id, setId] = useState(1)
     let [reason, setReason] = useState("")
+
+    const startDateRef = useRef(null);
+    const endDateRef = useRef(null);
+    let [open, setOpen] = useState(true)
+    let [details, setDetails] = useState([])
+    // 1ci action
+    const [modal, setModal] = useState(false)
+    // 2ci action
+    const [modalChek, setModalChek] = useState(false)
+    const [currentPage, setCurrentPage] = useState(1);
+    const totalPages = Math.ceil((data?.count || 1) / 10);
+    const [startDate, setStartDate] = useState("2024-10-16");
+    const [endDate, setEndDate] = useState("");
+
+    let [merchant, setMerchant] = useState("")
+    let [trader, setTrader] = useState("")
+    let [selectStatus, setSelectStatus] = useState("")
+    let [selectMethod, setSelectMethod] = useState("")
+
+    const [time, setTime] = useState('');
+    const [time_2, setTime_2] = useState('');
     // mobile
     const [filterBtn, setFilterBtn] = useState(false)
     const [searchBtn, setSearchBtn] = useState(false)
@@ -44,7 +67,7 @@ const Payout = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/${(page === 1 || page == 0 || page == "") ? "" : `?page=${+page}`}`, {
+                const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/?status=${selectStatus}&merchant=${merchant}&trader=${trader}&method=${selectMethod}&created_at_after=${time ? startDate + "T" + time : startDate}&created_at_before=${time_2 ? endDate + "T" + time_2 : endDate}&page=${currentPage == "" ? 1 : currentPage}`, {
                     method: "GET",
                     headers: {
                         "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
@@ -71,7 +94,7 @@ const Payout = () => {
                         console.log("Failed to refresh token, redirecting to login.");
                         navigate("/login");
                     }
-                } else if (response.status === 404) { console.log("Error 404") } else if (response.ok) {
+                } else if (response.status === 404) { setData(0) } else if (response.ok) {
                     const data = await response.json();
                     setData(data);
                 } else {
@@ -84,7 +107,7 @@ const Payout = () => {
         };
 
         fetchData();
-    }, [navigate, page]);
+    }, [navigate, selectStatus,merchant,trader,selectMethod,time,time_2,endDate,startDate,currentPage]);
 
     const handleUpload = async (e) => {
         e.preventDefault();
@@ -182,30 +205,11 @@ const Payout = () => {
     };
     let [zoom, setZoom] = useState(false)
 
+ 
+
     let methods = []
     data?.results?.map(item => methods.push(item.method.name))
-    const startDateRef = useRef(null);
-    const endDateRef = useRef(null);
-    let [open, setOpen] = useState(true)
-    let [details, setDetails] = useState([])
-    // 1ci action
-    const [modal, setModal] = useState(false)
-    // 2ci action
-    const [modalChek, setModalChek] = useState(false)
-
-    const [filteredCustomers, setFilteredCustomers] = useState([]);
-    const [startDate, setStartDate] = useState("2024-10-16");
-    const [endDate, setEndDate] = useState("");
-
-    let [merchant, setMerchant] = useState("")
-    let [trader, setTrader] = useState("")
-    let [selectStatus, setSelectStatus] = useState("")
-    let [selectMethod, setSelectMethod] = useState("")
-    const [startTime, setStartTime] = useState("");
-    const [endTime, setEndTime] = useState("");
-
-    const [time, setTime] = useState('');
-    const [time_2, setTime_2] = useState('');
+   
 
     // payout
     let [cancel, setCancel] = useState(false)
@@ -259,60 +263,60 @@ const Payout = () => {
         setTime_2(cleanedValue);
         setEndTime(cleanedValue);
     };
-    useEffect(() => {
-        const filteredData = data?.results?.filter(customer => {
-            const customerDate = new Date(customer?.created_at)
-            let [startHour, startMinute] = startTime.split(":");
-            let [endHour, endMinute] = endTime.split(":");
+    // useEffect(() => {
+    //     const filteredData = data?.results?.filter(customer => {
+    //         const customerDate = new Date(customer?.created_at)
+    //         let [startHour, startMinute] = startTime.split(":");
+    //         let [endHour, endMinute] = endTime.split(":");
 
-            let endDateTime;
-            let startDateTime;
+    //         let endDateTime;
+    //         let startDateTime;
 
-            if (startTime && !startMinute) {
-                startDateTime = new Date(`${startDate}T${((+startHour + 1) + ':' + "00") || '00:00'}`)
-            } else if (startTime) {
-                startDateTime = new Date(`${startDate}T${((+startHour + 1) + ':' + startMinute) || '00:00'}`)
-            } else {
-                startDateTime = new Date(`${startDate}T00:00`);
-            }
-            if (endDate) {
-                if (+endHour === 23 && +endMinute > 1) {
-                    endDateTime = new Date(`${endDate}T${((+endHour) + ':' + endMinute) || '23:59'}`)
-                } else if (endTime && !endMinute) {
-                    endDateTime = new Date(`${endDate}T${((+endHour + 1) + ':' + "00") || '00:00'}`)
-                } else if (endTime) {
-                    endDateTime = new Date(`${endDate}T${((+endHour + 1) + ':' + endMinute) || '00:00'}`)
-                }
-                else {
-                    endDateTime = new Date(`${endDate}T23:59`);
-                }
-            }
+    //         if (startTime && !startMinute) {
+    //             startDateTime = new Date(`${startDate}T${((+startHour + 1) + ':' + "00") || '00:00'}`)
+    //         } else if (startTime) {
+    //             startDateTime = new Date(`${startDate}T${((+startHour + 1) + ':' + startMinute) || '00:00'}`)
+    //         } else {
+    //             startDateTime = new Date(`${startDate}T00:00`);
+    //         }
+    //         if (endDate) {
+    //             if (+endHour === 23 && +endMinute > 1) {
+    //                 endDateTime = new Date(`${endDate}T${((+endHour) + ':' + endMinute) || '23:59'}`)
+    //             } else if (endTime && !endMinute) {
+    //                 endDateTime = new Date(`${endDate}T${((+endHour + 1) + ':' + "00") || '00:00'}`)
+    //             } else if (endTime) {
+    //                 endDateTime = new Date(`${endDate}T${((+endHour + 1) + ':' + endMinute) || '00:00'}`)
+    //             }
+    //             else {
+    //                 endDateTime = new Date(`${endDate}T23:59`);
+    //             }
+    //         }
 
-            let merchantMatch = true;
-            if (merchant) {
-                merchantMatch = customer.merchant["username"].toLowerCase().includes(merchant.toLowerCase());
-            }
-            let traderMatch = true;
-            if (trader) {
-                traderMatch = customer.trader ? customer.trader["username"].toLowerCase().includes(trader.toLowerCase()) : "";
-            }
-            let statusMatch = true;
-            if (selectStatus) {
-                if (selectStatus.toLowerCase() === "pending") {
-                    statusMatch = ["pending", "wait_confirm", "in_progress"].includes(customer.status.toLowerCase());
-                } else {
-                    statusMatch = customer.status.toLowerCase() === selectStatus.toLowerCase();
-                }
-            }
-            let methodMatch = true;
-            if (selectMethod) {
-                methodMatch = customer.method.name.toLowerCase() === selectMethod.toLowerCase();
-            }
+    //         let merchantMatch = true;
+    //         if (merchant) {
+    //             merchantMatch = customer.merchant["username"].toLowerCase().includes(merchant.toLowerCase());
+    //         }
+    //         let traderMatch = true;
+    //         if (trader) {
+    //             traderMatch = customer.trader ? customer.trader["username"].toLowerCase().includes(trader.toLowerCase()) : "";
+    //         }
+    //         let statusMatch = true;
+    //         if (selectStatus) {
+    //             if (selectStatus.toLowerCase() === "pending") {
+    //                 statusMatch = ["pending", "wait_confirm", "in_progress"].includes(customer.status.toLowerCase());
+    //             } else {
+    //                 statusMatch = customer.status.toLowerCase() === selectStatus.toLowerCase();
+    //             }
+    //         }
+    //         let methodMatch = true;
+    //         if (selectMethod) {
+    //             methodMatch = customer.method.name.toLowerCase() === selectMethod.toLowerCase();
+    //         }
 
-            return (customerDate >= startDateTime || !startDateTime) && (!endDateTime || customerDate <= endDateTime) && traderMatch && methodMatch && merchantMatch && statusMatch;
-        });
-        setFilteredCustomers(filteredData);
-    }, [startDate, endDate, merchant, trader, selectStatus, startTime, endTime, selectMethod]);
+    //         return (customerDate >= startDateTime || !startDateTime) && (!endDateTime || customerDate <= endDateTime) && traderMatch && methodMatch && merchantMatch && statusMatch;
+    //     });
+    //     setFilteredCustomers(filteredData);
+    // }, [startDate, endDate, merchant, trader, selectStatus, startTime, endTime, selectMethod]);
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -554,8 +558,10 @@ const Payout = () => {
                         </select>
                         <select onChange={(e) => setSelectStatus(e.target.value)} className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] min-w-[155px] h-[40px]`} name="" id="">
                             <option selected value={""} >Статус</option>
-                            <option value={"completed"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>Успешно</option>
-                            <option value={"pending"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>В обработке</option>
+                            <option value={"completed"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>Завершено</option>
+                            <option value={"in_progress"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>В обработке</option>
+                            <option value={"wait_confirm"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>Подождите</option>
+                            <option value={"pending"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>В ожидании</option>
                             <option value={"canceled"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>Отклонено</option>
                         </select>
                         <div className={`flex items-center pl-[12px] rounded-[4px] min-w-[155px] h-[40px] ${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} cursor-pointer`} onClick={() => startDateRef.current && startDateRef.current.showPicker()}>
@@ -635,7 +641,7 @@ const Payout = () => {
                     <div className={`${isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]"}  max-md:pr-0 max-md:pt-0`}>
 
                         <div className="block max-md:hidden">
-                            <DataTable value={filteredCustomers || data.results} paginator rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
+                            <DataTable value={data?.results}  rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
                                 <Column headerClassName="custom-column-header" body={(rowData) => {
                                     return (
                                         <>
@@ -783,7 +789,7 @@ const Payout = () => {
                             `}
                         </style>
                         <div className="hidden max-md:block">
-                            <DataTable value={filteredCustomers || data.results} paginator scrollable
+                            <DataTable value={data?.results}  scrollable
                                 scrollHeight="65vh" rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
                                 <Column body={(rowData) => {
                                     return (
@@ -922,7 +928,7 @@ const Payout = () => {
                             </DataTable>
                         </div>
 
-                        <div className="flex relative pages items-center justify-between">
+                        {/* <div className="flex relative pages items-center justify-between">
                             <p className={` text-[14px] font-normal md:absolute left-[46%] top-[-50px] duration-300 ${isDarkMode ? "text-[#fff]" : "text-[#252840]"} z-20 `}><input type='number' defaultValue={1} onInput={(e) => {
                                 if (e.target.value > Math.ceil(data.count / 10)) {
                                     e.target.value = Math.ceil(data.count / 10)
@@ -932,9 +938,40 @@ const Payout = () => {
                                 setPage(e.target.value);
                             }} max={12} className='bg-transparent rounded-lg text-center border border-[#fff] h-[32px] w-[35px]' /> из {Math.ceil(data.count / 10)}</p>
                             <p className={`text-right text-[14px] font-normal mr-4 absolute right-0 top-[-45px] z-30 duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p>
-                        </div>
+                        </div> */}
                     </div>
+                    {data?.count >= 10 &&
+                        <div className="pagination-buttons bg-transparent flex items-center my-4">
 
+                            <button className={`text-[#2D54DD]`} onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage)}>
+                                <FaAngleLeft />
+                            </button>
+
+                            <input
+                                type="number"
+                                onChange={(e) => {
+                                    const value = e.target.value;
+
+                                    if (value === "") {
+                                        setCurrentPage("");
+                                    } else {
+                                        const page = Math.max(1, Math.min(totalPages, Number(value)));
+                                        setCurrentPage(page);
+                                    }
+                                }}
+                                onBlur={() => {
+                                    if (currentPage === "") setCurrentPage(1);
+                                }}
+                                value={currentPage}
+                                className={`w-[50px] border mx-2 text-center page-button rounded-md px-[12px] py-1 ${isDarkMode ? "text-[#fff]" : ""} bg-[#D9D9D91F]`}
+                            />
+
+
+                            <button className={`text-[#2D54DD]`} onClick={() => setCurrentPage(totalPages > currentPage ? currentPage + 1 : currentPage)}>
+                                <FaAngleRight />
+                            </button>
+                        </div>
+                    }
                     <div onClick={() => { setModal(!modal); setCancel("") }} className={`${(!modal) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
                     <div onClick={() => { setModal(!modal); setCancel("") }} className={`${(!modalChek) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
                     <div onClick={() => { setZoom(!zoom) }} className={`${(!zoom) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
