@@ -262,60 +262,6 @@ const Payout = () => {
         setTime_2(cleanedValue);
         setEndTime(cleanedValue);
     };
-    // useEffect(() => {
-    //     const filteredData = data?.results?.filter(customer => {
-    //         const customerDate = new Date(customer?.created_at)
-    //         let [startHour, startMinute] = startTime.split(":");
-    //         let [endHour, endMinute] = endTime.split(":");
-
-    //         let endDateTime;
-    //         let startDateTime;
-
-    //         if (startTime && !startMinute) {
-    //             startDateTime = new Date(`${startDate}T${((+startHour + 1) + ':' + "00") || '00:00'}`)
-    //         } else if (startTime) {
-    //             startDateTime = new Date(`${startDate}T${((+startHour + 1) + ':' + startMinute) || '00:00'}`)
-    //         } else {
-    //             startDateTime = new Date(`${startDate}T00:00`);
-    //         }
-    //         if (endDate) {
-    //             if (+endHour === 23 && +endMinute > 1) {
-    //                 endDateTime = new Date(`${endDate}T${((+endHour) + ':' + endMinute) || '23:59'}`)
-    //             } else if (endTime && !endMinute) {
-    //                 endDateTime = new Date(`${endDate}T${((+endHour + 1) + ':' + "00") || '00:00'}`)
-    //             } else if (endTime) {
-    //                 endDateTime = new Date(`${endDate}T${((+endHour + 1) + ':' + endMinute) || '00:00'}`)
-    //             }
-    //             else {
-    //                 endDateTime = new Date(`${endDate}T23:59`);
-    //             }
-    //         }
-
-    //         let merchantMatch = true;
-    //         if (merchant) {
-    //             merchantMatch = customer.merchant["username"].toLowerCase().includes(merchant.toLowerCase());
-    //         }
-    //         let traderMatch = true;
-    //         if (trader) {
-    //             traderMatch = customer.trader ? customer.trader["username"].toLowerCase().includes(trader.toLowerCase()) : "";
-    //         }
-    //         let statusMatch = true;
-    //         if (selectStatus) {
-    //             if (selectStatus.toLowerCase() === "pending") {
-    //                 statusMatch = ["pending", "wait_confirm", "in_progress"].includes(customer.status.toLowerCase());
-    //             } else {
-    //                 statusMatch = customer.status.toLowerCase() === selectStatus.toLowerCase();
-    //             }
-    //         }
-    //         let methodMatch = true;
-    //         if (selectMethod) {
-    //             methodMatch = customer.method.name.toLowerCase() === selectMethod.toLowerCase();
-    //         }
-
-    //         return (customerDate >= startDateTime || !startDateTime) && (!endDateTime || customerDate <= endDateTime) && traderMatch && methodMatch && merchantMatch && statusMatch;
-    //     });
-    //     setFilteredCustomers(filteredData);
-    // }, [startDate, endDate, merchant, trader, selectStatus, startTime, endTime, selectMethod]);
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -549,7 +495,7 @@ const Payout = () => {
                         {localStorage.getItem("role") !== "merchant" &&
                             <input onChange={(e) => setTrader(e.target.value)} placeholder='Трейдер' type="text" className={` pl-[12px] w-[155px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
                         }
-                        <select onChange={(e) => setSelectMethod(e.target.value)} className={`${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] min-w-[155px] h-[40px]`} name="" id="">
+                        <select onChange={(e) => setSelectMethod(e.target.value)} className={`${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] max-w-[155px] h-[40px]`} name="" id="">
                             <option value="" selected>Метод</option>
                             {[...new Set(methods)].map(item => (
                                 <option key={item}>{item}</option>
@@ -757,16 +703,28 @@ const Payout = () => {
                                 }}></Column>
 
                                 <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
-                                    if (rowData.status == "wait_confirm" || rowData.status == "in_progress" || rowData.status == "pending") {
+                                    if (rowData.status == "in_progress") {
                                         return (
                                             <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
                                                 В обработке
                                             </div>
                                         );
+                                    } else if (rowData.status == "wait_confirm") {
+                                        return (
+                                            <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                Ожидает <br /> подтверждения
+                                            </div>
+                                        );
+                                    } else if (rowData.status == "pending") {
+                                        return (
+                                            <div className='bg-[#37B67E]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                В ожидании
+                                            </div>
+                                        )
                                     } else if (rowData.status == "completed") {
                                         return (
                                             <div className='bg-[#37B67E]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                Успешно
+                                                Завершено
                                             </div>
                                         )
                                     } else {
@@ -910,16 +868,28 @@ const Payout = () => {
                                 }}></Column>
 
                                 <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
-                                    if (rowData.status == "wait_confirm" || rowData.status == "in_progress" || rowData.status == "pending") {
+                                    if (rowData.status == "in_progress") {
                                         return (
                                             <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
                                                 В обработке
                                             </div>
                                         );
+                                    } else if (rowData.status == "wait_confirm") {
+                                        return (
+                                            <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                Ожидает <br /> подтверждения
+                                            </div>
+                                        );
+                                    } else if (rowData.status == "pending") {
+                                        return (
+                                            <div className='bg-[#37B67E]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                В ожидании
+                                            </div>
+                                        )
                                     } else if (rowData.status == "completed") {
                                         return (
                                             <div className='bg-[#37B67E]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                Успешно
+                                                Завершено
                                             </div>
                                         )
                                     } else {
