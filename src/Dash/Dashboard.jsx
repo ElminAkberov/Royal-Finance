@@ -34,23 +34,11 @@ const Dashboard = () => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const totalPages = Math.ceil((data?.count || 1) / 10);
-    console.log(data?.count)
 
-    const getPageRange = () => {
-        if (totalPages <= 3) {
-            return Array.from({ length: totalPages }, (_, i) => i + 1);
-        } else if (currentPage === 1) {
-            return [1, 2, 3];
-        } else if (currentPage === totalPages) {
-            return [totalPages - 2, totalPages - 1, totalPages];
-        } else {
-            return [currentPage - 1, currentPage, currentPage + 1];
-        }
-    };
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/refills/?method=${selectMethod && selectMethod}&status=${selectStatus && selectStatus}&created_at_before=${time_2 ? endDate + "T" + time_2 : endDate}&created_at_after=${time ? startDate + "T" + time : startDate}&hash=${hash && hash}&page=${currentPage && currentPage}`, {
+                const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/refills/?method=${selectMethod && selectMethod}&status=${selectStatus && selectStatus}&created_at_before=${time_2 ? endDate + "T" + time_2 : endDate}&created_at_after=${time ? startDate + "T" + time : startDate}&hash=${hash && hash}&page=${currentPage == "" ? 1 : currentPage}`, {
                     method: "GET",
                     headers: {
                         "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
@@ -79,7 +67,7 @@ const Dashboard = () => {
                     }
                 } else if (response.status === 400) {
                     console.log("Bad Request");
-                } else if (response.status === 404) {setData(0) } else if (response.ok) {
+                } else if (response.status === 404) { setData(0) } else if (response.ok) {
                     const data = await response.json();
                     setData(data);
                 } else {
