@@ -107,14 +107,14 @@ const Payout = () => {
         };
 
         fetchData();
-    }, [navigate, selectStatus,merchant,trader,selectMethod,time,time_2,endDate,startDate,currentPage]);
+    }, [navigate, selectStatus, merchant, trader, selectMethod, time, time_2, endDate, startDate, currentPage]);
 
     const handleUpload = async (e) => {
         e.preventDefault();
         try {
             const formData = new FormData();
             formData.append("receipts", describeImg);
-
+            console.log(describeImg)
             const response = await axios.post(`https://dev.royal-pay.org/api/v1/internal/payouts/submit/${id}/`, formData, {
                 headers: {
                     "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
@@ -205,11 +205,11 @@ const Payout = () => {
     };
     let [zoom, setZoom] = useState(false)
 
- 
+
 
     let methods = []
     data?.results?.map(item => methods.push(item.method.name))
-   
+
 
     // payout
     let [cancel, setCancel] = useState(false)
@@ -641,7 +641,7 @@ const Payout = () => {
                     <div className={`${isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]"}  max-md:pr-0 max-md:pt-0`}>
 
                         <div className="block max-md:hidden">
-                            <DataTable value={data?.results}  rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
+                            <DataTable value={data?.results} rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
                                 <Column headerClassName="custom-column-header" body={(rowData) => {
                                     return (
                                         <>
@@ -649,11 +649,16 @@ const Payout = () => {
                                                 {(rowData.status == "completed" || rowData.status == "canceled") ?
                                                     <>
                                                         <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
-                                                            <img className='mx-auto ' src='/assets/img/ion_eye.svg' />
+                                                            <img className='mx-auto min-w-[24px]' src='/assets/img/ion_eye.svg' />
                                                         </div>
+                                                        {rowData.status == "completed" &&
+                                                            <div onClick={() => { handleShow(rowData); setCancelCheck(!cancelCheck); setId(rowData.id) }} className="cursor-pointer">
+                                                                <img className='mx-auto min-w-[24px]' src='/assets/img/Connect.svg' />
+                                                            </div>
+                                                        }
                                                         {rowData.receipts.length > 0 &&
                                                             <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
-                                                                <img className='mx-auto' src='/assets/img/Group.svg' />
+                                                                <img className='mx-auto min-w-[20px]' src='/assets/img/Group.svg' />
                                                             </div>
                                                         }
                                                     </>
@@ -667,9 +672,7 @@ const Payout = () => {
                                                                 <img className='mx-auto' src='/assets/img/Group.svg' />
                                                             </div>
                                                         }
-                                                        <div onClick={() => { handleShow(rowData); setCancelCheck(!cancelCheck); setId(rowData.id) }} className="cursor-pointer">
-                                                            <img className='mx-auto' src='/assets/img/Connect.svg' />
-                                                        </div>
+
                                                     </>
                                                 }
                                             </div>
@@ -789,7 +792,7 @@ const Payout = () => {
                             `}
                         </style>
                         <div className="hidden max-md:block">
-                            <DataTable value={data?.results}  scrollable
+                            <DataTable value={data?.results} scrollable
                                 scrollHeight="65vh" rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
                                 <Column body={(rowData) => {
                                     return (
@@ -798,11 +801,16 @@ const Payout = () => {
                                                 {(rowData.status == "completed" || rowData.status == "canceled") ?
                                                     <>
                                                         <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
-                                                            <img className='mx-auto' src='/assets/img/ion_eye.svg' />
+                                                            <img className='mx-auto min-w-[20px]' src='/assets/img/ion_eye.svg' />
                                                         </div>
+                                                        {rowData.status == "completed" &&
+                                                            <div onClick={() => { handleShow(rowData); setCancelCheck(!cancelCheck); setId(rowData.id) }} className="cursor-pointer">
+                                                                <img className='mx-auto min-w-[20px]' src='/assets/img/Connect.svg' />
+                                                            </div>
+                                                        }
                                                         {rowData.receipts.length > 0 &&
                                                             <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
-                                                                <img className='mx-auto' src='/assets/img/Group.svg' />
+                                                                <img className='mx-auto min-w-[18px]' src='/assets/img/Group.svg' />
                                                             </div>
                                                         }
                                                     </>
@@ -816,9 +824,7 @@ const Payout = () => {
                                                                 <img className='mx-auto' src='/assets/img/Group.svg' />
                                                             </div>
                                                         }
-                                                        <div onClick={() => { handleShow(rowData); setCancelCheck(!cancelCheck); setId(rowData.id) }} className="cursor-pointer">
-                                                            <img className='mx-auto' src='/assets/img/Connect.svg' />
-                                                        </div>
+
                                                     </>
                                                 }
                                             </div>
@@ -940,38 +946,43 @@ const Payout = () => {
                             <p className={`text-right text-[14px] font-normal mr-4 absolute right-0 top-[-45px] z-30 duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p>
                         </div> */}
                     </div>
-                    {data?.count >= 10 &&
-                        <div className="pagination-buttons bg-transparent flex items-center my-4">
+                    <div className="flex items-center justify-between">
 
-                            <button className={`text-[#2D54DD]`} onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage)}>
-                                <FaAngleLeft />
-                            </button>
+                        {data?.count >= 10 &&
+                            <div className="pagination-buttons bg-transparent flex items-center my-4">
 
-                            <input
-                                type="number"
-                                onChange={(e) => {
-                                    const value = e.target.value;
+                                <button className={`text-[#2D54DD]`} onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage)}>
+                                    <FaAngleLeft />
+                                </button>
 
-                                    if (value === "") {
-                                        setCurrentPage("");
-                                    } else {
-                                        const page = Math.max(1, Math.min(totalPages, Number(value)));
-                                        setCurrentPage(page);
-                                    }
-                                }}
-                                onBlur={() => {
-                                    if (currentPage === "") setCurrentPage(1);
-                                }}
-                                value={currentPage}
-                                className={`w-[50px] border mx-2 text-center page-button rounded-md px-[12px] py-1 ${isDarkMode ? "text-[#fff]" : ""} bg-[#D9D9D91F]`}
-                            />
+                                <input
+                                    type="number"
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+
+                                        if (value === "") {
+                                            setCurrentPage("");
+                                        } else {
+                                            const page = Math.max(1, Math.min(totalPages, Number(value)));
+                                            setCurrentPage(page);
+                                        }
+                                    }}
+                                    onBlur={() => {
+                                        if (currentPage === "") setCurrentPage(1);
+                                    }}
+                                    value={currentPage}
+                                    className={`w-[50px] border mx-2 text-center page-button rounded-md px-[12px] py-1 ${isDarkMode ? "text-[#fff]" : ""} bg-[#D9D9D91F]`}
+                                />
 
 
-                            <button className={`text-[#2D54DD]`} onClick={() => setCurrentPage(totalPages > currentPage ? currentPage + 1 : currentPage)}>
-                                <FaAngleRight />
-                            </button>
-                        </div>
-                    }
+                                <button className={`text-[#2D54DD]`} onClick={() => setCurrentPage(totalPages > currentPage ? currentPage + 1 : currentPage)}>
+                                    <FaAngleRight />
+                                </button>
+                            </div>
+                        }
+                        <p className={`text-right text-[14px] font-normal mr-4  z-30 duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data?.count ? data?.count : 0} результата</p>
+                    </div>
+
                     <div onClick={() => { setModal(!modal); setCancel("") }} className={`${(!modal) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
                     <div onClick={() => { setModal(!modal); setCancel("") }} className={`${(!modalChek) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
                     <div onClick={() => { setZoom(!zoom) }} className={`${(!zoom) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
@@ -1139,7 +1150,7 @@ const Payout = () => {
                                         </button>
                                     </div>
                                 </form>
-
+                                {/* buttonlar */}
                                 <div className="flex w-full text-white md:justify-end gap-x-4">
                                     {details?.map((data, index) => {
                                         return (
@@ -1163,6 +1174,13 @@ const Payout = () => {
                                                         </button>
                                                     </form>
                                                 )}
+                                                {data.status == "completed" &&
+                                                    <form >
+                                                        <button type='submit' className='bg-[#2E70F5] max-md:mx-auto px-[37.5px]  py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                                            Submit
+                                                        </button>
+                                                    </form>
+                                                }
                                             </div>
                                         )
                                     })}
@@ -1172,7 +1190,7 @@ const Payout = () => {
                         </div>
                     </div>
                     {/* cek yuklemek ucun */}
-                    <div className={`${!cancelCheck && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+                    <div onClick={() => { setCancelCheck(!cancelCheck); setImageSrc("") }} className={`${!cancelCheck && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
 
                     <form onSubmit={handleUpload} className={`${!cancelCheck ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} p-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[763px] rounded-[24px]`}>
                         <div className="relative mb-8">

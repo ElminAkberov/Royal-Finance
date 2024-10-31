@@ -634,39 +634,43 @@ const Dashboard = () => {
                             <p className={`text-right text-[14px] font-normal mr-4 absolute right-0 top-[-45px] z-30 duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p>
                         </div> */}
                     </div>
-                    {data?.count >= 10 &&
-                        <div className="pagination-buttons bg-transparent flex items-center my-4">
+                    <div className="flex items-center justify-between">
+                        {data?.count >= 10 &&
+                            <div className="pagination-buttons bg-transparent flex items-center my-4">
 
-                            <button className={`text-[#2D54DD]`} onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage)}>
-                                <FaAngleLeft />
-                            </button>
-
-
-                            <input
-                                type="number"
-                                onChange={(e) => {
-                                    const value = e.target.value;
-
-                                    if (value === "") {
-                                        setCurrentPage("");
-                                    } else {
-                                        const page = Math.max(1, Math.min(totalPages, Number(value)));
-                                        setCurrentPage(page);
-                                    }
-                                }}
-                                onBlur={() => {
-                                    if (currentPage === "") setCurrentPage(1);
-                                }}
-                                value={currentPage}
-                                className={`w-[40px] border mx-2 text-center page-button rounded-md px-[12px] py-1 ${isDarkMode ? "text-[#fff]" : ""} bg-[#D9D9D91F]`}
-                            />
+                                <button className={`text-[#2D54DD]`} onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage)}>
+                                    <FaAngleLeft />
+                                </button>
 
 
-                            <button className={`text-[#2D54DD]`} onClick={() => setCurrentPage(totalPages > currentPage ? currentPage + 1 : currentPage)}>
-                                <FaAngleRight />
-                            </button>
-                        </div>
-                    }
+                                <input
+                                    type="number"
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+
+                                        if (value === "") {
+                                            setCurrentPage("");
+                                        } else {
+                                            const page = Math.max(1, Math.min(totalPages, Number(value)));
+                                            setCurrentPage(page);
+                                        }
+                                    }}
+                                    onBlur={() => {
+                                        if (currentPage === "") setCurrentPage(1);
+                                    }}
+                                    value={currentPage}
+                                    className={`w-[40px] border mx-2 text-center page-button rounded-md px-[12px] py-1 ${isDarkMode ? "text-[#fff]" : ""} bg-[#D9D9D91F]`}
+                                />
+
+
+                                <button className={`text-[#2D54DD]`} onClick={() => setCurrentPage(totalPages > currentPage ? currentPage + 1 : currentPage)}>
+                                    <FaAngleRight />
+                                </button>
+                            </div>
+                        }
+                        <p className={`text-end w-full my-3 text-[14px] font-normal mr-4  z-30 duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data?.count ? data?.count : 0} результата</p>
+                    </div>
+
                     {/* <p className={`text-right text-[14px] font-normal relative bottom-[45px] mr-4  duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p> */}
                     <div onClick={() => setModal(!modal)} className={`${!modal && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
                     <div className={`${!modal ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px]`}>
