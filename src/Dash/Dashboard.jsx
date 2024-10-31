@@ -647,29 +647,37 @@ const Dashboard = () => {
                         </div> */}
                     </div>
                     {data?.count >= 10 &&
-                    <div className="pagination-buttons bg-transparent flex items-center my-4">
-                        {currentPage > 1 && (
-                            <button className={`text-[#2D54DD]`} onClick={() => setCurrentPage(currentPage - 1)}>
+                        <div className="pagination-buttons bg-transparent flex items-center my-4">
+
+                            <button className={`text-[#2D54DD]`} onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage)}>
                                 <FaAngleLeft />
                             </button>
-                        )}
+                           
 
-                        {getPageRange().map((page) => (
-                            <button
-                                key={page}
-                                className={`page-button px-[12px] py-1  ${isDarkMode ? "text-[#fff]" : ""} ${currentPage === page ? 'bg-[#D9D9D91F]' : ''}`}
-                                onClick={() => setCurrentPage(page)}
-                            >
-                                {page}
-                            </button>
-                        ))}
+                            <input
+                                type="number"
+                                onChange={(e) => {
+                                    const value = e.target.value;
 
-                        {currentPage < totalPages && (
-                            <button className={`text-[#2D54DD]`} onClick={() => setCurrentPage(currentPage + 1)}>
+                                    if (value === "") {
+                                        setCurrentPage("");
+                                    } else {
+                                        const page = Math.max(1, Math.min(totalPages, Number(value)));
+                                        setCurrentPage(page);
+                                    }
+                                }}
+                                onBlur={() => {
+                                    if (currentPage === "") setCurrentPage(1);
+                                }}
+                                value={currentPage}
+                                className={`w-[40px] border mx-2 text-center page-button rounded-md px-[12px] py-1 ${isDarkMode ? "text-[#fff]" : ""} bg-[#D9D9D91F]`}
+                            />
+
+
+                            <button className={`text-[#2D54DD]`} onClick={() => setCurrentPage(totalPages > currentPage ? currentPage + 1 : currentPage)}>
                                 <FaAngleRight />
                             </button>
-                        )}
-                    </div>
+                        </div>
                     }
                     {/* <p className={`text-right text-[14px] font-normal relative bottom-[45px] mr-4  duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p> */}
                     <div onClick={() => setModal(!modal)} className={`${!modal && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
