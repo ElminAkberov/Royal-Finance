@@ -137,59 +137,34 @@ const Dashboard = () => {
         setDetails([info])
     }
     const handleDownload = () => {
-        const csvData = `ID,Merchant,Trader,Amount,Method,Merchant Rate,Merchant amount with rate,Trader Rate,Trader amount with rate,Status,Created At,Updated At
-1032,u1143,-,"300.00",SBER,"2.00","306.00","0.00","0.00",canceled,30.10.2024 19:25:22,30.10.2024 20:52:36
-1031,u1143,-,"300.00",SBP,"1.00","303.00","0.00","0.00",canceled,30.10.2024 19:16:36,30.10.2024 20:49:46
-1030,u1143,-,"300.00",SBER,"2.00","306.00","0.00","0.00",canceled,30.10.2024 19:15:22,30.10.2024 22:12:19
-1029,u1143,-,"200.00",SBER,"2.00","204.00","0.00","0.00",canceled,30.10.2024 19:14:52,30.10.2024 23:07:33
-1028,u1143,-,"200.00",SBER,"2.00","204.00","0.00","0.00",canceled,30.10.2024 18:41:41,30.10.2024 22:23:21
-1027,u1143,-,"299.00",SBER,"2.00","304.98","0.00","0.00",canceled,30.10.2024 18:41:19,30.10.2024 22:18:23
-1026,u1143,-,"300.00",SBER,"2.00","306.00","0.00","0.00",canceled,30.10.2024 18:40:26,30.10.2024 22:25:18
-1025,u1143,-,"121.00",SBER,"2.00","123.42","0.00","0.00",canceled,30.10.2024 18:39:59,30.10.2024 22:26:02
-1024,u1143,-,"121.00",SBER,"2.00","123.42","0.00","0.00",canceled,30.10.2024 18:38:17,30.10.2024 22:27:55
-1023,u1143,-,"121.00",SBER,"2.00","123.42","0.00","0.00",canceled,30.10.2024 18:35:39,31.10.2024 00:36:24
-1022,u1143,-,"121.00",SBER,"2.00","123.42","0.00","0.00",wait_confirm,30.10.2024 18:34:12,30.10.2024 18:34:12
-1021,u1143,-,"121.00",SBER,"2.00","123.42","0.00","0.00",wait_confirm,30.10.2024 18:32:55,30.10.2024 18:32:55
-1020,u1143,-,"121.00",SBER,"2.00","123.42","0.00","0.00",wait_confirm,30.10.2024 18:24:06,30.10.2024 18:24:06
-1019,u1143,-,"121.00",SBER,"2.00","123.42","0.00","0.00",wait_confirm,30.10.2024 18:22:52,30.10.2024 18:22:52
-1018,u1143,-,"121.00",SBER,"2.00","123.42","0.00","0.00",wait_confirm,30.10.2024 18:22:52,30.10.2024 18:22:52
-1017,u1143,-,"121.00",SBER,"2.00","123.42","0.00","0.00",wait_confirm,30.10.2024 18:12:06,30.10.2024 18:12:06
-1016,u1143,-,"121.00",SBER,"2.00","123.42","0.00","0.00",wait_confirm,30.10.2024 18:09:02,30.10.2024 18:09:02
-1015,u1143,-,"121.00",SBER,"2.00","123.42","0.00","0.00",wait_confirm,30.10.2024 18:08:18,30.10.2024 18:08:18
-1014,u1143,-,"121.00",SBER,"2.00","123.42","0.00","0.00",wait_confirm,30.10.2024 18:06:35,30.10.2024 18:06:35
-1013,u1143,-,"121.00",SBER,"2.00","123.42","0.00","0.00",wait_confirm,30.10.2024 18:00:27,30.10.2024 18:00:27
-1012,u1143,-,"121.00",SBER,"2.00","123.42","0.00","0.00",wait_confirm,30.10.2024 17:59:52,30.10.2024 17:59:52
-1011,u1143,-,"121.00",INTERBANK,"12.00","135.52","0.00","0.00",wait_confirm,30.10.2024 17:57:03,30.10.2024 17:57:03
-1010,u1143,-,"121.00",SBP,"1.00","122.21","0.00","0.00",wait_confirm,30.10.2024 17:56:10,30.10.2024 17:56:10
-1009,u1143,-,"121.00",SBP,"1.00","122.21","0.00","0.00",wait_confirm,30.10.2024 17:55:25,30.10.2024 17:55:25
-1008,u1143,-,"121.00",SBP,"1.00","122.21","0.00","0.00",wait_confirm,30.10.2024 17:38:28,30.10.2024 17:38:28
-1007,u1143,-,"121.00",SBP,"1.00","122.21","0.00","0.00",wait_confirm,30.10.2024 17:34:11,30.10.2024 17:34:11
-1006,u1143,-,"121.00",SBP,"1.00","122.21","0.00","0.00",wait_confirm,30.10.2024 17:32:50,30.10.2024 17:32:50
-1005,u1143,-,"121.00",SBP,"1.00","122.21","0.00","0.00",wait_confirm,30.10.2024 17:31:27,30.10.2024 17:31:27
-1004,u1143,-,"100.00",SBP,"1.00","101.00","0.00","0.00",wait_confirm,30.10.2024 17:30:01,30.10.2024 17:30:01
-1003,u1143,-,"100.00",SBP,"1.00","101.00","0.00","0.00",wait_confirm,30.10.2024 14:30:28,30.10.2024 14:30:28
-1002,u1143,-,"100.00",SBP,"1.00","101.00","0.00","0.00",canceled,30.10.2024 14:27:41,30.10.2024 22:09:35
-1001,u1143,-,"100.00",SBP,"1.00","101.00","0.00","0.00",wait_confirm,30.10.2024 14:20:13,30.10.2024 14:20:13
-1000,u1143,-,"1.00",SBP,"1.00","1.01","0.00","0.00",pending,30.10.2024 13:17:03,30.10.2024 13:17:03
-116,MerchantTest,u1143,"2000.00",SBP,"5.00","2100.00","1.00","2020.00",canceled,30.10.2024 12:16:58,30.10`; // Add the rest of your data here
+        fetch("https://dev.royal-pay.org/api/v1/internal/refills/download/", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("access")}`
+            }
+        })
+            .then(res => res.text())
+            .then(csvData => {
+                const workbook = XLSX.read(csvData, { type: 'string', raw: true, FS: ',' });
 
-        const workbook = XLSX.read(csvData, { type: 'string', raw: true });
+                const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
 
-        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+                const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+                const url = URL.createObjectURL(blob);
 
-        const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'data.xlsx');
+                document.body.appendChild(link);
+                link.click();
 
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'data.xlsx');
-        document.body.appendChild(link);
-
-        link.click();
-
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            })
+            .catch(err => console.error(err));
     };
+
 
     return (
         <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border `}>

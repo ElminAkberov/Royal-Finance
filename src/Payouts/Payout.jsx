@@ -306,6 +306,34 @@ const Payout = () => {
             console.error("An error occurred:", error);
         }
     }
+    const handleDownload = () => {
+        fetch("https://dev.royal-pay.org/api/v1/internal/payouts/download/", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("access")}`
+            }
+        })
+            .then(res => res.text())
+            .then(csvData => {
+                const workbook = XLSX.read(csvData, { type: 'string', raw: true, FS: ',' });
+
+                const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+                const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+                const url = URL.createObjectURL(blob);
+
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'data.xlsx');
+                document.body.appendChild(link);
+                link.click();
+
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            })
+            .catch(err => console.error(err));
+    };
 
     return (
         <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border`}>
@@ -467,7 +495,7 @@ const Payout = () => {
                                     </g>
                                 </svg>
                                 {/* download */}
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <svg onClick={handleDownload} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M12 16L7 11L8.4 9.55L11 12.15V4H13V12.15L15.6 9.55L17 11L12 16ZM6 20C5.45 20 4.97933 19.8043 4.588 19.413C4.19667 19.0217 4.00067 18.5507 4 18V15H6V18H18V15H20V18C20 18.55 19.8043 19.021 19.413 19.413C19.0217 19.805 18.5507 20.0007 18 20H6Z" fill="#2552F2" />
                                 </svg>
                                 {/* filter */}
@@ -486,7 +514,7 @@ const Payout = () => {
                                     </svg>
                                 </div>
                             </div>
-                            <button className='text-[#2D54DD] text-[14px] max-md:hidden mr-4 font-normal border-[#2D54DD] border-2 px-[24px] rounded-[8px] py-[8px] min-w-[145px]'>Скачать отчет</button>
+                            <button onClick={handleDownload} className='text-[#2D54DD] text-[14px] max-md:hidden mr-4 font-normal border-[#2D54DD] border-2 px-[24px] rounded-[8px] py-[8px] min-w-[145px]'>Скачать отчет</button>
                         </div>
                     </div>
                     {/* filterler */}
@@ -1069,7 +1097,7 @@ const Payout = () => {
                                             {data.receipts.length > 0 &&
                                                 <div className="modal_payout">
                                                     <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Чек </h5>
-                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}><img className='w-[200px] h-[150px] object-contain' onClick={()=>{setZoom(!zoom)}} src={data.receipts[0] && data.receipts[0].endsWith('.pdf') ? '/assets/img/check.jpg' : data.receipts[0]} /> </p>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}><img className='w-[200px] h-[150px] object-contain' onClick={() => { setZoom(!zoom) }} src={data.receipts[0] && data.receipts[0].endsWith('.pdf') ? '/assets/img/check.jpg' : data.receipts[0]} /> </p>
                                                 </div>
                                             }
                                         </div>
