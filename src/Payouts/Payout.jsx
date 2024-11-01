@@ -51,7 +51,6 @@ const Payout = () => {
     let [otkImgDesc, setOtkImgDesc] = useState("")
     const handleCopy = (e) => {
         const textToCopy = e.currentTarget.previousElementSibling.innerText.split('\n\n').join("")
-        console.log(e.currentTarget)
         navigator.clipboard.writeText(textToCopy)
             .then(() => {
                 setCopy(true);
@@ -121,7 +120,6 @@ const Payout = () => {
         try {
             const formData = new FormData();
             formData.append("receipts", describeImg);
-            console.log(describeImg)
             const response = await axios.post(`https://dev.royal-pay.org/api/v1/internal/payouts/submit/${id}/`, formData, {
                 headers: {
                     "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,

@@ -86,7 +86,6 @@ const Dashboard = () => {
             setLoading(false)
         }
     };
-    console.log(data)
     useEffect(() => {
         handleFilter();
     }, [currentPage]);
