@@ -7,11 +7,13 @@ import { Context } from '../context/ContextProvider';
 import axios from 'axios';
 import { LuCopy } from "react-icons/lu";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
+import Loading from '../Loading/Loading';
 
 const Payout = () => {
+    let [error, setError] = useState({ "handleCancel": false, "handleUpload": false, "handleAccept": false })
     const [imageSrc, setImageSrc] = useState(null);
     const [describeImg, setDescribeImg] = useState(null)
-    let [method_name, setMethod_name] = useState("")
+    const [loading, setLoading] = useState(true);
     let [dropDown, setDropDown] = useState(false)
     let { isDarkMode } = useContext(Context)
     let navigate = useNavigate()
@@ -63,50 +65,56 @@ const Payout = () => {
             });
     }
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/?status=${selectStatus}&merchant=${merchant}&trader=${trader}&method=${selectMethod}&created_at_after=${time ? startDate + "T" + time : startDate}&created_at_before=${time_2 ? endDate + "T" + time_2 : endDate}&page=${currentPage == "" ? 1 : currentPage}`, {
-                    method: "GET",
+    const handleFilter = async () => {
+        setLoading(true)
+        try {
+            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/?status=${selectStatus}&merchant=${merchant}&trader=${trader}&method=${selectMethod}&created_at_after=${time ? startDate + "T" + time : startDate}&created_at_before=${time_2 ? endDate + "T" + time_2 : endDate}&page=${currentPage === "" ? 1 : currentPage}`, {
+                method: "GET",
+                headers: {
+                    "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
+                }
+            });
+
+            if (response.status === 401) {
+                console.log("Unauthorized access, attempting to refresh token.");
+                const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
+                    method: "POST",
                     headers: {
-                        "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
-                    }
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        refresh: localStorage.getItem("refresh"),
+                    }),
                 });
 
-                if (response.status === 401) {
-                    console.log("Unauthorized access, attempting to refresh token.");
-                    const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            refresh: localStorage.getItem("refresh"),
-                        }),
-                    });
-
-                    if (refreshResponse.ok) {
-                        const refreshData = await refreshResponse.json();
-                        localStorage.setItem("access", refreshData.access);
-                        return fetchData();
-                    } else {
-                        console.log("Failed to refresh token, redirecting to login.");
-                        navigate("/login");
-                    }
-                } else if (response.status === 404) { setData(0) } else if (response.ok) {
-                    const data = await response.json();
-                    setData(data);
+                if (refreshResponse.ok) {
+                    const refreshData = await refreshResponse.json();
+                    localStorage.setItem("access", refreshData.access);
+                    return handleFilter(); // Retry fetch with new token
                 } else {
-                    console.log("Unexpected error:", response.status);
+                    console.log("Failed to refresh token, redirecting to login.");
+                    navigate("/login");
                 }
-            } catch (error) {
-                console.error("An error occurred:", error);
-                navigate("/login");
+            } else if (response.status === 404) {
+                setData(0);
+            } else if (response.ok) {
+                const data = await response.json();
+                setData(data);
+            } else {
+                console.log("Unexpected error:", response.status);
             }
-        };
+        } catch (error) {
+            console.error("An error occurred:", error);
+            navigate("/login");
+        } finally {
+            setLoading(false)
+        }
+    };
 
-        fetchData();
-    }, [navigate, selectStatus, merchant, trader, selectMethod, time, time_2, endDate, startDate, currentPage]);
+    useEffect(() => {
+        handleFilter();
+    }, []);
+
 
     const handleUpload = async (e) => {
         e.preventDefault();
@@ -121,15 +129,16 @@ const Payout = () => {
                 }
             });
 
-            console.log(response.data);
-        } catch (error) {
-            if (error.response.status === 400) {
-            } else if (error.response.status === 500) {
-                console.error("Internal Server Error: Please try again later.", error.message);
+            if (!response.ok || response.status == 400) {
+                setError((prevError) => ({ ...prevError, "handleUpload": true }));
+            } else {
+                setError((prevError) => ({ ...prevError, "handleUpload": false }));
             }
+        } catch (error) {
+            console.log(error)
+            setError((prevError) => ({ ...prevError, "handleUpload": true }))
         }
     };
-
     const handleCancel = async (e) => {
         e.preventDefault();
         try {
@@ -153,8 +162,14 @@ const Payout = () => {
             } else {
                 console.log("Unexpected error:", response.status);
             }
+            if (!response.ok || response.status == 400) {
+                setError((prevError) => ({ ...prevError, "handleCancel": true }));
+            } else {
+                setError((prevError) => ({ ...prevError, "handleCancel": false }));
+            }
         } catch (error) {
             console.log(error)
+            setError((prevError) => ({ ...prevError, "handleCancel": true }))
         }
     };
 
@@ -292,7 +307,7 @@ const Payout = () => {
         setDetails([info])
     }
     const handleAccept = async (e) => {
-        e.preventDefault()
+        e.preventDefault();
         try {
             const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/accept/${id}/`, {
                 method: "POST",
@@ -302,10 +317,19 @@ const Payout = () => {
                 }
             });
             const data = await response.json();
+
+            if (!response.ok || response.status == 400) {
+                setError((prevError) => ({ ...prevError, handleAccept: true }));
+            } else {
+                setError((prevError) => ({ ...prevError, handleAccept: false }));
+                window.location.reload()
+            }
         } catch (error) {
+            setError((prevError) => ({ ...prevError, handleAccept: true }));
             console.error("An error occurred:", error);
         }
-    }
+    };
+
     const handleDownload = () => {
         fetch("https://dev.royal-pay.org/api/v1/internal/payouts/download/", {
             method: "GET",
@@ -334,7 +358,6 @@ const Payout = () => {
             })
             .catch(err => console.error(err));
     };
-
     return (
         <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border`}>
             <div className='flex'>
@@ -404,12 +427,16 @@ const Payout = () => {
                             {/* profile */}
                             <div className='max-md:flex  items-center justify-between'>
                                 <div onClick={() => setDropDown(!dropDown)} className="bg-[#4CAF50] uppercase rounded-[100px] text-white w-[48px] h-[48px] flex items-center justify-center">
-                                    {localStorage.getItem("username").split("_")[0][0]}
-                                    {localStorage.getItem("username").split("_")[1][0]}
+                                    {(localStorage.getItem("username") !== "undefined") &&
+                                        <>
+                                            {localStorage.getItem("username").split("_")[0][0]}
+                                            {localStorage.getItem("username").split("_")[1][0]}
+                                        </>
+                                    }
                                 </div>
                             </div>
                             <div onClick={() => setDropDown(!dropDown)} className="cursor-pointer ">
-                                <svg width="16" height="10" viewBox="0 0 12 6" fill="none" className='ml-2 my-4' xmlns="http://www.w3.org/2000/svg">
+                                <svg width="16" height="10" viewBox="0 0 12 6" fill="none" className={`ml-2 my-4 ${dropDown ? "rotate-180" : ""} duration-300 `} xmlns="http://www.w3.org/2000/svg">
                                     <path d="M5.57143 6C5.39315 6 5.21485 5.93469 5.07905 5.80469L0.204221 1.13817C-0.0680735 0.877514 -0.0680735 0.456152 0.204221 0.195494C0.476514 -0.0651646 0.916685 -0.0651646 1.18898 0.195494L5.57143 4.39068L9.95388 0.195494C10.2262 -0.0651646 10.6663 -0.0651646 10.9386 0.195494C11.2109 0.456152 11.2109 0.877514 10.9386 1.13817L6.06381 5.80469C5.92801 5.93469 5.74971 6 5.57143 6Z" fill="#60626C" />
                                 </svg>
                             </div>
@@ -571,7 +598,11 @@ const Payout = () => {
                             </div>
                             <input value={time_2} onChange={handleEndTimeChange} type="text" className='bg-transparent outline-none pl-7' placeholder='23:59' />
                         </div>
-
+                        <div className="flex justify-center w-full md:hidden mb-2 ">
+                            <button onClick={handleFilter} className='bg-[#2E70F5] text-[#fff] px-[37.5px] py-[10px] font-normal  text-[14px] rounded-[8px]'>
+                                Применить фильтр
+                            </button>
+                        </div>
                     </div>
                     {localStorage.getItem("role") == "merchant" &&
                         <div className="flex justify-between flex-wrap gap-x-3">
@@ -616,157 +647,165 @@ const Payout = () => {
                     <div className={`${isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]"}  max-md:pr-0 max-md:pt-0`}>
 
                         <div className="block max-md:hidden">
-                            <DataTable value={data?.results} rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
-                                <Column headerClassName="custom-column-header" body={(rowData) => {
-                                    return (
-                                        <>
-                                            <div className='flex justify-center gap-x-[10px]'>
-                                                {(rowData.status == "completed" || rowData.status == "canceled") ?
-                                                    <>
-                                                        <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
-                                                            <img className='mx-auto min-w-[24px]' src='/assets/img/ion_eye.svg' />
-                                                        </div>
-
-                                                        {rowData.receipts.length > 0 &&
-                                                            <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
-                                                                <img className='mx-auto min-w-[20px]' src='/assets/img/Group.svg' />
+                            <div className="flex justify-center mb-2 ">
+                                <button onClick={handleFilter} className='bg-[#2E70F5] text-[#fff] px-[37.5px] py-[10px] font-normal  text-[14px] rounded-[8px]'>
+                                    Применить фильтр
+                                </button>
+                            </div>
+                            {loading ? (
+                                <Loading />
+                            ) :
+                                <DataTable value={data?.results} rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
+                                    <Column headerClassName="custom-column-header" body={(rowData) => {
+                                        return (
+                                            <>
+                                                <div className='flex justify-center gap-x-[10px]'>
+                                                    {(rowData.status == "completed" || rowData.status == "canceled") ?
+                                                        <>
+                                                            <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
+                                                                <img className='mx-auto min-w-[24px]' src='/assets/img/ion_eye.svg' />
                                                             </div>
-                                                        }
-                                                    </>
-                                                    :
-                                                    <>
-                                                        <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
-                                                            <img className='mx-auto min-w-[24px]' src='/assets/img/ion_eye.svg' />
-                                                        </div>
-                                                        {rowData.status == "in_progress" &&
-                                                            <div onClick={() => { handleShow(rowData); setCancelCheck(!cancelCheck); setId(rowData.id) }} className="cursor-pointer">
-                                                                <img className='mx-auto min-w-[24px]' src='/assets/img/Connect.svg' />
+
+                                                            {rowData.receipts.length > 0 &&
+                                                                <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
+                                                                    <img className='mx-auto min-w-[20px]' src='/assets/img/Group.svg' />
+                                                                </div>
+                                                            }
+                                                        </>
+                                                        :
+                                                        <>
+                                                            <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
+                                                                <img className='mx-auto min-w-[24px]' src='/assets/img/ion_eye.svg' />
                                                             </div>
-                                                        }
-                                                        {rowData.receipts.length > 0 &&
-                                                            <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
-                                                                <img className='mx-auto min-w-[20px]' src='/assets/img/Group.svg' />
-                                                            </div>
-                                                        }
+                                                            {rowData.status == "in_progress" &&
+                                                                <div onClick={() => { handleShow(rowData); setCancelCheck(!cancelCheck); setId(rowData.id) }} className="cursor-pointer">
+                                                                    <img className='mx-auto min-w-[24px]' src='/assets/img/Connect.svg' />
+                                                                </div>
+                                                            }
+                                                            {rowData.receipts.length > 0 &&
+                                                                <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
+                                                                    <img className='mx-auto min-w-[20px]' src='/assets/img/Group.svg' />
+                                                                </div>
+                                                            }
 
-                                                    </>
-                                                }
-                                            </div>
-                                        </>
-                                    );
-                                }} headerStyle={{ backgroundColor: '#D9D9D90A', color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Действия" ></Column>
+                                                        </>
+                                                    }
+                                                </div>
+                                            </>
+                                        );
+                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Действия" ></Column>
 
-                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 8px", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header=" ID " body={(rowData) => <div>{rowData.id}</div>} ></Column>
+                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 8px", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header=" ID " body={(rowData) => <div>{rowData.id}</div>} ></Column>
 
-                                <Column body={(rowData) => {
-                                    return (
-                                        <div>
+                                    <Column body={(rowData) => {
+                                        return (
                                             <div>
-                                                <h5>{rowData?.created_at?.split("T")[0]} {rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}/</h5>
-                                                <h5>{rowData?.updated_at?.split("T")[0]} {rowData?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
+                                                <div>
+                                                    <h5>{rowData?.created_at?.split("T")[0]} {rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
+                                                    <h5>{rowData?.updated_at?.split("T")[0]} {rowData?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
+                                                </div>
                                             </div>
-                                        </div>
-                                    )
-                                }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время создания / обновления"  ></Column>
+                                        )
+                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время создания / обновления"  ></Column>
 
-                                {localStorage.getItem("role") !== "trader" &&
-                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" header={"Мерчант"} headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} `} body={(rowData) => {
+                                    {localStorage.getItem("role") !== "trader" &&
+                                        <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" header={"Мерчант"} headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} `} body={(rowData) => {
+                                            return (
+                                                <div>
+                                                    <>
+                                                        <div>{rowData.merchant["username"]}</div>
+                                                    </>
+                                                </div>
+                                            )
+
+                                        }} ></Column>
+                                    }
+                                    {localStorage.getItem("role") !== "merchant" &&
+                                        <Column body={(rowData) => {
+                                            return (
+                                                <div>
+                                                    <>
+                                                        <div>{rowData.trader ? rowData.trader["username"] : "-"}</div>
+                                                    </>
+                                                </div>
+                                            )
+
+                                        }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="course" header="Трейдер" ></Column>
+                                    }
+
+                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="price_2" header="Назначенный трейдер" body={(rowData) => {
                                         return (
                                             <div>
                                                 <>
-                                                    <div>{rowData.merchant["username"]}</div>
+                                                    <div>{rowData.selected_traders.length > 0 ? rowData.selected_traders.map((person, index) => <p key={index}>{person.username}{index !== rowData.selected_traders.length - 1 && ','}</p>) : "-"}</div>
                                                 </>
                                             </div>
                                         )
 
                                     }} ></Column>
-                                }
-                                {localStorage.getItem("role") !== "merchant" &&
-                                    <Column body={(rowData) => {
+
+                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} body={(rowData) => {
                                         return (
                                             <div>
-                                                <>
-                                                    <div>{rowData.trader ? rowData.trader["username"] : "-"}</div>
-                                                </>
+                                                <div>{rowData.bank} Банк</div>
                                             </div>
                                         )
 
-                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="course" header="Трейдер" ></Column>
-                                }
+                                    }} field="code" header="Банк" ></Column>
 
-                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="price_2" header="Назначенный трейдер" body={(rowData) => {
-                                    return (
-                                        <div>
-                                            <>
-                                                <div>{rowData.selected_traders.length > 0 ? rowData.selected_traders.map((person, index) => <p key={index}>{person.username}{index !== rowData.selected_traders.length - 1 && ','}</p>) : "-"}</div>
-                                            </>
-                                        </div>
-                                    )
-
-                                }} ></Column>
-
-                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} body={(rowData) => {
-                                    return (
-                                        <div>
-                                            <div>{rowData.bank} Банк</div>
-                                        </div>
-                                    )
-
-                                }} field="code" header="Банк" ></Column>
-
-                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Метод" body={(rowData) => {
-                                    return <div>{rowData.method["name"]}</div>
-                                }}></Column>
-                                {localStorage.getItem("role") !== "trader" &&
-                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка мерчанта " body={(rowData) => {
-                                        return (<div>{rowData.merchant_rate}</div>)
+                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Метод" body={(rowData) => {
+                                        return <div>{rowData.method["name"]}</div>
                                     }}></Column>
-                                }
-                                {localStorage.getItem("role") !== "merchant" &&
-                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка трейдера" body={(rowData) => {
-                                        return (<div>{rowData.trader_rate}</div>)
-                                    }}></Column>
-                                }
-
-                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Сумма" body={(rowData) => {
-                                    return (<div>{rowData.amount}</div>)
-
-                                }}></Column>
-
-                                <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
-                                    if (rowData.status == "in_progress") {
-                                        return (
-                                            <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                В обработке
-                                            </div>
-                                        );
-                                    } else if (rowData.status == "wait_confirm") {
-                                        return (
-                                            <div className='bg-[#37B67E] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                Ожидает <br /> подтверждения
-                                            </div>
-                                        );
-                                    } else if (rowData.status == "pending") {
-                                        return (
-                                            <div className=' bg-[#FFC107]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                В ожидании
-                                            </div>
-                                        )
-                                    } else if (rowData.status == "completed") {
-                                        return (
-                                            <div className='bg-[#37B67E]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                Завершено
-                                            </div>
-                                        )
-                                    } else {
-                                        return (
-                                            <div className='bg-[#CE2E2E] flex  justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                Отклонено
-                                            </div>
-                                        )
+                                    {localStorage.getItem("role") !== "trader" &&
+                                        <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка мерчанта " body={(rowData) => {
+                                            return (<div>{rowData.merchant_rate}</div>)
+                                        }}></Column>
                                     }
-                                }}></Column>
-                            </DataTable>
+                                    {localStorage.getItem("role") !== "merchant" &&
+                                        <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка трейдера" body={(rowData) => {
+                                            return (<div>{rowData.trader_rate}</div>)
+                                        }}></Column>
+                                    }
+
+                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Сумма" body={(rowData) => {
+                                        return (<div>{rowData.amount}</div>)
+
+                                    }}></Column>
+
+                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
+                                        if (rowData.status == "in_progress") {
+                                            return (
+                                                <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                    В обработке
+                                                </div>
+                                            );
+                                        } else if (rowData.status == "wait_confirm") {
+                                            return (
+                                                <div className='bg-[#37B67E] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                    Ожидает <br /> подтверждения
+                                                </div>
+                                            );
+                                        } else if (rowData.status == "pending") {
+                                            return (
+                                                <div className=' bg-[#FFC107]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                    В ожидании
+                                                </div>
+                                            )
+                                        } else if (rowData.status == "completed") {
+                                            return (
+                                                <div className='bg-[#37B67E]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                    Завершено
+                                                </div>
+                                            )
+                                        } else {
+                                            return (
+                                                <div className='bg-[#CE2E2E] flex  justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                    Отклонено
+                                                </div>
+                                            )
+                                        }
+                                    }}></Column>
+                                </DataTable>}
                         </div>
                         <style>
                             {`
@@ -826,7 +865,7 @@ const Payout = () => {
                                     return (
                                         <div>
                                             <div>
-                                                <h5>{rowData?.created_at?.split("T")[0]} {rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}/</h5>
+                                                <h5>{rowData?.created_at?.split("T")[0]} {rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
                                                 <h5>{rowData?.updated_at?.split("T")[0]} {rowData?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
                                             </div>
                                         </div>
@@ -936,44 +975,45 @@ const Payout = () => {
 
 
                     </div>
-                    <div className="flex items-center justify-between">
+                    {loading ? "" :
+                        <div className="flex items-center justify-between">
+                            {data?.count >= 10 &&
+                                <div className="pagination-buttons bg-transparent flex items-center my-4">
 
-                        {data?.count >= 10 &&
-                            <div className="pagination-buttons bg-transparent flex items-center my-4">
+                                    <button className={`text-[#2D54DD]`} onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage)}>
+                                        <FaAngleLeft />
+                                    </button>
 
-                                <button className={`text-[#2D54DD]`} onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage)}>
-                                    <FaAngleLeft />
-                                </button>
+                                    <input
+                                        type="number"
+                                        onChange={(e) => {
+                                            const value = e.target.value;
 
-                                <input
-                                    type="number"
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-
-                                        if (value === "") {
-                                            setCurrentPage("");
-                                        } else {
-                                            const page = Math.max(1, Math.min(totalPages, Number(value)));
-                                            setCurrentPage(page);
-                                        }
-                                    }}
-                                    onBlur={() => {
-                                        if (currentPage === "") setCurrentPage(1);
-                                    }}
-                                    value={currentPage}
-                                    className={`w-[50px] border mx-2 text-center page-button rounded-md px-[12px] py-1 ${isDarkMode ? "text-[#fff]" : ""} bg-[#D9D9D91F]`}
-                                />
+                                            if (value === "") {
+                                                setCurrentPage("");
+                                            } else {
+                                                const page = Math.max(1, Math.min(totalPages, Number(value)));
+                                                setCurrentPage(page);
+                                            }
+                                        }}
+                                        onBlur={() => {
+                                            if (currentPage === "") setCurrentPage(1);
+                                        }}
+                                        value={currentPage}
+                                        className={`w-[50px] border mx-2 text-center page-button rounded-md px-[12px] py-1 ${isDarkMode ? "text-[#fff]" : ""} bg-[#D9D9D91F]`}
+                                    />
 
 
-                                <button className={`text-[#2D54DD]`} onClick={() => setCurrentPage(totalPages > currentPage ? currentPage + 1 : currentPage)}>
-                                    <FaAngleRight />
-                                </button>
-                            </div>
-                        }
-                        <p className={`text-right text-[14px] font-normal mr-4  z-30 duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data?.count ? data?.count : 0} результата</p>
-                    </div>
+                                    <button className={`text-[#2D54DD]`} onClick={() => setCurrentPage(totalPages > currentPage ? currentPage + 1 : currentPage)}>
+                                        <FaAngleRight />
+                                    </button>
+                                </div>
+                            }
+                            <p className={`text-right text-[14px] font-normal mr-4  z-30 duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data?.count ? data?.count : 0} результата</p>
+                        </div>
+                    }
 
-                    <div onClick={() => { setModal(!modal); setCancel("") }} className={`${(!modal) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+                    <div onClick={() => { setModal(!modal); setCancel(""); setOtkImg("") }} className={`${(!modal) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
                     <div onClick={() => { setModal(!modal); setCancel("") }} className={`${(!modalChek) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
                     <div onClick={() => { setZoom(!zoom) }} className={`${(!zoom) && "hidden"} fixed inset-0 bg-[#2222224D] z-50`}></div>
 
@@ -1007,6 +1047,20 @@ const Payout = () => {
                                         <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
                                     </svg>
                                     <h5 className='text-[14px] text-[#60626C]'>Подробная информация</h5>
+                                </div>
+
+                                {/* eroor */}
+                                <div className={`px-[20px] pt-1  absolute duration-300 ${!error["handleAccept"] ? "top-[-100px]" : "top-[50px]"} w-full `}>
+                                    <div className="flex items-center shadow-2xl mb-5 max-w-[650px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
+                                        <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
+                                        <div className="relative mr-[8px] ml-[18px]">
+                                            <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
+                                        </div>
+                                        <div className="">
+                                            <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
+                                            <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
+                                        </div>
+                                    </div>
                                 </div>
                                 {details?.map((data, index) => (
                                     <div key={index} className='grid grid-cols-2 max-md:grid-cols-1 '>
@@ -1105,8 +1159,21 @@ const Payout = () => {
                                     </div>
                                 ))}
                                 {/* cancel modal */}
-                                <div className={`${!cancel && "hidden"} fixed inset-0 h-[120vh] bg-[#2222224D] z-20`}></div>
+
+                                <div onClick={() => setOtkImg("")} className={`${!cancel && "hidden"} fixed inset-0 h-[120vh] bg-[#2222224D] z-20`}></div>
                                 <form onSubmit={handleCancel} className={`${!cancel ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} p-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full rounded-[24px]`}>
+                                    <div className={`px-[20px] pt-1 z-20 absolute duration-300 ${!error["handleCancel"] ? "top-[-350px]" : "top-[50px]"} w-full left-1/2 -translate-x-1/2`}>
+                                        <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
+                                            <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
+                                            <div className="relative mr-[8px] ml-[18px]">
+                                                <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
+                                            </div>
+                                            <div className="">
+                                                <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
+                                                <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div className="relative mb-8">
                                         <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Отклонить выплату</h3>
                                         <svg width="14" onClick={() => { setCancel(!cancel); setOtkImg("") }} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1146,16 +1213,19 @@ const Payout = () => {
                                         return (
                                             <div key={index}>
                                                 {(data.status === "pending") && (
-                                                    <div className='flex gap-x-4'>
-                                                        <button onClick={() => setCancel(!cancel)} className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                                            Отклонить
-                                                        </button>
-                                                        <form onSubmit={handleAccept}>
-                                                            <button type='submit' className='bg-[#2E70F5] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                                                Взять в работу
+                                                    <>
+
+                                                        <div className='flex gap-x-4'>
+                                                            <button onClick={() => setCancel(!cancel)} className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                                                Отклонить
                                                             </button>
-                                                        </form>
-                                                    </div>
+                                                            <form onSubmit={handleAccept}>
+                                                                <button type='submit' className='bg-[#2E70F5] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                                                    Взять в работу
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </>
                                                 )}
                                                 {(data.status === "in_progress") && (
                                                     <div className='flex gap-x-4'>
@@ -1173,11 +1243,40 @@ const Payout = () => {
                         </div>
                     </div>
                     {/* cek yuklemek ucun */}
-                    <div onClick={() => { setCancelCheck(!cancelCheck); setImageSrc("") }} className={`${!cancelCheck && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+
+                    <div onClick={() => { setCancelCheck(!cancelCheck); setImageSrc(""); setError((prevError) => ({ ...prevError, handleUpload: false })); }} className={`${!cancelCheck && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
                     <form onSubmit={handleUpload} className={`${!cancelCheck ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} p-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[763px] rounded-[24px]`}>
+                        {/* true */}
+                        {error["handleUpload"] && (
+                            <div className={`px-[20px] pt-1 z-20 absolute duration-300 ${!error["handleUpload"] ? "top-[50px]" : "top-[-350px]"} w-full left-1/2 -translate-x-1/2`}>
+                                <div className="flex items-center max-w-[720px] mx-auto mb-5 border bg-white border-[#37B67E] rounded-md">
+                                    <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#37b67e]"></div>
+                                    <div className="relative mr-[8px] ml-[18px]">
+                                        <img src="/assets/img/check.svg" className='bg-[#37B67E] min-w-[26.67px] max-w-[26.67px] min-h-[26.67px] p-[6px] rounded-full' alt="" />
+                                    </div>
+                                    <div className="">
+                                        <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Успешно!</h4>
+                                        <p className='text-[14px] text-[#484951]'>Ваши изменения успешно сохранены.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        {/* error */}
+                        <div className={`px-[20px] pt-1 z-20 absolute duration-300 ${!error["handleUpload"] ? "top-[-350px]" : "top-[50px]"} w-full left-1/2 -translate-x-1/2`}>
+                            <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
+                                <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
+                                <div className="relative mr-[8px] ml-[18px]">
+                                    <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
+                                </div>
+                                <div className="">
+                                    <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
+                                    <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
+                                </div>
+                            </div>
+                        </div>
                         <div className="relative mb-8">
                             <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Завершить</h3>
-                            <svg width="14" onClick={() => { setCancelCheck(!cancelCheck); setImageSrc("") }} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg width="14" onClick={() => { setCancelCheck(!cancelCheck); setImageSrc(""); setError((prevError) => ({ ...prevError, handleUpload: false })); }} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
                             </svg>
                             <h5 className='text-[14px] text-[#60626C]'>Заполните информацию</h5>
@@ -1200,7 +1299,7 @@ const Payout = () => {
                             }
                         </div>
                         <div className="flex justify-end mt-4">
-                            <button type='submit' onClick={() => { setCancelCheck(!cancelCheck); setImageSrc("") }} className='bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                            <button type='submit' className='bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                 Завершить
                             </button>
                         </div>
@@ -1209,7 +1308,7 @@ const Payout = () => {
                 </div>
 
             </div>
-        </div>
+        </div >
     )
 }
 

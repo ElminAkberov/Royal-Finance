@@ -7,7 +7,7 @@ const Layout = () => {
     if (localStorage.getItem("role") === "trader" && location.pathname === "/dash") {
         return <Navigate to={"/deposit"} replace />;
     }
-
+    
     return (
         <div className='inter'>
             <Outlet />

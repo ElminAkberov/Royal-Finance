@@ -124,12 +124,16 @@ const Deposit = () => {
             {/* profile */}
             <div className='max-md:flex items-center justify-between'>
               <div onClick={() => setDropDown(!dropDown)} className="bg-[#4CAF50] uppercase rounded-[100px] text-white w-[48px] h-[48px] flex items-center justify-center">
-                {localStorage.getItem("username").split("_")[0][0]}
-                {localStorage.getItem("username").split("_")[1][0]}
+                {(localStorage.getItem("username") !== "undefined") &&
+                  <>
+                    {localStorage.getItem("username").split("_")[0][0]}
+                    {localStorage.getItem("username").split("_")[1][0]}
+                  </>
+                }
               </div>
             </div>
             <div onClick={() => setDropDown(!dropDown)} className="cursor-pointer ">
-              <svg width="16" height="10" viewBox="0 0 12 6" fill="none" className='ml-2 my-4' xmlns="http://www.w3.org/2000/svg">
+              <svg width="16" height="10" viewBox="0 0 12 6" fill="none" className={`ml-2 my-4 ${dropDown ? "rotate-180" : ""} duration-300 `} xmlns="http://www.w3.org/2000/svg">
                 <path d="M5.57143 6C5.39315 6 5.21485 5.93469 5.07905 5.80469L0.204221 1.13817C-0.0680735 0.877514 -0.0680735 0.456152 0.204221 0.195494C0.476514 -0.0651646 0.916685 -0.0651646 1.18898 0.195494L5.57143 4.39068L9.95388 0.195494C10.2262 -0.0651646 10.6663 -0.0651646 10.9386 0.195494C11.2109 0.456152 11.2109 0.877514 10.9386 1.13817L6.06381 5.80469C5.92801 5.93469 5.74971 6 5.57143 6Z" fill="#60626C" />
               </svg>
             </div>
@@ -249,8 +253,8 @@ const Deposit = () => {
           </div>
         </div>
 
-        <div onClick={()=>setModalCash(!modalCash)} className={`${!modalCash && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
-        <div onClick={()=>setModalUsdt(!modalUsdt)} className={`${!modalUsdt && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+        <div onClick={() => setModalCash(!modalCash)} className={`${!modalCash && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+        <div onClick={() => setModalUsdt(!modalUsdt)} className={`${!modalUsdt && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
         {/* pop-up */}
         {
           <div className={`absolute ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2 -translate-x-1/2 z-50 ${copy ? "top-20" : "top-[-50px] "} duration-300 mx-auto left-1/2 `}>
