@@ -50,7 +50,7 @@ const Login = () => {
         setTimeout(() => {
           setIsLoading(false);
           navigate("/dash");
-        }, 4000);
+        }, 3000);
       })
       .catch(() => {
         setError(true);
