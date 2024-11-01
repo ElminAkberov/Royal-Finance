@@ -33,9 +33,8 @@ const Deposit = () => {
   }
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      await fetch("https://dev.royal-pay.org/api/v1/internal/refills/", {
+      const res = await fetch("https://dev.royal-pay.org/api/v1/internal/refills/", {
         method: "POST",
         headers: {
           "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
@@ -46,20 +45,46 @@ const Deposit = () => {
           method: method,
           amount: amount
         })
-      }).then(res => res.json()).then(res => { if (res.code == "token_not_valid") { setError(true) } else { setError(false) } });
+      });
+      const data = await res.json();
+      if (res.status === 401) {
+        const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            refresh: localStorage.getItem("refresh"),
+          }),
+        });
+
+        if (refreshResponse.ok) {
+          const refreshData = await refreshResponse.json();
+          localStorage.setItem("access", refreshData.access);
+          return handleSubmit(e);
+        } else {
+          console.log("Failed to refresh token, redirecting to login.");
+          navigate("/login");
+        }
+      } else if (!res.ok) {
+        setError(true);
+      } else {
+        setError(false);
+      }
     } catch (error) {
       console.error("Error:", error);
-      setError(true)
+      setError(true);
     }
   };
 
+  console.log(error)
 
   return (
     <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : "" }} className='flex '>
       <div className={`max-md:hidden`}>
         <div className={`${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5] border"}  min-h-[100vh] h-full z-20  relative `}>
           <h3 className={`py-[20px] flex items-center justify-start ml-[8px] font-medium px-[8px] ${isDarkMode ? "text-white" : "text-black"}`}>Лого</h3>
-          <div className={` ${!open ? "min-w-[263px]":"min-w-0"} overflow-hidden transition-all duration-300`}>
+          <div className={` ${!open ? "min-w-[263px]" : "min-w-0"} overflow-hidden transition-all duration-300`}>
             <div className="">
               {localStorage.getItem("role") !== "trader" &&
                 <NavLink to={"/dash"} className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px] ">
@@ -253,8 +278,8 @@ const Deposit = () => {
           </div>
         </div>
 
-        <div onClick={() => setModalCash(!modalCash)} className={`${!modalCash && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
-        <div onClick={() => setModalUsdt(!modalUsdt)} className={`${!modalUsdt && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+        <div onClick={() => { setModalCash(!modalCash); setError(""); setMethod(""); setAmount(""); setHash(''); setCopy(false) }} className={`${!modalCash && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+        <div onClick={() => { setModalUsdt(!modalUsdt); setError(""); setMethod(""); setAmount(""); setHash(''); setCopy(false) }} className={`${!modalUsdt && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
         {/* pop-up */}
         {
           <div className={`absolute ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2 -translate-x-1/2 z-50 ${copy ? "top-20" : "top-[-50px] "} duration-300 mx-auto left-1/2 `}>
@@ -263,7 +288,7 @@ const Deposit = () => {
           </div>
         }
         {/* modallar */}
-        <form onSubmit={handleSubmit} className={`${!modalUsdt ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[765px]`}>
+        <form onSubmit={handleSubmit} className={`${!modalUsdt ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto overflow-y-scroll h-[90vh] custom-scroll w-full max-w-[765px]`}>
           <div className="p-8">
             <div className="relative">
               <div onClick={() => { setModalUsdt(false); setMethod(""); setAmount(""); setHash(""); setError(false); setCopy(false) }} className="absolute right-0 cursor-pointer">
@@ -275,20 +300,18 @@ const Deposit = () => {
                 <h3 className={`text-[32px] font-semibold ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Пополнить депозит</h3>
                 <h5 className='text-[14px] text-[#60626C]'>Заполните форму</h5>
               </div>
-              {error &&
-                <div className=" pt-1">
-                  <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
-                    <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
-                    <div className="relative mr-[8px] ml-[18px]">
-                      <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
-                    </div>
-                    <div className="">
-                      <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
-                      <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
-                    </div>
+              <div className={`pt-1 absolute w-full duration-300 ${error ? " top-[20px]" : "top-[-200px]"}`}>
+                <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
+                  <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
+                  <div className="relative mr-[8px] ml-[18px]">
+                    <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
+                  </div>
+                  <div className="">
+                    <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
+                    <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
                   </div>
                 </div>
-              }
+              </div>
               <div className="mb-8">
                 <h4 className={`text-[12px] mb-2 font-semibold ${isDarkMode ? "text-[#e7e7e7]" : ""}`}>Хеш</h4>
                 <input value={hash} onChange={(e) => { setHash(e.target.value) }} placeholder='Хеш' type="text" required className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
@@ -326,20 +349,18 @@ const Deposit = () => {
                 <h3 className={`text-[32px] font-semibold ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Пополнить депозит</h3>
                 <h5 className='text-[14px] text-[#60626C]'>Заполните форму</h5>
               </div>
-              {error &&
-                <div className=" pt-1">
-                  <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
-                    <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
-                    <div className="relative mr-[8px] ml-[18px]">
-                      <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
-                    </div>
-                    <div className="">
-                      <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
-                      <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
-                    </div>
+              <div className={`pt-1 absolute w-full duration-300 ${error ? " top-[20px]" : "top-[-300px]"}`}>
+                <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
+                  <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
+                  <div className="relative mr-[8px] ml-[18px]">
+                    <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
+                  </div>
+                  <div className="">
+                    <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
+                    <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
                   </div>
                 </div>
-              }
+              </div>
 
               <div className="mb-8">
                 <h4 className={`text-[12px] mb-2 font-semibold ${isDarkMode ? "text-[#e7e7e7]" : ""}`}>Код</h4>

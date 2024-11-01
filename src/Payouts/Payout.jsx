@@ -1038,7 +1038,7 @@ const Payout = () => {
                         })}
                     </div>
 
-                    <div className={`${!modal ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px] ${!cancelCheck ? "overflow-y-scroll h-[100vh]" : ""} custom-scroll`}>
+                    <div className={`${!modal ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px] ${!cancelCheck ? "overflow-y-scroll h-[90vh]" : ""} custom-scroll`}>
                         <div className="p-8 ">
                             <div className="">
                                 <div className="mb-8 relative">
@@ -1050,7 +1050,7 @@ const Payout = () => {
                                 </div>
 
                                 {/* eroor */}
-                                <div className={`px-[20px] pt-1  absolute duration-300 ${!error["handleAccept"] ? "top-[-100px]" : "top-[50px]"} w-full `}>
+                                <div className={`px-[20px] pt-1  absolute duration-300 ${!error["handleAccept"] ? "top-[-200px]" : "top-[50px]"} w-full `}>
                                     <div className="flex items-center shadow-2xl mb-5 max-w-[650px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
                                         <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
                                         <div className="relative mr-[8px] ml-[18px]">
@@ -1093,18 +1093,18 @@ const Payout = () => {
                                                 <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Ставка трейдера</h5>
                                                 <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.trader_rate}</p>
                                             </div>
-                                            <div className="modal_payout ">
+                                            <div className="modal_payout relative w-max">
                                                 {/* slice metodu */}
-                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} flex items-center gap-x-2`}>Внешний ID
+                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} flex items-center gap-x-2 ml-5`}>Внешний ID
                                                 </h5>
                                                 <div className="text-[14px] mb-0">
                                                     <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(0, 33) : '-'}</p>
                                                     <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(32) : ''}</p>
                                                 </div>
-                                                <LuCopy className={`text-[16px]  ${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} cursor-pointer`} onClick={(e) => handleCopy(e)} />
+                                                <LuCopy className={`text-[16px] absolute top-0 ${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} cursor-pointer`} onClick={(e) => handleCopy(e)} />
                                             </div>
                                             {
-                                                <div className={`absolute ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2 -translate-x-1/2 z-50 ${copy ? "top-20" : "top-[-50px] "} duration-300 mx-auto left-1/2 `}>
+                                                <div className={`fixed ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2  -translate-x-1/2 z-50 ${copy ? "top-32" : "top-[-50px] "} duration-300 mx-auto left-1/2 `}>
                                                     <LuCopy size={18} color={`${isDarkMode ? "#E7E7E7" : "#18181B"}`} />
                                                     <h4 className={`text-sm ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`} >Ссылка скопирована</h4>
                                                 </div>
