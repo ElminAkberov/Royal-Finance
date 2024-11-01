@@ -947,14 +947,14 @@ const Payout = () => {
 
                     <div onClick={() => { setModal(!modal); setCancel("") }} className={`${(!modal) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
                     <div onClick={() => { setModal(!modal); setCancel("") }} className={`${(!modalChek) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
-                    <div onClick={() => { setZoom(!zoom) }} className={`${(!zoom) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+                    <div onClick={() => { setZoom(!zoom) }} className={`${(!zoom) && "hidden"} fixed inset-0 bg-[#2222224D] z-50`}></div>
 
                     {/* cek tam ekran */}
                     <div>
                         {details?.map((img, index) => {
                             return (
                                 zoom &&
-                                <div key={index} className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30'>
+                                <div key={index} className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50'>
                                     {img.receipts.map(img => {
                                         return (
                                             <div className='relative'>
@@ -1069,7 +1069,7 @@ const Payout = () => {
                                             {data.receipts.length > 0 &&
                                                 <div className="modal_payout">
                                                     <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Чек </h5>
-                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}><img className='w-[200px] h-[150px] object-contain' src={data.receipts[0] && data.receipts[0].endsWith('.pdf') ? '/assets/img/check.jpg' : data.receipts[0]} /> </p>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}><img className='w-[200px] h-[150px] object-contain' onClick={()=>{setZoom(!zoom)}} src={data.receipts[0] && data.receipts[0].endsWith('.pdf') ? '/assets/img/check.jpg' : data.receipts[0]} /> </p>
                                                 </div>
                                             }
                                         </div>
@@ -1136,8 +1136,6 @@ const Payout = () => {
                                                         </button>
                                                     </div>
                                                 )}
-                                                
-                                                
                                             </div>
                                         )
                                     })}
