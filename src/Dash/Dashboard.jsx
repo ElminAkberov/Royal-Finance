@@ -89,7 +89,7 @@ const Dashboard = () => {
 
     useEffect(() => {
         handleFilter();
-    }, []);
+    }, [currentPage]);
 
     const handleStartTimeChange = (e) => {
         const value = e.target.value.replace(/[^0-9]/g, '');

@@ -113,7 +113,7 @@ const Payout = () => {
 
     useEffect(() => {
         handleFilter();
-    }, []);
+    }, [currentPage]);
 
 
     const handleUpload = async (e) => {
