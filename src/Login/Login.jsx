@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { PulseLoader } from 'react-spinners';
 import { Context } from '../context/ContextProvider';
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
-import MainLoading from '../MainLoading'; // Import your MainLoading component
+import MainLoading from '../MainLoading/MainLoading'; 
 
 const Login = () => {
   let navigate = useNavigate();
@@ -14,7 +14,7 @@ const Login = () => {
   const [success, setSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // New state for MainLoading
+  const [isLoading, setIsLoading] = useState(false);
 
   let { isDarkMode, toggleDarkMode } = useContext(Context);
 
@@ -50,7 +50,7 @@ const Login = () => {
         setTimeout(() => {
           setIsLoading(false);
           navigate("/dash");
-        }, 2000);
+        }, 4000);
       })
       .catch(() => {
         setError(true);
