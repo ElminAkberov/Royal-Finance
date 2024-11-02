@@ -16,7 +16,6 @@ const Deposit = () => {
   let [dropDown, setDropDown] = useState(false)
   let { isDarkMode, toggleDarkMode } = useContext(Context)
   let [open, setOpen] = useState(true)
-  let [error, setError] = useState(false)
 
   const [navBtn, setNavBtn] = useState(false)
   const handleCopy = (e) => {
@@ -80,7 +79,6 @@ const Deposit = () => {
     }
   };
 
-  console.log(error)
 
   return (
     <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : "" }} className={`flex `}>
@@ -281,8 +279,8 @@ const Deposit = () => {
           </div>
         </div>
 
-        <div onClick={() => { setModalCash(!modalCash); setError(""); setMethod(""); setAmount(""); setHash(''); setCopy(false); setStatus(null) }} className={`${!modalCash && "hidden"} fixed inset-0  bg-[#2222224D]  z-20`}></div>
-        <div onClick={() => { setModalUsdt(!modalUsdt); setError(""); setMethod(""); setAmount(""); setHash(''); setCopy(false); setStatus(null) }} className={`${!modalUsdt && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+        <div onClick={() => { setModalCash(!modalCash); setMethod(""); setAmount(""); setHash(''); setCopy(false); setStatus(null) }} className={`${!modalCash && "hidden"} fixed inset-0  bg-[#2222224D]  z-20`}></div>
+        <div onClick={() => { setModalUsdt(!modalUsdt); setMethod(""); setAmount(""); setHash(''); setCopy(false); setStatus(null) }} className={`${!modalUsdt && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
         {/* pop-up */}
         {
           <div className={`absolute ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2 -translate-x-1/2 z-50 ${copy ? "top-20" : "top-[-50px] "} duration-300 mx-auto left-1/2 `}>
@@ -294,7 +292,7 @@ const Deposit = () => {
         <form onSubmit={handleSubmit} className={`${!modalUsdt ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto overflow-y-hidden h-[90vh]  w-full max-w-[765px]`}>
           <div className="p-8 overflow-y-scroll max-h-[90vh]">
             <div className="relative">
-              <div onClick={() => { setModalUsdt(false); setMethod(""); setAmount(""); setHash(""); setError(false); setCopy(false) }} className="absolute right-0 cursor-pointer">
+              <div onClick={() => { setModalUsdt(false); setMethod(""); setAmount(""); setHash(""); setStatus(null); setCopy(false) }} className="absolute right-0 cursor-pointer">
                 <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${isDarkMode ? "fill-[#fff]" : "fill-[#000]"}`}>
                   <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
                 </svg>
@@ -359,7 +357,7 @@ const Deposit = () => {
 
           <div className="p-8">
             <div className="relative">
-              <div onClick={() => { setModalCash(false); setMethod(""); setAmount(""); setHash(""); setError(false) }} className="absolute right-0 cursor-pointer ">
+              <div onClick={() => { setModalCash(false); setMethod(""); setAmount(""); setHash(""); setStatus(null) }} className="absolute right-0 cursor-pointer ">
                 <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${isDarkMode ? "fill-[#fff]" : "fill-[#000]"} `}>
                   <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
                 </svg>

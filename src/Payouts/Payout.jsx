@@ -239,7 +239,6 @@ const Payout = () => {
         }
     };
 
-
     const handleDepositGet = async (e) => {
         e.preventDefault();
         try {
