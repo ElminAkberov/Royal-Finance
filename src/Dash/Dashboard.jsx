@@ -373,7 +373,7 @@ const Dashboard = () => {
                         </div>
                     </div>
                     {/* filter */}
-                    <div className={`${!filterBtn && "max-md:hidden"} flex max-md:justify-center pr-4 flex-wrap py-[24px] text-[14px] gap-2 text-[#717380]`}>
+                    <div className={`${!filterBtn && "max-md:hidden"} flex justify-center pr-4 flex-wrap py-[24px] text-[14px] gap-2 text-[#717380]`}>
                         <input onChange={(e) => setHash(e.target.value)} placeholder='Хеш' type="text" className={` pl-[12px] w-[155px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
                         <select onChange={(e) => setSelectMethod(e.target.value)} className={`${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] min-w-[155px] h-[40px]`} name="" id="">
                             <option value="" selected>Метод</option>
