@@ -29,8 +29,11 @@ const Payout = () => {
     const [modal, setModal] = useState(false)
     // 2ci action
     const [modalChek, setModalChek] = useState(false)
+
+    const [page, setPage] = useState(1)
     const [currentPage, setCurrentPage] = useState(1);
     const totalPages = Math.ceil((data?.count || 1) / 10);
+
     const [startDate, setStartDate] = useState("2024-10-16");
     const [endDate, setEndDate] = useState("");
 
@@ -116,6 +119,8 @@ const Payout = () => {
             setLoading(false)
         }
     };
+
+
     useEffect(() => {
         if (currentPage) {
             setTimeout(() => {
@@ -123,7 +128,55 @@ const Payout = () => {
             }, 2000)
         }
     }, [currentPage]);
+    let methodss = []
+    let [method, setMethod] = useState([])
+    const handleMethod = async () => {
+        try {
+            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/?status=${selectStatus}&page=${currentPage === "" ? 1 : currentPage}`, {
+                method: "GET",
+                headers: {
+                    "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
+                }
+            });
 
+            if (response.status === 401) {
+                console.log("Unauthorized access, attempting to refresh token.");
+                const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        refresh: localStorage.getItem("refresh"),
+                    }),
+                });
+
+                if (refreshResponse.ok) {
+                    const refreshData = await refreshResponse.json();
+                    localStorage.setItem("access", refreshData.access);
+                    return handleMethod(); // Retry fetch with new token
+                } else {
+                    console.log("Failed to refresh token, redirecting to login.");
+                    navigate("/login");
+                }
+            } else if (response.ok) {
+                const data = await response.json();
+                data?.results?.filter(item => selectStatus ? selectStatus == item.status : item).map(item => methodss.push(item.method["name"]))
+                setMethod(methodss)
+            } else {
+                console.log("Unexpected error:", response.status);
+            }
+        } catch (error) {
+            console.error("An error occurred:", error);
+            navigate("/login");
+        }
+    }
+    useEffect(() => {
+        if (currentPage) {
+            handleMethod();
+        }
+    }, [currentPage, selectStatus]);
+    console.log()
 
     const handleUpload = async (e) => {
         e.preventDefault();
@@ -234,9 +287,7 @@ const Payout = () => {
 
 
 
-    let methods = []
-    data?.results?.map(item => methods.push(item.method.name))
-    localStorage.setItem("method", [...new Set(methods)])
+    
 
     // payout
     let [cancel, setCancel] = useState(false)
@@ -567,7 +618,7 @@ const Payout = () => {
                         }
                         <select onChange={(e) => setSelectMethod(e.target.value)} className={`${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] max-w-[155px] min-w-[155px] h-[40px]`} name="" id="">
                             <option value="" selected>Метод</option>
-                            {[...new Set(methods)].map(item => (
+                            {[...new Set(method)].map(item => (
                                 <option key={item}>{item}</option>
                             ))}
                         </select>
