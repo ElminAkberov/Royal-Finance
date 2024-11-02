@@ -653,13 +653,13 @@ const Payout = () => {
                             <input onChange={(e) => setTrader(e.target.value)} placeholder='Трейдер' type="text" className={` pl-[12px] w-[155px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
                         }
                         <select onChange={(e) => setSelectMethod(e.target.value)} className={`${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] max-w-[155px] min-w-[155px] h-[40px]`} name="" id="">
-                            <option value="" selected>Метод</option>
+                            <option value="" defaultValue={"Метод"}>Метод</option>
                             {[...new Set(method)].map(item => (
                                 <option key={item}>{item}</option>
                             ))}
                         </select>
                         <select onChange={(e) => setSelectStatus(e.target.value)} className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] max-w-[155px] h-[40px]`} name="" id="">
-                            <option selected value={""} >Статус</option>
+                            <option defaultValue={"Статус"} value={""} >Статус</option>
                             <option value={"completed"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>Завершено</option>
                             <option value={"in_progress"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>В обработке</option>
                             <option value={"wait_confirm"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}> Ожидает подтверждения</option>
