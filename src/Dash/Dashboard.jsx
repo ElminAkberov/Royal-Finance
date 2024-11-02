@@ -10,7 +10,7 @@ import { LuCopy } from 'react-icons/lu';
 
 const Dashboard = () => {
     const [loading, setLoading] = useState(true);
-
+    let [copy, setCopy] = useState(false)
     let [dropDown, setDropDown] = useState(false)
     let { isDarkMode } = useContext(Context)
 
@@ -37,7 +37,10 @@ const Dashboard = () => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const totalPages = Math.ceil((data?.count || 1) / 10);
-
+    const handleFilterApply = () => {
+        setCurrentPage(1);
+        handleFilter();
+    };
     const handleFilter = async () => {
         setLoading(true)
         try {
@@ -332,7 +335,7 @@ const Dashboard = () => {
                     </div>
                 </div>
 
-                <div className={`mt-[50px] md:mt-[94px] w-full rounded-[24px] pr-[32px] pl-[32px] max-md:pl-4 max-md:pr-0 pt-[32px] ${isDarkMode ? "md:bg-[#1F1F1F]" : "md:bg-[#F5F6FC]"} overflow-x-auto md:mr-[40px] md:mx-[32px]  `}>
+                <div className={`mt-[50px] md:mt-[94px] w-full rounded-[24px] pr-[32px] pl-[32px] max-md:pl-4 max-md:pr-0 pt-[32px] ${isDarkMode ? "md:bg-[#1F1F1F]" : "md:bg-[#F5F6FC]"}  overflow-x-auto md:mr-[40px] md:mx-[32px]  `}>
                     <div className="flex max-lg:flex-col relative gap-x-2 justify-between pr-4 items-center">
                         <div className="flex max-[270px]:flex-wrap items-center justify-between w-full mb-4">
                             <h3 className={`font-semibold text-[24px] max-lg:mx-auto max-md:mx-0 md:text-center ${isDarkMode ? "text-[#E7E7E7]" : "text-[#3d457c]"}`}>Управления депозитами</h3>
@@ -417,18 +420,26 @@ const Dashboard = () => {
                             <input value={time_2} onChange={handleEndTimeChange} type="text" className='bg-transparent outline-none pl-7' placeholder='23:59' />
                         </div>
                         <div className="flex justify-center mb-2 max-w-[160px] max-md:hidden">
-                            <button onClick={handleFilter} className='bg-[#2E70F5] text-[#fff]  py-[10px] font-normal px-4 text-[14px] rounded-[8px]'>
+                            <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff]  py-[10px] font-normal px-4 text-[14px] rounded-[8px]'>
                                 Применить фильтр
                             </button>
                         </div>
-                        <div className="flex w-full md:hidden justify-center my-2">
-                            <button onClick={handleFilter} className='bg-[#2E70F5] text-[#fff]  px-[37.5px] py-[10px] font-normal  text-[14px] rounded-[8px]'>
+                        <div className="flex justify-center w-full min-[450px]:hidden mb-2 ">
+                            <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff] px-[37.5px] py-[10px] font-normal  text-[14px] rounded-[8px]'>
                                 Применить фильтр
                             </button>
                         </div>
                     </div>
-
-                    <div className={`${isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]"}`}>
+                    <div className={`hidden justify-center w-full  ${filterBtn && "max-md:flex"} max-[450px]:hidden mb-2 `}>
+                        <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff] px-[37.5px] py-[10px] font-normal  text-[14px] rounded-[8px]'>
+                            Применить фильтр
+                        </button>
+                    </div>
+                    <div className={`fixed ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2  -translate-x-1/2 z-50 ${copy ? "top-20" : "top-[-200px] "} duration-300 mx-auto left-1/2 `}>
+                        <LuCopy size={18} color={`${isDarkMode ? "#E7E7E7" : "#18181B"}`} />
+                        <h4 className={`text-sm ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`} >Ссылка скопирована</h4>
+                    </div>
+                    <div className={`${!loading ? (isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]") : ""}`}>
                         <div className="hidden max-md:block">
                             <style >
                                 {`
@@ -443,102 +454,104 @@ const Dashboard = () => {
 }                          
                             `}
                             </style>
-
-                            <DataTable scrollable scrollHeight="65vh" value={data?.results} rows={10} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
-                                <Column body={(rowData) => {
-                                    return (
-                                        <div onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>
-                                            <img className='mx-auto' src='/assets/img/ion_eye.svg' />
-                                        </div>
-                                    );
-                                }} headerStyle={{ color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Действия" ></Column>
-
-                                <Column body={(rowData) => {
-                                    return (
-                                        <div>
-                                            <div>
-                                                <h5>{rowData?.created_at?.split("T")[0]}</h5>
-                                                <p>{rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
-                                            </div>
-
-                                        </div>
-                                    )
-                                }} headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время"  ></Column>
-
-                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header="Метод" body={(rowData) => <div>{rowData?.method_name}</div>} ></Column>
-                                {localStorage.getItem("role") == "admin" &&
-                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="merchant" header="Мерчант" body={(rowData) => <div>{rowData?.merchant["username"]}</div>} ></Column>
-                                }
-
-                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" sortable header={"Сумма"} headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} `} body={(rowData) => {
-                                    return (
-                                        <div>
-                                            <>
-                                                <div>{rowData.amount_in_usdt} USDT</div>
-                                            </>
-                                        </div>
-                                    )
-
-                                }} ></Column>
-
-                                <Column body={(rowData) => {
-                                    return (
-                                        <div>
-                                            <>
-                                                <div>{rowData.course} {rowData.currency}</div>
-                                            </>
-                                        </div>
-                                    )
-
-                                }} headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="course" header="Курс/Крипта" ></Column>
-
-                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="price_2" header="Сумма" body={(rowData) => {
-                                    return (
-                                        <div>
-                                            <>
-                                                <div>{rowData.amount} RUB</div>
-                                            </>
-                                        </div>
-                                    )
-
-                                }} ></Column>
-
-                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} body={(rowData) => {
-                                    return (
-                                        <div >
-                                            <div>{rowData.hash.slice(0, 8)}...</div>
-                                        </div>
-                                    )
-
-                                }} field="code" header="Xэш" ></Column>
-
-                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
-                                    if (rowData.status === "pending") {
+                            {loading ? (
+                                <Loading />
+                            ) :
+                                <DataTable scrollable scrollHeight="65vh" value={data?.results} rows={10} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
+                                    <Column body={(rowData) => {
                                         return (
-                                            <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                В обработке
+                                            <div onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>
+                                                <img className='mx-auto' src='/assets/img/ion_eye.svg' />
                                             </div>
                                         );
-                                    } else if (rowData.status == "success") {
-                                        return (
-                                            <div className='bg-[#37B67E]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                Успешно
-                                            </div>
-                                        )
-                                    } else {
-                                        return (
-                                            <div className='bg-[#CE2E2E] flex  justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                Отклонено
-                                            </div>
-                                        )
-                                    }
-                                }}></Column>
+                                    }} headerStyle={{ color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Действия" ></Column>
 
-                            </DataTable>
+                                    <Column body={(rowData) => {
+                                        return (
+                                            <div>
+                                                <div>
+                                                    <h5>{rowData?.created_at?.split("T")[0]}</h5>
+                                                    <p>{rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
+                                                </div>
+
+                                            </div>
+                                        )
+                                    }} headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время"  ></Column>
+
+                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header="Метод" body={(rowData) => <div>{rowData?.method_name}</div>} ></Column>
+                                    {localStorage.getItem("role") == "admin" &&
+                                        <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="merchant" header="Мерчант" body={(rowData) => <div>{rowData?.merchant["username"]}</div>} ></Column>
+                                    }
+
+                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" sortable header={"Сумма"} headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} `} body={(rowData) => {
+                                        return (
+                                            <div>
+                                                <>
+                                                    <div>{rowData.amount_in_usdt} USDT</div>
+                                                </>
+                                            </div>
+                                        )
+
+                                    }} ></Column>
+
+                                    <Column body={(rowData) => {
+                                        return (
+                                            <div>
+                                                <>
+                                                    <div>{rowData.course} {rowData.currency}</div>
+                                                </>
+                                            </div>
+                                        )
+
+                                    }} headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="course" header="Курс/Крипта" ></Column>
+
+                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="price_2" header="Сумма" body={(rowData) => {
+                                        return (
+                                            <div>
+                                                <>
+                                                    <div>{rowData.amount} RUB</div>
+                                                </>
+                                            </div>
+                                        )
+
+                                    }} ></Column>
+
+                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} body={(rowData) => {
+                                        return (
+                                            <div >
+                                                <div>{rowData.hash.slice(0, 8)}...</div>
+                                            </div>
+                                        )
+
+                                    }} field="code" header="Xэш" ></Column>
+
+                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
+                                        if (rowData.status === "pending") {
+                                            return (
+                                                <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                    В обработке
+                                                </div>
+                                            );
+                                        } else if (rowData.status == "success") {
+                                            return (
+                                                <div className='bg-[#37B67E]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                    Успешно
+                                                </div>
+                                            )
+                                        } else {
+                                            return (
+                                                <div className='bg-[#CE2E2E] flex  justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                    Отклонено
+                                                </div>
+                                            )
+                                        }
+                                    }}></Column>
+
+                                </DataTable>
+                            }
                         </div>
 
                         <div className="block max-md:hidden">
-
                             {loading ? (
                                 <Loading />
                             ) :
@@ -604,7 +617,7 @@ const Dashboard = () => {
                                         return (
                                             <div >
                                                 <div className='group cursor-pointer'>{rowData.hash.slice(0, 8)}...
-                                                    <div onClick={() => navigator.clipboard.writeText(rowData.hash)} className="group-hover:opacity-100 group-hover:visible duration-300  flex items-center gap-x-2 absolute right-0 p-1 opacity-0 invisible" style={{ background: isDarkMode ? "#121212" : "#dfdfec", color: isDarkMode ? "#fff" : "#121212" }}>{rowData.hash}  <LuCopy /></div>
+                                                    <div onClick={() => { navigator.clipboard.writeText(rowData.hash); setCopy(true); setTimeout(() => { setCopy(false) }, 2000) }} className="group-hover:opacity-100 group-hover:visible duration-300  flex items-center gap-x-2 absolute right-0 p-1 opacity-0 invisible" style={{ background: isDarkMode ? "#121212" : "#dfdfec", color: isDarkMode ? "#fff" : "#121212" }}>{rowData.hash}  <LuCopy /></div>
                                                 </div>
                                             </div>
                                         )

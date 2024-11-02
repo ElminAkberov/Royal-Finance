@@ -10,7 +10,7 @@ import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
 import Loading from '../Loading/Loading';
 
 const Payout = () => {
-    let [error, setError] = useState({ "handleCancel": false, "handleUpload": false, "handleAccept": false })
+    let [status, setStatus] = useState({ "handleCancel": null, "handleUpload": null, "handleAccept": null })
     const [imageSrc, setImageSrc] = useState(null);
     const [describeImg, setDescribeImg] = useState(null)
     const [loading, setLoading] = useState(true);
@@ -51,20 +51,23 @@ const Payout = () => {
     let [otkImgDesc, setOtkImgDesc] = useState("")
 
     const handleCopy = (e) => {
-        const textToCopy = e.currentTarget.previousElementSibling.innerText.split('\n\n').join("")
+        const textElement = e.currentTarget.parentElement.nextElementSibling;
+        const textToCopy = Array.from(textElement.querySelectorAll("p")).map(p => p.textContent).join("");
+
         navigator.clipboard.writeText(textToCopy)
             .then(() => {
                 setCopy(true);
                 setTimeout(() => {
-                    setCopy(false)
+                    setCopy(false);
                 }, 1500);
             })
             .catch(err => {
                 setCopy(false);
-                console.error('Metin kopyalanırken bir hata oluştu:', err);
+                console.error('An error occurred while copying the text:', err);
             });
-    }
-    const handleFilterApply = () => {
+    };
+
+    const handleFilterApply = async () => {
         setCurrentPage(1);
         handleFilter();
     };
@@ -113,7 +116,6 @@ const Payout = () => {
             setLoading(false)
         }
     };
-    console.log(currentPage)
     useEffect(() => {
         if (currentPage) {
             setTimeout(() => {
@@ -135,14 +137,17 @@ const Payout = () => {
                 }
             });
 
-            if (!response.ok || response.status == 400) {
-                setError((prevError) => ({ ...prevError, "handleUpload": true }));
+            if (response.status == 400) {
+                setStatus((prevError) => ({ ...prevError, "handleUpload": "error" }));
             } else {
-                setError((prevError) => ({ ...prevError, "handleUpload": false }));
+                setStatus((prevError) => ({ ...prevError, "handleUpload": "success" }));
+                setTimeout(() => {
+                    window.location.reload()
+                }, 2000);
             }
         } catch (error) {
             console.log(error)
-            setError((prevError) => ({ ...prevError, "handleUpload": true }))
+            setStatus((prevError) => ({ ...prevError, "handleUpload": "error" }))
         }
     };
     const handleCancel = async (e) => {
@@ -163,19 +168,21 @@ const Payout = () => {
                 console.log("Unauthorized access, redirecting to login.");
             } else if (response.status === 200) {
                 const data = response.data;
-                setCancel(!cancel)
-                window.location.reload()
+                setStatus((prevError) => ({ ...prevError, "handleCancel": "success" }));
+                setTimeout(() => {
+                    window.location.reload()
+                }, 2000);
             } else {
                 console.log("Unexpected error:", response.status);
             }
-            if (!response.ok || response.status == 400) {
-                setError((prevError) => ({ ...prevError, "handleCancel": true }));
+            if (response.status == 400) {
+                setStatus((prevError) => ({ ...prevError, "handleCancel": "error" }));
             } else {
-                setError((prevError) => ({ ...prevError, "handleCancel": false }));
+                setStatus((prevError) => ({ ...prevError, "handleCancel": "success" }));
             }
         } catch (error) {
             console.log(error)
-            setError((prevError) => ({ ...prevError, "handleCancel": true }))
+            setStatus((prevError) => ({ ...prevError, "handleCancel": "error" }))
         }
     };
 
@@ -324,14 +331,14 @@ const Payout = () => {
             });
             const data = await response.json();
 
-            if (!response.ok || response.status == 400) {
-                setError((prevError) => ({ ...prevError, handleAccept: true }));
+            if (response.status == 400) {
+                setStatus((prevError) => ({ ...prevError, handleAccept: "error" }));
             } else {
-                setError((prevError) => ({ ...prevError, handleAccept: false }));
+                setStatus((prevError) => ({ ...prevError, handleAccept: "success" }));
                 window.location.reload()
             }
         } catch (error) {
-            setError((prevError) => ({ ...prevError, handleAccept: true }));
+            setStatus((prevError) => ({ ...prevError, handleAccept: "error" }));
             console.error("An error occurred:", error);
         }
     };
@@ -551,7 +558,7 @@ const Payout = () => {
                         </div>
                     </div>
                     {/* filterler */}
-                    <div className={`${!filterBtn && "max-md:hidden"} flex max-md:justify-center flex-wrap py-[24px] pr-4 text-[14px] gap-2 text-[#717380]`}>
+                    <div className={`${!filterBtn && "max-md:hidden"} flex max-md:grid max-md:grid-cols-2 max-md:justify-items-center max-[450px]:grid-cols-1    max-md:justify-center flex-wrap   py-[24px] pr-4 text-[14px] gap-2 text-[#717380]`}>
                         {localStorage.getItem("role") !== "trader" &&
                             <input onChange={(e) => setMerchant(e.target.value)} placeholder='Мерчант' type="text" className={` h-[40px] w-[155px] pl-[12px] rounded-[4px] ${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
                         }
@@ -572,14 +579,14 @@ const Payout = () => {
                             <option value={"pending"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>В ожидании</option>
                             <option value={"canceled"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>Отклонено</option>
                         </select>
-                        <div className={`flex items-center pl-[12px] rounded-[4px] min-w-[155px] h-[40px] ${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} cursor-pointer`} onClick={() => startDateRef.current && startDateRef.current.showPicker()}>
+                        <div className={`flex items-center pl-[12px] rounded-[4px] min-w-[155px] max-w-[155px] h-[40px] ${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} cursor-pointer`} onClick={() => startDateRef.current && startDateRef.current.showPicker()}>
                             <svg width="24" height="24" className='' viewBox="0 0 24 24" fill={`${isDarkMode ? "#E7E7E7" : "#252840"}`} xmlns="http://www.w3.org/2000/svg">
                                 <path d="M20 3H19V2C19 1.45 18.55 1 18 1C17.45 1 17 1.45 17 2V3H7V2C7 1.45 6.55 1 6 1C5.45 1 5 1.45 5 2V3H4C2.9 3 2 3.9 2 5V21C2 22.1 2.9 23 4 23H20C21.1 23 22 22.1 22 21V5C22 3.9 21.1 3 20 3ZM19 21H5C4.45 21 4 20.55 4 20V8H20V20C20 20.55 19.55 21 19 21Z" />
                             </svg>
                             <input ref={startDateRef} type="date" name="" id="date-picker" min="2023-01-01" className='bg-transparent outline-none relative mt-1 ml-1 w-full cursor-pointer' onChange={(e) => setStartDate(e.target.value)} defaultValue={"2024-10-16"} />
                         </div>
 
-                        <div className={`flex items-center pl-[12px] rounded-[4px] w-[155px] relative h-[40px] ${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC]"}`}>
+                        <div className={`flex items-center pl-[12px] rounded-[4px] w-[155px]  relative h-[40px] ${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC]"}`}>
                             <div className="">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className='absolute top-2' xmlns="http://www.w3.org/2000/svg">
                                     <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.78 7H11.72C11.32 7 11 7.32 11 7.72V12.44C11 12.79 11.18 13.12 11.49 13.3L15.64 15.79C15.98 15.99 16.42 15.89 16.62 15.55C16.83 15.21 16.72 14.76 16.37 14.56L12.5 12.26V7.72C12.5 7.32 12.18 7 11.78 7Z" fill="#717380" />
@@ -588,7 +595,7 @@ const Payout = () => {
                             <input value={time} onChange={handleStartTimeChange} type="text" className='bg-transparent outline-none pl-7' placeholder='00:00' />
                         </div>
 
-                        <div className={`flex overflow-hidden items-center  pl-[12px] rounded-[4px] min-w-[155px] h-[40px] ${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC] text-black"}`} onClick={() => endDateRef.current && endDateRef.current.showPicker()}>
+                        <div className={`flex overflow-hidden items-center  pl-[12px] rounded-[4px] min-w-[155px] max-w-[155px] h-[40px] ${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC] text-black"}`} onClick={() => endDateRef.current && endDateRef.current.showPicker()}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M20 3H19V2C19 1.45 18.55 1 18 1C17.45 1 17 1.45 17 2V3H7V2C7 1.45 6.55 1 6 1C5.45 1 5 1.45 5 2V3H4C2.9 3 2 3.9 2 5V21C2 22.1 2.9 23 4 23H20C21.1 23 22 22.1 22 21V5C22 3.9 21.1 3 20 3ZM19 21H5C4.45 21 4 20.55 4 20V8H20V20C20 20.55 19.55 21 19 21Z" fill="#717380" />
                             </svg>
@@ -609,11 +616,17 @@ const Payout = () => {
                                 Применить фильтр
                             </button>
                         </div>
-                        <div className="flex justify-center w-full md:hidden mb-2 ">
+                        <div className="flex justify-center w-full min-[450px]:hidden mb-2 ">
                             <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff] px-[37.5px] py-[10px] font-normal  text-[14px] rounded-[8px]'>
                                 Применить фильтр
                             </button>
                         </div>
+                    </div>
+
+                    <div className={`hidden justify-center w-full  ${filterBtn && "max-md:flex"} max-[450px]:hidden mb-2 `}>
+                        <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff] px-[37.5px] py-[10px] font-normal  text-[14px] rounded-[8px]'>
+                            Применить фильтр
+                        </button>
                     </div>
                     {localStorage.getItem("role") == "merchant" &&
                         <div className="flex justify-between flex-wrap gap-x-3">
@@ -655,7 +668,7 @@ const Payout = () => {
                             </div>
                         </div>
                     </form>
-                    <div className={`${isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]"}  max-md:pr-0 max-md:pt-0`}>
+                    <div className={`${!loading ? (isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]") : ""}  max-md:pr-0 max-md:pt-0`}>
 
                         <div className="block max-md:hidden">
 
@@ -826,158 +839,162 @@ const Payout = () => {
                             `}
                         </style>
                         <div className="hidden max-md:block">
-                            <DataTable value={data?.results} scrollable
-                                scrollHeight="65vh" rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
-                                <Column body={(rowData) => {
-                                    return (
-                                        <>
-                                            <div className='flex gap-x-[10px]'>
-                                                {(rowData.status == "completed" || rowData.status == "canceled") ?
-                                                    <>
-                                                        <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
-                                                            <img className='mx-auto min-w-[20px]' src='/assets/img/ion_eye.svg' />
-                                                        </div>
-                                                        {rowData.receipts.length > 0 &&
-                                                            <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
-                                                                <img className='mx-auto min-w-[18px]' src='/assets/img/Group.svg' />
+                            {loading ? (
+                                <Loading />
+                            ) :
+                                <DataTable value={data?.results} scrollable
+                                    scrollHeight="65vh" rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
+                                    <Column body={(rowData) => {
+                                        return (
+                                            <>
+                                                <div className='flex gap-x-[10px]'>
+                                                    {(rowData.status == "completed" || rowData.status == "canceled") ?
+                                                        <>
+                                                            <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
+                                                                <img className='mx-auto min-w-[20px]' src='/assets/img/ion_eye.svg' />
                                                             </div>
-                                                        }
-                                                    </>
-                                                    :
-                                                    <>
-                                                        <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
-                                                            <img className='mx-auto min-w-[20px]' src='/assets/img/ion_eye.svg' />
-                                                        </div>
-                                                        {rowData.status == "in_progress" &&
-                                                            <div onClick={() => { handleShow(rowData); setCancelCheck(!cancelCheck); setId(rowData.id) }} className="cursor-pointer">
-                                                                <img className='mx-auto min-w-[24px]' src='/assets/img/Connect.svg' />
+                                                            {rowData.receipts.length > 0 &&
+                                                                <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
+                                                                    <img className='mx-auto min-w-[18px]' src='/assets/img/Group.svg' />
+                                                                </div>
+                                                            }
+                                                        </>
+                                                        :
+                                                        <>
+                                                            <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
+                                                                <img className='mx-auto min-w-[20px]' src='/assets/img/ion_eye.svg' />
                                                             </div>
-                                                        }
-                                                        {rowData.receipts.length > 0 &&
-                                                            <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
-                                                                <img className='mx-auto min-w-[18px]' src='/assets/img/Group.svg' />
-                                                            </div>
-                                                        }
+                                                            {rowData.status == "in_progress" &&
+                                                                <div onClick={() => { handleShow(rowData); setCancelCheck(!cancelCheck); setId(rowData.id) }} className="cursor-pointer">
+                                                                    <img className='mx-auto min-w-[24px]' src='/assets/img/Connect.svg' />
+                                                                </div>
+                                                            }
+                                                            {rowData.receipts.length > 0 &&
+                                                                <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
+                                                                    <img className='mx-auto min-w-[18px]' src='/assets/img/Group.svg' />
+                                                                </div>
+                                                            }
 
-                                                    </>
-                                                }
-                                            </div>
-                                        </>
-                                    );
-                                }} headerStyle={{ color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Действия" ></Column>
+                                                        </>
+                                                    }
+                                                </div>
+                                            </>
+                                        );
+                                    }} headerStyle={{ color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Действия" ></Column>
 
-                                <Column headerStyle={{ padding: "16px 8px", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header=" ID " body={(rowData) => <div>{rowData.id}</div>} ></Column>
+                                    <Column headerStyle={{ padding: "16px 8px", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header=" ID " body={(rowData) => <div>{rowData.id}</div>} ></Column>
 
-                                <Column body={(rowData) => {
-                                    return (
-                                        <div>
+                                    <Column body={(rowData) => {
+                                        return (
                                             <div>
-                                                <h5>{rowData?.created_at?.split("T")[0]} {rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
-                                                <h5>{rowData?.updated_at?.split("T")[0]} {rowData?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
+                                                <div>
+                                                    <h5>{rowData?.created_at?.split("T")[0]} {rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
+                                                    <h5>{rowData?.updated_at?.split("T")[0]} {rowData?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
+                                                </div>
                                             </div>
-                                        </div>
-                                    )
-                                }} headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время создания / обновления"  ></Column>
+                                        )
+                                    }} headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время создания / обновления"  ></Column>
 
-                                {localStorage.getItem("role") !== "trader" &&
-                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" header={"Мерчант"} headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} `} body={(rowData) => {
+                                    {localStorage.getItem("role") !== "trader" &&
+                                        <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" header={"Мерчант"} headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} `} body={(rowData) => {
+                                            return (
+                                                <div>
+                                                    <>
+                                                        <div>{rowData.merchant["username"]}</div>
+                                                    </>
+                                                </div>
+                                            )
+
+                                        }} ></Column>
+                                    }
+
+                                    {localStorage.getItem("role") !== "merchant" &&
+                                        <Column body={(rowData) => {
+                                            return (
+                                                <div>
+                                                    <>
+                                                        <div>{rowData.trader ? rowData.trader["username"] : "-"}</div>
+                                                    </>
+                                                </div>
+                                            )
+
+                                        }} headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="course" header="Трейдер" ></Column>
+                                    }
+
+                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="price_2" header="Назначенный трейдер" body={(rowData) => {
                                         return (
                                             <div>
                                                 <>
-                                                    <div>{rowData.merchant["username"]}</div>
+                                                    <div>{rowData.selected_traders.length > 0 ? rowData.selected_traders.map((person, index) => <p key={index}>{person.username}{index !== rowData.selected_traders.length - 1 && ','}</p>) : "-"}</div>
                                                 </>
                                             </div>
                                         )
 
                                     }} ></Column>
-                                }
 
-                                {localStorage.getItem("role") !== "merchant" &&
-                                    <Column body={(rowData) => {
+                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} body={(rowData) => {
                                         return (
                                             <div>
-                                                <>
-                                                    <div>{rowData.trader ? rowData.trader["username"] : "-"}</div>
-                                                </>
+                                                <div>{rowData.bank} Банк</div>
                                             </div>
                                         )
 
-                                    }} headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="course" header="Трейдер" ></Column>
-                                }
+                                    }} field="code" header="Банк" ></Column>
 
-                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="price_2" header="Назначенный трейдер" body={(rowData) => {
-                                    return (
-                                        <div>
-                                            <>
-                                                <div>{rowData.selected_traders.length > 0 ? rowData.selected_traders.map((person, index) => <p key={index}>{person.username}{index !== rowData.selected_traders.length - 1 && ','}</p>) : "-"}</div>
-                                            </>
-                                        </div>
-                                    )
-
-                                }} ></Column>
-
-                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} body={(rowData) => {
-                                    return (
-                                        <div>
-                                            <div>{rowData.bank} Банк</div>
-                                        </div>
-                                    )
-
-                                }} field="code" header="Банк" ></Column>
-
-                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Метод" body={(rowData) => {
-                                    return <div>{rowData.method["name"]}</div>
-                                }}></Column>
-                                {localStorage.getItem("role") !== "trader" &&
-                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка мерчанта " body={(rowData) => {
-                                        return (<div>{rowData.merchant_rate}</div>)
+                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Метод" body={(rowData) => {
+                                        return <div>{rowData.method["name"]}</div>
                                     }}></Column>
-                                }
-                                {localStorage.getItem("role") !== "merchant" &&
-                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка трейдера" body={(rowData) => {
-                                        return (<div>{rowData.trader_rate}</div>)
-                                    }}></Column>
-                                }
-
-                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Сумма" body={(rowData) => {
-                                    return (<div>{rowData.amount}</div>)
-
-                                }}></Column>
-
-                                <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
-                                    if (rowData.status == "in_progress") {
-                                        return (
-                                            <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                В обработке
-                                            </div>
-                                        );
-                                    } else if (rowData.status == "wait_confirm") {
-                                        return (
-                                            <div className='bg-[#37B67E] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                Ожидает <br /> подтверждения
-                                            </div>
-                                        );
-                                    } else if (rowData.status == "pending") {
-                                        return (
-                                            <div className=' bg-[#FFC107]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                В ожидании
-                                            </div>
-                                        )
-                                    } else if (rowData.status == "completed") {
-                                        return (
-                                            <div className='bg-[#37B67E]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                Завершено
-                                            </div>
-                                        )
-                                    } else {
-                                        return (
-                                            <div className='bg-[#CE2E2E] flex  justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                Отклонено
-                                            </div>
-                                        )
+                                    {localStorage.getItem("role") !== "trader" &&
+                                        <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка мерчанта " body={(rowData) => {
+                                            return (<div>{rowData.merchant_rate}</div>)
+                                        }}></Column>
                                     }
-                                }}></Column>
-                            </DataTable>
+                                    {localStorage.getItem("role") !== "merchant" &&
+                                        <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка трейдера" body={(rowData) => {
+                                            return (<div>{rowData.trader_rate}</div>)
+                                        }}></Column>
+                                    }
+
+                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Сумма" body={(rowData) => {
+                                        return (<div>{rowData.amount}</div>)
+
+                                    }}></Column>
+
+                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
+                                        if (rowData.status == "in_progress") {
+                                            return (
+                                                <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                    В обработке
+                                                </div>
+                                            );
+                                        } else if (rowData.status == "wait_confirm") {
+                                            return (
+                                                <div className='bg-[#37B67E] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                    Ожидает <br /> подтверждения
+                                                </div>
+                                            );
+                                        } else if (rowData.status == "pending") {
+                                            return (
+                                                <div className=' bg-[#FFC107]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                    В ожидании
+                                                </div>
+                                            )
+                                        } else if (rowData.status == "completed") {
+                                            return (
+                                                <div className='bg-[#37B67E]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                    Завершено
+                                                </div>
+                                            )
+                                        } else {
+                                            return (
+                                                <div className='bg-[#CE2E2E] flex  justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                    Отклонено
+                                                </div>
+                                            )
+                                        }
+                                    }}></Column>
+                                </DataTable>
+                            }
                         </div>
 
 
@@ -1020,7 +1037,7 @@ const Payout = () => {
                         </div>
                     }
 
-                    <div onClick={() => { setModal(!modal); setCancel(""); setOtkImg("") }} className={`${(!modal) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+                    <div onClick={() => { setModal(!modal); setCancel(""); setOtkImg(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${(!modal) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
                     <div onClick={() => { setModal(!modal); setCancel("") }} className={`${(!modalChek) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
                     <div onClick={() => { setZoom(!zoom) }} className={`${(!zoom) && "hidden"} fixed inset-0 bg-[#2222224D] z-50`}></div>
 
@@ -1056,19 +1073,7 @@ const Payout = () => {
                                     <h5 className='text-[14px] text-[#60626C]'>Подробная информация</h5>
                                 </div>
 
-                                {/* eroor */}
-                                <div className={`px-[20px] pt-1  absolute duration-300 ${!error["handleAccept"] ? "top-[-200px]" : "top-[50px]"} w-full `}>
-                                    <div className="flex items-center shadow-2xl mb-5 max-w-[650px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
-                                        <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
-                                        <div className="relative mr-[8px] ml-[18px]">
-                                            <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
-                                        </div>
-                                        <div className="">
-                                            <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
-                                            <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
-                                        </div>
-                                    </div>
-                                </div>
+
                                 <div className="">
                                     {details?.map((data, index) => (
                                         <div key={index} className='grid grid-cols-2 max-md:grid-cols-1 '>
@@ -1103,16 +1108,17 @@ const Payout = () => {
                                                 </div>
                                                 <div className="modal_payout relative w-max">
                                                     {/* slice metodu */}
-                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} flex items-center gap-x-2 ml-5`}>Внешний ID
-                                                    </h5>
-                                                    <div className="text-[14px] mb-0">
-                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(0, 33) : '-'}</p>
-                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(32) : ''}</p>
+                                                    <div className="flex items-center font-semibold gap-x-1">
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} flex items-center gap-x-2 text-[12px] `}>Внешний ID</h5>
+                                                        <LuCopy className={`text-[16px]  top-0  ${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} cursor-pointer`} onClick={(e) => handleCopy(e)} />
                                                     </div>
-                                                    <LuCopy className={`text-[16px] absolute top-0 ${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} cursor-pointer`} onClick={(e) => handleCopy(e)} />
+                                                    <div className=" mb-0">
+                                                        <p style={{ fontSize: "14px" }} className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(0, 33) : '-'}</p>
+                                                        <p style={{ fontSize: "14px" }} className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(32) : ''}</p>
+                                                    </div>
                                                 </div>
                                                 {
-                                                    <div className={`fixed ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2  -translate-x-1/2 z-50 ${copy ? "top-32" : "top-[-50px] "} duration-300 mx-auto left-1/2 `}>
+                                                    <div className={`fixed ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2  -translate-x-1/2 z-50 ${copy ? "top-32" : "top-[-200px] "} duration-300 mx-auto left-1/2 `}>
                                                         <LuCopy size={18} color={`${isDarkMode ? "#E7E7E7" : "#18181B"}`} />
                                                         <h4 className={`text-sm ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`} >Ссылка скопирована</h4>
                                                     </div>
@@ -1169,30 +1175,47 @@ const Payout = () => {
                                 </div>
                                 {/* cancel modal */}
 
-                                <div onClick={() => setOtkImg("")} className={`${!cancel && "hidden"} fixed inset-0 h-[120vh] bg-[#2222224D] z-20`}></div>
-                                <form onSubmit={handleCancel} className={`${!cancel ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} p-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full rounded-[24px]`}>
-                                    <div className={`px-[20px] pt-1 z-20 absolute duration-300 ${!error["handleCancel"] ? "top-[-350px]" : "top-[50px]"} w-full left-1/2 -translate-x-1/2`}>
-                                        <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
-                                            <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
-                                            <div className="relative mr-[8px] ml-[18px]">
-                                                <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
-                                            </div>
-                                            <div className="">
-                                                <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
-                                                <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="relative mb-8">
+                                <div onClick={() => { setOtkImg(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${!cancel && "hidden"} fixed inset-0 h-[120vh] bg-[#2222224D] z-20`}></div>
+                                <form onSubmit={handleCancel} className={`${!cancel ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} p-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full overflow-y-scroll  rounded-[24px]`}>
+                                    <div className="relative mb-8 ">
                                         <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Отклонить выплату</h3>
-                                        <svg width="14" onClick={() => { setCancel(!cancel); setOtkImg("") }} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <svg width="14" onClick={() => { setCancel(!cancel); setOtkImg(""); setReason(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })) }} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
                                         </svg>
                                         <h5 className='text-[14px] text-[#60626C]'>Укажите причину</h5>
                                     </div>
+                                    {/* errorm */}
+                                    {status["handleCancel"] == "error" &&
+                                        <div className={`pt-1 z-20  duration-300  w-full `}>
+                                            <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
+                                                <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
+                                                <div className="relative mr-[8px] ml-[18px]">
+                                                    <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
+                                                </div>
+                                                <div className="">
+                                                    <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
+                                                    <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    {status["handleCancel"] == "success" &&
+                                        <div className="w-full pt-1 ">
+                                            <div className="flex items-center max-w-[720px] mx-auto mb-5 border bg-white border-[#37B67E] rounded-md">
+                                                <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#37b67e]"></div>
+                                                <div className="relative mr-[8px] ml-[18px]">
+                                                    <img src="/assets/img/check.svg" className='bg-[#37B67E] min-w-[26.67px] min-h-[26.67px] p-[6px] rounded-full' alt="" />
+                                                </div>
+                                                <div className="">
+                                                    <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Успешно!</h4>
+                                                    <p className='text-[14px] text-[#484951]'>Ваши изменения успешно сохранены.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
                                     <div className="modal_payout mb-8">
                                         <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} mb-2`}>Описание</h5>
-                                        <input onChange={(e) => setReason(e.target.value)} required placeholder='Описание' type="text" className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
+                                        <input onChange={(e) => setReason(e.target.value)} value={reason} required placeholder='Описание' type="text" className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
                                     </div>
                                     <div className=" flex max-[400px]:flex-col items-center">
                                         {otkImg && <img src={otkImg} alt="Uploaded preview" className="mt-4 max-w-[300px] max-h-[400px]" />}
@@ -1223,7 +1246,6 @@ const Payout = () => {
                                             <div key={index}>
                                                 {(data.status === "pending") && (
                                                     <>
-
                                                         <div className='flex max-[420px]:flex-col gap-4'>
                                                             <button onClick={() => setCancel(!cancel)} className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                                                 Отклонить
@@ -1237,9 +1259,12 @@ const Payout = () => {
                                                     </>
                                                 )}
                                                 {(data.status === "in_progress") && (
-                                                    <div className='flex gap-x-4'>
+                                                    <div className='flex max-[420px]:flex-col  gap-4'>
                                                         <button onClick={() => setCancel(!cancel)} className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                                             Отклонить
+                                                        </button>
+                                                        <button onClick={() => { setCancelCheck(!cancelCheck); setModal(!modal) }} type='submit' className='bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                                            Завершить
                                                         </button>
                                                     </div>
                                                 )}
@@ -1253,64 +1278,66 @@ const Payout = () => {
                     </div>
                     {/* cek yuklemek ucun */}
 
-                    <div onClick={() => { setCancelCheck(!cancelCheck); setImageSrc(""); setError((prevError) => ({ ...prevError, handleUpload: false })); }} className={`${!cancelCheck && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
-                    <form onSubmit={handleUpload} className={`${!cancelCheck ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} p-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[763px] rounded-[24px]`}>
-                        {/* true */}
-                        {error["handleUpload"] && (
-                            <div className={`px-[20px] pt-1 z-20 absolute duration-300 ${!error["handleUpload"] ? "top-[50px]" : "top-[-350px]"} w-full left-1/2 -translate-x-1/2`}>
-                                <div className="flex items-center max-w-[720px] mx-auto mb-5 border bg-white border-[#37B67E] rounded-md">
-                                    <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#37b67e]"></div>
-                                    <div className="relative mr-[8px] ml-[18px]">
-                                        <img src="/assets/img/check.svg" className='bg-[#37B67E] min-w-[26.67px] max-w-[26.67px] min-h-[26.67px] p-[6px] rounded-full' alt="" />
-                                    </div>
-                                    <div className="">
-                                        <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Успешно!</h4>
-                                        <p className='text-[14px] text-[#484951]'>Ваши изменения успешно сохранены.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                        {/* error */}
-                        <div className={`px-[20px] pt-1 z-20 absolute duration-300 ${!error["handleUpload"] ? "top-[-350px]" : "top-[50px]"} w-full left-1/2 -translate-x-1/2`}>
-                            <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
-                                <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
-                                <div className="relative mr-[8px] ml-[18px]">
-                                    <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
-                                </div>
-                                <div className="">
-                                    <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
-                                    <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="relative mb-8">
-                            <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Завершить</h3>
-                            <svg width="14" onClick={() => { setCancelCheck(!cancelCheck); setImageSrc(""); setError((prevError) => ({ ...prevError, handleUpload: false })); }} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
-                            </svg>
-                            <h5 className='text-[14px] text-[#60626C]'>Заполните информацию</h5>
-                        </div>
-                        <div className="modal_payout mb-8">
-                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} mb-2`}>Чек</h5>
-                            <div
-                                className='w-max text-[#2E70F5] cursor-pointer border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'
-                                onClick={() => document.getElementById('fileInput').click()}>
-                                Прикрепить Чек
-                            </div>
-                            <input id="fileInput" type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
-                        </div>
-                        <div className=" flex max-[400px]:flex-col items-center">
-                            {imageSrc && <img src={imageSrc} alt="Uploaded preview" className="mt-4 max-w-[300px] max-h-[400px]" />}
-                            {imageSrc &&
-                                <svg onClick={() => setImageSrc("")} width="24" className='ml-3 cursor-pointer min-w-[24px]' height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
+                    <div onClick={() => { setCancelCheck(!cancelCheck); setImageSrc(""); setStatus((prevError) => ({ ...prevError, handleUpload: null })); }} className={`${!cancelCheck && "hidden"} fixed inset-0 bg-[#2222224D] z-30`}></div>
+                    <form onSubmit={handleUpload} className={`${!cancelCheck ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} pt-8 pl-8 pb-8 md:pr-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[763px]  overflow-y-hidden rounded-[24px]`}>
+                        <div className="max-md:overflow-y-scroll max-md:max-h-[80vh]">
+                            <div className="relative mb-8">
+                                <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Завершить</h3>
+                                <svg width="14" onClick={() => { setCancelCheck(!cancelCheck); setImageSrc(""); setStatus((prevError) => ({ ...prevError, handleUpload: null })); }} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-5`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
                                 </svg>
+                                <h5 className='text-[14px] text-[#60626C]'>Заполните информацию</h5>
+                            </div>
+                            {status["handleUpload"] == "error" &&
+                                <div className={`pt-1 z-20 max-md:pr-5 w-full`}>
+                                    <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
+                                        <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
+                                        <div className="relative mr-[8px] ml-[18px]">
+                                            <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
+                                        </div>
+                                        <div className="">
+                                            <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
+                                            <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
+                                        </div>
+                                    </div>
+                                </div>
                             }
-                        </div>
-                        <div className="flex justify-end mt-4">
-                            <button type='submit' className='bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                Завершить
-                            </button>
+                            {status["handleUpload"] == "success" &&
+                                <div className="w-full pt-1 ">
+                                    <div className="flex items-center max-w-[720px] mx-auto mb-5 border bg-white border-[#37B67E] rounded-md">
+                                        <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#37b67e]"></div>
+                                        <div className="relative mr-[8px] ml-[18px]">
+                                            <img src="/assets/img/check.svg" className='bg-[#37B67E] min-w-[26.67px] min-h-[26.67px] p-[6px] rounded-full' alt="" />
+                                        </div>
+                                        <div className="">
+                                            <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Успешно!</h4>
+                                            <p className='text-[14px] text-[#484951]'>Ваши изменения успешно сохранены.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            <div className="modal_payout mb-8 ">
+                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} mb-2`}>Чек</h5>
+                                <div
+                                    className='w-max text-[#2E70F5] cursor-pointer border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'
+                                    onClick={() => document.getElementById('fileInput').click()}>
+                                    Прикрепить Чек
+                                </div>
+                                <input id="fileInput" type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
+                            </div>
+                            <div className=" flex max-[400px]:flex-col items-center">
+                                {imageSrc && <img src={imageSrc} alt="Uploaded preview" className="mt-4 max-w-[300px] max-h-[400px]" />}
+                                {imageSrc &&
+                                    <svg onClick={() => setImageSrc("")} width="24" className='ml-3 cursor-pointer min-w-[24px]' height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
+                                    </svg>
+                                }
+                            </div>
+                            <div className="flex justify-end my-4">
+                                <button type='submit' className='bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                    Завершить
+                                </button>
+                            </div>
                         </div>
                     </form>
 

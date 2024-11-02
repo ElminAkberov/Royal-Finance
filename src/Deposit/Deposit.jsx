@@ -5,6 +5,8 @@ import Dark from '../Dark'
 import { LuCopy } from 'react-icons/lu'
 
 const Deposit = () => {
+  let [status, setStatus] = useState(null)
+
   const [modalUsdt, setModalUsdt] = useState(false)
   const [modalCash, setModalCash] = useState(false)
   const [method, setMethod] = useState("")
@@ -66,21 +68,22 @@ const Deposit = () => {
           console.log("Failed to refresh token, redirecting to login.");
           navigate("/login");
         }
-      } else if (!res.ok) {
-        setError(true);
+      }
+      if (res.status == 400) {
+        setStatus("error");
       } else {
-        setError(false);
+        setStatus("success");
       }
     } catch (error) {
       console.error("Error:", error);
-      setError(true);
+      setStatus("error");
     }
   };
 
   console.log(error)
 
   return (
-    <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : "" }} className='flex '>
+    <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : "" }} className={`flex `}>
       <div className={`max-md:hidden`}>
         <div className={`${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5] border"}  min-h-[100vh] h-full z-20  relative `}>
           <h3 className={`py-[20px] flex items-center justify-start ml-[8px] font-medium px-[8px] ${isDarkMode ? "text-white" : "text-black"}`}>Лого</h3>
@@ -228,7 +231,7 @@ const Deposit = () => {
         </div>
       </div>
       <div className={`w-full ${isDarkMode ? "bg-[#000]" : "bg-[#E9EBF7]"}`}>
-        <div className={`pt-[129px] px-[68px] max-[300px]:px-[35px] `}>
+        <div className={`pt-[129px] px-[68px] max-[300px]:px-[35px] ${(modalUsdt || modalCash) ? "h-[100vh]  overflow-hidden" : ""}`}>
           <h3 className={`font-semibold  max-[1100px]:text-center text-[24px] mb-[26px]  ${isDarkMode ? "text-[#E7E7E7]" : "text-[#3d457c]"}`}>Пополнение депозита</h3>
           <div className="cards flex flex-wrap  gap-8  max-[1100px]:justify-center duration-300">
             <div onClick={() => { setModalUsdt(true); setMethod('USDT') }} className={`card_1 cursor-pointer   p-8 ${isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]"}  rounded-2xl`}>
@@ -278,8 +281,8 @@ const Deposit = () => {
           </div>
         </div>
 
-        <div onClick={() => { setModalCash(!modalCash); setError(""); setMethod(""); setAmount(""); setHash(''); setCopy(false) }} className={`${!modalCash && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
-        <div onClick={() => { setModalUsdt(!modalUsdt); setError(""); setMethod(""); setAmount(""); setHash(''); setCopy(false) }} className={`${!modalUsdt && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+        <div onClick={() => { setModalCash(!modalCash); setError(""); setMethod(""); setAmount(""); setHash(''); setCopy(false); setStatus(null) }} className={`${!modalCash && "hidden"} fixed inset-0  bg-[#2222224D]  z-20`}></div>
+        <div onClick={() => { setModalUsdt(!modalUsdt); setError(""); setMethod(""); setAmount(""); setHash(''); setCopy(false); setStatus(null) }} className={`${!modalUsdt && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
         {/* pop-up */}
         {
           <div className={`absolute ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2 -translate-x-1/2 z-50 ${copy ? "top-20" : "top-[-50px] "} duration-300 mx-auto left-1/2 `}>
@@ -300,18 +303,34 @@ const Deposit = () => {
                 <h3 className={`text-[32px] font-semibold ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Пополнить депозит</h3>
                 <h5 className='text-[14px] text-[#60626C]'>Заполните форму</h5>
               </div>
-              <div className={`pt-1 absolute w-full duration-300 ${error ? " top-[20px]" : "top-[-200px]"}`}>
-                <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
-                  <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
-                  <div className="relative mr-[8px] ml-[18px]">
-                    <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
-                  </div>
-                  <div className="">
-                    <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
-                    <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
+              {status == "error" ?
+                <div className={`pt-1  w-full duration-300 `}>
+                  <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
+                    <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
+                    <div className="relative mr-[8px] ml-[18px]">
+                      <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
+                    </div>
+                    <div className="">
+                      <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
+                      <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+                : status == "success" ?
+                  <div className="px-[20px] pt-1 ">
+                    <div className="flex items-center max-w-[720px] mx-auto mb-5 border bg-white border-[#37B67E] rounded-md">
+                      <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#37b67e]"></div>
+                      <div className="relative mr-[8px] ml-[18px]">
+                        <img src="/assets/img/check.svg" className='bg-[#37B67E] min-w-[26.67px] min-h-[26.67px] p-[6px] rounded-full' alt="" />
+                      </div>
+                      <div className="">
+                        <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Успешно!</h4>
+                        <p className='text-[14px] text-[#484951]'>Ваши изменения успешно сохранены.</p>
+                      </div>
+                    </div>
+                  </div> : ""
+              }
+
               <div className="mb-8">
                 <h4 className={`text-[12px] mb-2 font-semibold ${isDarkMode ? "text-[#e7e7e7]" : ""}`}>Хеш</h4>
                 <input value={hash} onChange={(e) => { setHash(e.target.value) }} placeholder='Хеш' type="text" required className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
@@ -349,18 +368,33 @@ const Deposit = () => {
                 <h3 className={`text-[32px] font-semibold ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Пополнить депозит</h3>
                 <h5 className='text-[14px] text-[#60626C]'>Заполните форму</h5>
               </div>
-              <div className={`pt-1 absolute w-full duration-300 ${error ? " top-[20px]" : "top-[-300px]"}`}>
-                <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
-                  <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
-                  <div className="relative mr-[8px] ml-[18px]">
-                    <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
-                  </div>
-                  <div className="">
-                    <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
-                    <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
+              {status == "error" ?
+                <div className={`pt-1 w-full duration-300 `}>
+                  <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
+                    <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
+                    <div className="relative mr-[8px] ml-[18px]">
+                      <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
+                    </div>
+                    <div className="">
+                      <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
+                      <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+                : status == "success" ?
+                  <div className="px-[20px] pt-1 ">
+                    <div className="flex items-center max-w-[720px] mx-auto mb-5 border bg-white border-[#37B67E] rounded-md">
+                      <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#37b67e]"></div>
+                      <div className="relative mr-[8px] ml-[18px]">
+                        <img src="/assets/img/check.svg" className='bg-[#37B67E] min-w-[26.67px] min-h-[26.67px] p-[6px] rounded-full' alt="" />
+                      </div>
+                      <div className="">
+                        <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Успешно!</h4>
+                        <p className='text-[14px] text-[#484951]'>Ваши изменения успешно сохранены.</p>
+                      </div>
+                    </div>
+                  </div> : ""
+              }
 
               <div className="mb-8">
                 <h4 className={`text-[12px] mb-2 font-semibold ${isDarkMode ? "text-[#e7e7e7]" : ""}`}>Код</h4>

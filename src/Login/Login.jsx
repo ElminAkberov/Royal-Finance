@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { PulseLoader } from 'react-spinners';
 import { Context } from '../context/ContextProvider';
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
-import MainLoading from '../MainLoading/MainLoading'; 
+import MainLoading from '../MainLoading/MainLoading';
 
 const Login = () => {
   let navigate = useNavigate();
@@ -39,13 +39,14 @@ const Login = () => {
         }
         return res.json();
       })
-      .then(async (data) => { localStorage.setItem("access", data.access); localStorage.setItem("role", data.role); localStorage.setItem("refresh", data.refresh);
+      .then(async (data) => {
+        localStorage.setItem("access", data.access); localStorage.setItem("role", data.role); localStorage.setItem("refresh", data.refresh);
         setSuccess(true);
         setError(false);
 
         await fetchData();
 
-        setIsLoading(true); 
+        setIsLoading(true);
 
         setTimeout(() => {
           setIsLoading(false);
@@ -81,7 +82,8 @@ const Login = () => {
     fetchData();
   }, [fetchData]);
 
-  const togglePasswordVisibility = () => {
+  const togglePasswordVisibility = (e) => {
+    e.stopPropagation();
     setShowPassword(prev => !prev);
   };
 
@@ -131,10 +133,14 @@ const Login = () => {
             </label>
             <label htmlFor="password" className='relative'>
               <input type={showPassword ? 'text' : 'password'} onChange={(e => setPass(e.target.value))} placeholder='Пароль' className={`w-full border-[#6C6E86] border bg-transparent ${isDarkMode ? "text-[#C5C7CD]" : "text-[#000]"}  rounded-[4px] outline-[#2D54DD] pl-4 my-4 py-[10px] placeholder:text-[#C5C7CD] text-[14px] font-normal`} required />
-              {showPassword ?
-                <IoMdEye size={26} onClick={togglePasswordVisibility} width="22" className='cursor-pointer absolute top-[34%] right-0  mr-[12px]' height="16" />
-                : <IoMdEyeOff size={26} onClick={togglePasswordVisibility} width="22" className='cursor-pointer absolute top-[34%] right-0  mr-[12px]' height="16" />
-              }
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className='absolute top-[34%] right-0 mr-[12px] cursor-pointer'
+                style={{ background: 'transparent', border: 'none' }}
+              >
+                {showPassword ? <IoMdEye size={26} width="22" height="16" /> : <IoMdEyeOff size={26} width="22" height="16" />}
+              </button>
             </label>
             <label htmlFor="otp">
               <input type="number" onChange={(e => setOtp(e.target.value))} placeholder='ОТП' className={`w-full mb-11 border-[#6C6E86] border bg-transparent ${isDarkMode ? "text-[#C5C7CD]" : "text-[#000]"}  rounded-[4px] outline-[#2D54DD] pl-4 py-[10px] placeholder:text-[#C5C7CD] text-[14px] font-normal`} required minLength={6} maxLength={6} />
