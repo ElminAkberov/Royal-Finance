@@ -115,7 +115,6 @@ const Dashboard = () => {
         }
 
         setTime(cleanedValue);
-        setStartTime(cleanedValue);
 
     };
     const handleEndTimeChange = (e) => {
@@ -141,8 +140,6 @@ const Dashboard = () => {
         setTime_2(cleanedValue);
         setEndTime(cleanedValue);
     };
-
-
     const handleShow = (info) => {
         setDetails([info])
     }
@@ -175,16 +172,6 @@ const Dashboard = () => {
             .catch(err => console.error(err));
     };
 
-    const [showText, setShowText] = useState(false);
-
-    useEffect(() => {
-        if (open) {
-            setShowText(true); // Show text when sidebar is open
-        } else {
-            const timer = setTimeout(() => setShowText(false), 300); // Hide after transition
-            return () => clearTimeout(timer);
-        }
-    }, [open]);
     return (
         <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border `}>
             <div className='flex'>

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Context } from '../context/ContextProvider'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import Dark from '../Dark'
 import { LuCopy } from 'react-icons/lu'
 
@@ -67,8 +67,7 @@ const Deposit = () => {
           console.log("Failed to refresh token, redirecting to login.");
           navigate("/login");
         }
-      }
-      if (res.status == 400) {
+      }else if (res.status == 400) {
         setStatus("error");
       } else {
         setStatus("success");
@@ -78,8 +77,6 @@ const Deposit = () => {
       setStatus("error");
     }
   };
-
-
   return (
     <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : "" }} className={`flex `}>
       <div className={`max-md:hidden`}>
@@ -139,7 +136,6 @@ const Deposit = () => {
           </div>
         </div>
       </div>
-
       <div className={`flex w-full md:justify-end max-md:px-4 ${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5]"} absolute right-0 pr-[16px] py-2 items-center `}>
         <div className="flex max-md:w-full items-center justify-between">
           <div className="mr-[16px] max-md:hidden">
@@ -278,7 +274,6 @@ const Deposit = () => {
             </div>
           </div>
         </div>
-
         <div onClick={() => { setModalCash(!modalCash); setMethod(""); setAmount(""); setHash(''); setCopy(false); setStatus(null) }} className={`${!modalCash && "hidden"} fixed inset-0  bg-[#2222224D]  z-20`}></div>
         <div onClick={() => { setModalUsdt(!modalUsdt); setMethod(""); setAmount(""); setHash(''); setCopy(false); setStatus(null) }} className={`${!modalUsdt && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
         {/* pop-up */}
@@ -354,7 +349,6 @@ const Deposit = () => {
           </div>
         </form>
         <form onSubmit={handleSubmit} className={`${!modalCash ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[765px]`}>
-
           <div className="p-8">
             <div className="relative">
               <div onClick={() => { setModalCash(false); setMethod(""); setAmount(""); setHash(""); setStatus(null) }} className="absolute right-0 cursor-pointer ">

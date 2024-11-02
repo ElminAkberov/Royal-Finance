@@ -69,12 +69,10 @@ const Payout = () => {
                 console.error('An error occurred while copying the text:', err);
             });
     };
-
     const handleFilterApply = async () => {
         setCurrentPage(1);
         handleFilter();
     };
-
     const handleFilter = async () => {
         setLoading(true)
         try {
@@ -120,13 +118,11 @@ const Payout = () => {
             setLoading(false)
         }
     };
-
-
     useEffect(() => {
         if (currentPage) {
             setTimeout(() => {
                 handleFilter();
-            }, 2000) 
+            }, 2000)
         }
     }, [currentPage]);
     let methodss = []
@@ -177,8 +173,6 @@ const Payout = () => {
             handleMethod();
         }
     }, [currentPage, selectStatus]);
-    console.log()
-
     const handleUpload = async (e) => {
         e.preventDefault();
         try {
@@ -190,8 +184,27 @@ const Payout = () => {
                     "Content-Type": "multipart/form-data"
                 }
             });
+            if (response.status === 401) {
+                console.log("Unauthorized access, attempting to refresh token.");
+                const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        refresh: localStorage.getItem("refresh"),
+                    }),
+                });
 
-            if (response.status == 400) {
+                if (refreshResponse.ok) {
+                    const refreshData = await refreshResponse.json();
+                    localStorage.setItem("access", refreshData.access);
+                    return handleUpload();
+                } else {
+                    console.log("Failed to refresh token, redirecting to login.");
+                    navigate("/login");
+                }
+            } else if (response.status == 400) {
                 setStatus((prevError) => ({ ...prevError, "handleUpload": "error" }));
             } else {
                 setStatus((prevError) => ({ ...prevError, "handleUpload": "success" }));
@@ -218,8 +231,25 @@ const Payout = () => {
             });
 
             if (response.status === 401) {
-                navigate("/login");
-                console.log("Unauthorized access, redirecting to login.");
+                console.log("Unauthorized access, attempting to refresh token.");
+                const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        refresh: localStorage.getItem("refresh"),
+                    }),
+                });
+
+                if (refreshResponse.ok) {
+                    const refreshData = await refreshResponse.json();
+                    localStorage.setItem("access", refreshData.access);
+                    return handleCancel();
+                } else {
+                    console.log("Failed to refresh token, redirecting to login.");
+                    navigate("/login");
+                }
             } else if (response.status === 200) {
                 const data = response.data;
                 setStatus((prevError) => ({ ...prevError, "handleCancel": "success" }));
@@ -239,7 +269,6 @@ const Payout = () => {
             setStatus((prevError) => ({ ...prevError, "handleCancel": "error" }))
         }
     };
-
     const handleDepositGet = async (e) => {
         e.preventDefault();
         try {
@@ -258,7 +287,6 @@ const Payout = () => {
             console.error("An error occurred:", error);
         }
     };
-
     let [depositAmount, setDepositAmount] = useState("")
     let [depositModal, setDepositModal] = useState(false)
     const handleDepositPost = async (e) => {
@@ -284,15 +312,9 @@ const Payout = () => {
         }
     };
     let [zoom, setZoom] = useState(false)
-
-
-
-
-
     // payout
     let [cancel, setCancel] = useState(false)
     let [cancelCheck, setCancelCheck] = useState(false)
-
     const handleStartTimeChange = (e) => {
         const value = e.target.value.replace(/[^0-9]/g, '');
         let cleanedValue = value;
@@ -315,7 +337,6 @@ const Payout = () => {
         }
 
         setTime(cleanedValue);
-        setStartTime(cleanedValue);
 
     };
     const handleEndTimeChange = (e) => {
@@ -339,9 +360,7 @@ const Payout = () => {
         }
 
         setTime_2(cleanedValue);
-        setEndTime(cleanedValue);
     };
-
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -354,7 +373,6 @@ const Payout = () => {
         }
         e.target.value = '';
     };
-
     const handleFileClose = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -381,8 +399,27 @@ const Payout = () => {
                 }
             });
             const data = await response.json();
+            if (response.status === 401) {
+                console.log("Unauthorized access, attempting to refresh token.");
+                const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        refresh: localStorage.getItem("refresh"),
+                    }),
+                });
 
-            if (response.status == 400) {
+                if (refreshResponse.ok) {
+                    const refreshData = await refreshResponse.json();
+                    localStorage.setItem("access", refreshData.access);
+                    return handleAccept();
+                } else {
+                    console.log("Failed to refresh token, redirecting to login.");
+                    navigate("/login");
+                }
+            } else if (response.status == 400) {
                 setStatus((prevError) => ({ ...prevError, handleAccept: "error" }));
             } else {
                 setStatus((prevError) => ({ ...prevError, handleAccept: "success" }));
@@ -393,7 +430,6 @@ const Payout = () => {
             console.error("An error occurred:", error);
         }
     };
-
     const handleDownload = () => {
         fetch("https://dev.royal-pay.org/api/v1/internal/payouts/download/", {
             method: "GET",
@@ -1047,8 +1083,6 @@ const Payout = () => {
                                 </DataTable>
                             }
                         </div>
-
-
                     </div>
                     {loading ? "" :
                         <div className="flex items-center justify-between">
@@ -1087,7 +1121,6 @@ const Payout = () => {
                             <p className={`text-right text-[14px] font-normal mr-4  z-30 duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data?.count ? data?.count : 0} результата</p>
                         </div>
                     }
-
                     <div onClick={() => { setModal(!modal); setCancel(""); setOtkImg(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${(!modal) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
                     <div onClick={() => { setModal(!modal); setCancel("") }} className={`${(!modalChek) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
                     <div onClick={() => { setZoom(!zoom) }} className={`${(!zoom) && "hidden"} fixed inset-0 bg-[#2222224D] z-50`}></div>
@@ -1123,8 +1156,6 @@ const Payout = () => {
                                     </svg>
                                     <h5 className='text-[14px] text-[#60626C]'>Подробная информация</h5>
                                 </div>
-
-
                                 <div className="">
                                     {details?.map((data, index) => (
                                         <div key={index} className='grid grid-cols-2 max-md:grid-cols-1 '>
@@ -1328,7 +1359,6 @@ const Payout = () => {
                         </div>
                     </div>
                     {/* cek yuklemek ucun */}
-
                     <div onClick={() => { setCancelCheck(!cancelCheck); setImageSrc(""); setStatus((prevError) => ({ ...prevError, handleUpload: null })); }} className={`${!cancelCheck && "hidden"} fixed inset-0 bg-[#2222224D] z-30`}></div>
                     <form onSubmit={handleUpload} className={`${!cancelCheck ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} pt-8 pl-8 pb-8 md:pr-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[763px]  overflow-y-hidden rounded-[24px]`}>
                         <div className="max-md:overflow-y-scroll max-md:max-h-[80vh]">
