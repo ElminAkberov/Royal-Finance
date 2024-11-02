@@ -49,7 +49,7 @@ const Payout = () => {
     let [copy, setCopy] = useState(false)
     let [otkImg, setOtkImg] = useState("")
     let [otkImgDesc, setOtkImgDesc] = useState("")
-   
+
     const handleCopy = (e) => {
         const textToCopy = e.currentTarget.previousElementSibling.innerText.split('\n\n').join("")
         navigator.clipboard.writeText(textToCopy)
@@ -113,9 +113,13 @@ const Payout = () => {
             setLoading(false)
         }
     };
-
+    console.log(currentPage)
     useEffect(() => {
-        handleFilter();
+        if (currentPage) {
+            setTimeout(() => {
+                handleFilter();
+            }, 2000)
+        }
     }, [currentPage]);
 
 
