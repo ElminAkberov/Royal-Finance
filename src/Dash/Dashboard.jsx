@@ -74,7 +74,7 @@ const Dashboard = () => {
             } else if (response.status === 400) {
                 console.log("Bad Request");
             } else if (response.status === 404) {
-                setData(0);
+                setCurrentPage(1);
             } else if (response.ok) {
                 const data = await response.json();
                 setData(data);

@@ -74,6 +74,7 @@ const Payout = () => {
         setCurrentPage(1);
         handleFilter();
     };
+
     const handleFilter = async () => {
         setLoading(true)
         try {
@@ -105,7 +106,7 @@ const Payout = () => {
                     navigate("/login");
                 }
             } else if (response.status === 404) {
-                setData(0);
+                setCurrentPage(1);
             } else if (response.ok) {
                 const data = await response.json();
                 setData(data);
@@ -125,7 +126,7 @@ const Payout = () => {
         if (currentPage) {
             setTimeout(() => {
                 handleFilter();
-            }, 2000)
+            }, 2000) 
         }
     }, [currentPage]);
     let methodss = []
@@ -286,7 +287,7 @@ const Payout = () => {
 
 
 
-    
+
 
     // payout
     let [cancel, setCancel] = useState(false)
