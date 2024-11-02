@@ -288,8 +288,8 @@ const Deposit = () => {
           </div>
         }
         {/* modallar */}
-        <form onSubmit={handleSubmit} className={`${!modalUsdt ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto overflow-y-scroll h-[90vh] custom-scroll w-full max-w-[765px]`}>
-          <div className="p-8">
+        <form onSubmit={handleSubmit} className={`${!modalUsdt ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto overflow-y-hidden h-[90vh]  w-full max-w-[765px]`}>
+          <div className="p-8 overflow-y-scroll max-h-[90vh]">
             <div className="relative">
               <div onClick={() => { setModalUsdt(false); setMethod(""); setAmount(""); setHash(""); setError(false); setCopy(false) }} className="absolute right-0 cursor-pointer">
                 <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${isDarkMode ? "fill-[#fff]" : "fill-[#000]"}`}>

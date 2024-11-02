@@ -188,7 +188,7 @@ const Dashboard = () => {
                 <div className="max-md:hidden">
                     <div className={`${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5] border"}  min-h-[100vh] h-full z-20  relative `}>
                         <h3 className={`py-[20px] flex items-center justify-start  ml-[8px] font-medium px-[8px] ${isDarkMode ? "text-white" : "text-black"}`}>Лого</h3>
-                        <div className={` ${!open ? "min-w-[263px]":"min-w-0"}  transition-all duration-300`}>
+                        <div className={` ${!open ? "min-w-[263px]" : "min-w-0"}  transition-all duration-300`}>
                             <div className="">
                                 {localStorage.getItem("role") !== "trader" &&
                                     <NavLink to={"/dash"} className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px] bg-[#2D54DD4D]">
@@ -371,7 +371,6 @@ const Dashboard = () => {
                     </div>
                     {/* filter */}
                     <div className={`${!filterBtn && "max-md:hidden"} flex max-md:justify-center pr-4 flex-wrap py-[24px] text-[14px] gap-2 text-[#717380]`}>
-                        <input onChange={(e) => setHash(e.target.value)} placeholder='Код' type="text" className={` h-[40px] w-[155px] pl-[12px] rounded-[4px] ${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
                         <input onChange={(e) => setHash(e.target.value)} placeholder='Хеш' type="text" className={` pl-[12px] w-[155px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
                         <select onChange={(e) => setSelectMethod(e.target.value)} className={`${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] min-w-[155px] h-[40px]`} name="" id="">
                             <option value="" selected>Метод</option>
@@ -416,6 +415,11 @@ const Dashboard = () => {
                                 </svg>
                             </div>
                             <input value={time_2} onChange={handleEndTimeChange} type="text" className='bg-transparent outline-none pl-7' placeholder='23:59' />
+                        </div>
+                        <div className="flex justify-center mb-2 max-w-[160px] max-md:hidden">
+                            <button onClick={handleFilter} className='bg-[#2E70F5] text-[#fff]  py-[10px] font-normal px-4 text-[14px] rounded-[8px]'>
+                                Применить фильтр
+                            </button>
                         </div>
                         <div className="flex w-full md:hidden justify-center my-2">
                             <button onClick={handleFilter} className='bg-[#2E70F5] text-[#fff]  px-[37.5px] py-[10px] font-normal  text-[14px] rounded-[8px]'>
@@ -506,7 +510,7 @@ const Dashboard = () => {
                                         </div>
                                     )
 
-                                }} field="code" header="Код/Xэш" ></Column>
+                                }} field="code" header="Xэш" ></Column>
 
                                 <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
                                     if (rowData.status === "pending") {
@@ -534,11 +538,7 @@ const Dashboard = () => {
                         </div>
 
                         <div className="block max-md:hidden">
-                            <div className="flex justify-center mb-2 ">
-                                <button onClick={handleFilter} className='bg-[#2E70F5] text-[#fff]  px-[37.5px] py-[10px] font-normal  text-[14px] rounded-[8px]'>
-                                    Применить фильтр
-                                </button>
-                            </div>
+
                             {loading ? (
                                 <Loading />
                             ) :
@@ -604,12 +604,12 @@ const Dashboard = () => {
                                         return (
                                             <div >
                                                 <div className='group cursor-pointer'>{rowData.hash.slice(0, 8)}...
-                                                    <div onClick={() => navigator.clipboard.writeText(rowData.hash)} className="group-hover:opacity-100 group-hover:visible duration-300  flex items-center gap-x-2 absolute right-0 p-1 opacity-0 invisible" style={{ background: isDarkMode ? "#121212" : "#dfdfec" ,color:isDarkMode ? "#fff" : "#121212"}}>{rowData.hash}  <LuCopy/></div>
+                                                    <div onClick={() => navigator.clipboard.writeText(rowData.hash)} className="group-hover:opacity-100 group-hover:visible duration-300  flex items-center gap-x-2 absolute right-0 p-1 opacity-0 invisible" style={{ background: isDarkMode ? "#121212" : "#dfdfec", color: isDarkMode ? "#fff" : "#121212" }}>{rowData.hash}  <LuCopy /></div>
                                                 </div>
                                             </div>
                                         )
 
-                                    }} field="code" header="Код/Xэш" ></Column>
+                                    }} field="code" header="Xэш" ></Column>
 
                                     <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
                                         if (rowData.status === "pending") {
@@ -678,7 +678,7 @@ const Dashboard = () => {
 
                     {/* <p className={`text-right text-[14px] font-normal relative bottom-[45px] mr-4  duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p> */}
                     <div onClick={() => setModal(!modal)} className={`${!modal && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
-                    <div className={`${!modal ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px]`}>
+                    <div className={`${!modal ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px] `}>
                         <div className="p-8">
                             <div className="">
                                 <div className="mb-8">
@@ -703,10 +703,6 @@ const Dashboard = () => {
                                         <div className="modal">
                                             <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Курс обмена</h5>
                                             <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.course} {data?.currency}</p>
-                                        </div>
-                                        <div className="modal">
-                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма в фиате (без ставки)</h5>
-                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>1020</p>
                                         </div>
                                         <div className="modal">
                                             <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Статус</h5>

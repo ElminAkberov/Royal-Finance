@@ -49,6 +49,7 @@ const Payout = () => {
     let [copy, setCopy] = useState(false)
     let [otkImg, setOtkImg] = useState("")
     let [otkImgDesc, setOtkImgDesc] = useState("")
+   
     const handleCopy = (e) => {
         const textToCopy = e.currentTarget.previousElementSibling.innerText.split('\n\n').join("")
         navigator.clipboard.writeText(textToCopy)
@@ -63,7 +64,10 @@ const Payout = () => {
                 console.error('Metin kopyalanırken bir hata oluştu:', err);
             });
     }
-
+    const handleFilterApply = () => {
+        setCurrentPage(1);
+        handleFilter();
+    };
     const handleFilter = async () => {
         setLoading(true)
         try {
@@ -362,7 +366,7 @@ const Payout = () => {
                 <div className={`max-md:hidden`}>
                     <div className={`${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5] border"}  min-h-[100vh] h-full z-20  relative `}>
                         <h3 className={`py-[20px] flex items-center justify-start ml-[8px] font-medium px-[8px] ${isDarkMode ? "text-white" : "text-black"}`}>Лого</h3>
-                        <div className={` ${!open ? "min-w-[263px]":"min-w-0"}  transition-all duration-300`}>
+                        <div className={` ${!open ? "min-w-[263px]" : "min-w-0"}  transition-all duration-300`}>
                             <div className="">
                                 {localStorage.getItem("role") !== "trader" &&
                                     <NavLink to={"/dash"} className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px] ">
@@ -596,8 +600,13 @@ const Payout = () => {
                             </div>
                             <input value={time_2} onChange={handleEndTimeChange} type="text" className='bg-transparent outline-none pl-7' placeholder='23:59' />
                         </div>
+                        <div className="flex justify-center mb-2 max-w-[160px] max-md:hidden">
+                            <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff]  py-[10px] font-normal px-4 text-[14px] rounded-[8px]'>
+                                Применить фильтр
+                            </button>
+                        </div>
                         <div className="flex justify-center w-full md:hidden mb-2 ">
-                            <button onClick={handleFilter} className='bg-[#2E70F5] text-[#fff] px-[37.5px] py-[10px] font-normal  text-[14px] rounded-[8px]'>
+                            <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff] px-[37.5px] py-[10px] font-normal  text-[14px] rounded-[8px]'>
                                 Применить фильтр
                             </button>
                         </div>
@@ -645,11 +654,7 @@ const Payout = () => {
                     <div className={`${isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]"}  max-md:pr-0 max-md:pt-0`}>
 
                         <div className="block max-md:hidden">
-                            <div className="flex justify-center mb-2 ">
-                                <button onClick={handleFilter} className='bg-[#2E70F5] text-[#fff] px-[37.5px] py-[10px] font-normal  text-[14px] rounded-[8px]'>
-                                    Применить фильтр
-                                </button>
-                            </div>
+
                             {loading ? (
                                 <Loading />
                             ) :
@@ -1036,8 +1041,8 @@ const Payout = () => {
                         })}
                     </div>
 
-                    <div className={`${!modal ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px] ${!cancelCheck ? "overflow-y-scroll h-[90vh]" : ""} custom-scroll`}>
-                        <div className="p-8 ">
+                    <div className={`${!modal ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px] ${!cancelCheck ? "  overflow-y-hidden h-[90vh]" : ""} `}>
+                        <div className="p-8 overflow-y-scroll max-h-[90vh]">
                             <div className="">
                                 <div className="mb-8 relative">
                                     <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Детали пополнения</h3>
@@ -1060,102 +1065,104 @@ const Payout = () => {
                                         </div>
                                     </div>
                                 </div>
-                                {details?.map((data, index) => (
-                                    <div key={index} className='grid grid-cols-2 max-md:grid-cols-1 '>
-                                        <div className="">
-                                            <div className="modal_payout ">
-                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>ID</h5>
-                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.id} </p>
-                                            </div>
-                                            <div className="modal_payout">
-                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Назначенный трейдер</h5>
-                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.trader ? data.trader["username"] : "-"}</p>
-                                            </div>
-                                            <div className="modal_payout">
-                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Мерчант </h5>
-                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.merchant ? data.merchant["username"] : "-"}</p>
-                                            </div>
-                                            <div className="modal_payout">
-                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Получатель</h5>
-                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>-</p>
-                                            </div>
-                                            <div className="modal_payout">
-                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Метод оплаты</h5>
-                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.method["name"]}</p>
-                                            </div>
-                                            <div className="modal_payout">
-                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Ставка мерчанта</h5>
-                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.merchant_rate}</p>
-                                            </div>
-                                            <div className="modal_payout">
-                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Ставка трейдера</h5>
-                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.trader_rate}</p>
-                                            </div>
-                                            <div className="modal_payout relative w-max">
-                                                {/* slice metodu */}
-                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} flex items-center gap-x-2 ml-5`}>Внешний ID
-                                                </h5>
-                                                <div className="text-[14px] mb-0">
-                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(0, 33) : '-'}</p>
-                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(32) : ''}</p>
+                                <div className="">
+                                    {details?.map((data, index) => (
+                                        <div key={index} className='grid grid-cols-2 max-md:grid-cols-1 '>
+                                            <div className="">
+                                                <div className="modal_payout ">
+                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>ID</h5>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.id} </p>
                                                 </div>
-                                                <LuCopy className={`text-[16px] absolute top-0 ${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} cursor-pointer`} onClick={(e) => handleCopy(e)} />
-                                            </div>
-                                            {
-                                                <div className={`fixed ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2  -translate-x-1/2 z-50 ${copy ? "top-32" : "top-[-50px] "} duration-300 mx-auto left-1/2 `}>
-                                                    <LuCopy size={18} color={`${isDarkMode ? "#E7E7E7" : "#18181B"}`} />
-                                                    <h4 className={`text-sm ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`} >Ссылка скопирована</h4>
-                                                </div>
-                                            }
-                                            <div className="modal_payout">
-                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма</h5>
-                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.amount}</p>
-                                            </div>
-
-                                        </div>
-                                        <div className="">
-                                            <div className="modal_payout">
-                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Статус</h5>
-                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.status === "pending" ? "В ожидании" : data?.status == "wait_confirm" ? "Ожидает подтверждения" : data?.status == "in_progress" ? "В обработке" : data?.status === "completed" ? "Завершено" : "Отклонено"}</p>
-                                            </div>
-                                            <div className="modal_payout">
-                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Трейдеры на выбор</h5>
-                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.selected_traders.length > 0 ? data.selected_traders.map((person, index) => <span key={index}>{person.username}{index !== data.selected_traders.length - 1 && ','}</span>) : "-"}</p>
-                                            </div>
-                                            <div className="modal_payout">
-                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Банк</h5>
-                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.bank} Банк</p>
-                                            </div>
-                                            <div className="modal_payout">
-                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма с учетом ставки трейдера </h5>
-                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.trader_amount_with_rate}</p>
-                                            </div>
-                                            <div className="modal_payout">
-                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма с учетом ставки мерчанта</h5>
-                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.merchant_amount_with_rate}</p>
-                                            </div>
-                                            <div className="modal_payout">
-                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Время создания</h5>
-                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.created_at?.split("T")[0]} {data?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
-                                            </div>
-                                            <div className="modal_payout">
-                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Время обновления</h5>
-                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.updated_at?.split("T")[0]} {data?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
-                                            </div>
-                                            <div className="modal_payout">
-                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Реквизиты </h5>
-                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.requisite} </p>
-                                            </div>
-                                            {data.receipts.length > 0 &&
                                                 <div className="modal_payout">
-                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Чек </h5>
-                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}><img className='w-[200px] h-[150px] object-contain' onClick={() => { setZoom(!zoom) }} src={data.receipts[0] && data.receipts[0].endsWith('.pdf') ? '/assets/img/check.jpg' : data.receipts[0]} /> </p>
+                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Назначенный трейдер</h5>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.trader ? data.trader["username"] : "-"}</p>
                                                 </div>
-                                            }
-                                        </div>
+                                                <div className="modal_payout">
+                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Мерчант </h5>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.merchant ? data.merchant["username"] : "-"}</p>
+                                                </div>
+                                                <div className="modal_payout">
+                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Получатель</h5>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>-</p>
+                                                </div>
+                                                <div className="modal_payout">
+                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Метод оплаты</h5>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.method["name"]}</p>
+                                                </div>
+                                                <div className="modal_payout">
+                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Ставка мерчанта</h5>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.merchant_rate}</p>
+                                                </div>
+                                                <div className="modal_payout">
+                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Ставка трейдера</h5>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.trader_rate}</p>
+                                                </div>
+                                                <div className="modal_payout relative w-max">
+                                                    {/* slice metodu */}
+                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} flex items-center gap-x-2 ml-5`}>Внешний ID
+                                                    </h5>
+                                                    <div className="text-[14px] mb-0">
+                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(0, 33) : '-'}</p>
+                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(32) : ''}</p>
+                                                    </div>
+                                                    <LuCopy className={`text-[16px] absolute top-0 ${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} cursor-pointer`} onClick={(e) => handleCopy(e)} />
+                                                </div>
+                                                {
+                                                    <div className={`fixed ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2  -translate-x-1/2 z-50 ${copy ? "top-32" : "top-[-50px] "} duration-300 mx-auto left-1/2 `}>
+                                                        <LuCopy size={18} color={`${isDarkMode ? "#E7E7E7" : "#18181B"}`} />
+                                                        <h4 className={`text-sm ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`} >Ссылка скопирована</h4>
+                                                    </div>
+                                                }
+                                                <div className="modal_payout">
+                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма</h5>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.amount}</p>
+                                                </div>
 
-                                    </div>
-                                ))}
+                                            </div>
+                                            <div className="">
+                                                <div className="modal_payout">
+                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Статус</h5>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.status === "pending" ? "В ожидании" : data?.status == "wait_confirm" ? "Ожидает подтверждения" : data?.status == "in_progress" ? "В обработке" : data?.status === "completed" ? "Завершено" : "Отклонено"}</p>
+                                                </div>
+                                                <div className="modal_payout">
+                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Трейдеры на выбор</h5>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.selected_traders.length > 0 ? data.selected_traders.map((person, index) => <span key={index}>{person.username}{index !== data.selected_traders.length - 1 && ','}</span>) : "-"}</p>
+                                                </div>
+                                                <div className="modal_payout">
+                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Банк</h5>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.bank} Банк</p>
+                                                </div>
+                                                <div className="modal_payout">
+                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма с учетом ставки трейдера </h5>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.trader_amount_with_rate}</p>
+                                                </div>
+                                                <div className="modal_payout">
+                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма с учетом ставки мерчанта</h5>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.merchant_amount_with_rate}</p>
+                                                </div>
+                                                <div className="modal_payout">
+                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Время создания</h5>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.created_at?.split("T")[0]} {data?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
+                                                </div>
+                                                <div className="modal_payout">
+                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Время обновления</h5>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.updated_at?.split("T")[0]} {data?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
+                                                </div>
+                                                <div className="modal_payout">
+                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Реквизиты </h5>
+                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.requisite} </p>
+                                                </div>
+                                                {data.receipts.length > 0 &&
+                                                    <div className="modal_payout">
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Чек </h5>
+                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}><img className='w-[200px] h-[150px] object-contain' onClick={() => { setZoom(!zoom) }} src={data.receipts[0] && data.receipts[0].endsWith('.pdf') ? '/assets/img/check.jpg' : data.receipts[0]} /> </p>
+                                                    </div>
+                                                }
+                                            </div>
+
+                                        </div>
+                                    ))}
+                                </div>
                                 {/* cancel modal */}
 
                                 <div onClick={() => setOtkImg("")} className={`${!cancel && "hidden"} fixed inset-0 h-[120vh] bg-[#2222224D] z-20`}></div>
@@ -1206,14 +1213,14 @@ const Payout = () => {
                                     </div>
                                 </form>
                                 {/* buttonlar */}
-                                <div className="flex w-full text-white md:justify-end gap-x-4">
+                                <div className="flex w-full text-white md:justify-end gap-x-4 mt-2 ">
                                     {details?.map((data, index) => {
                                         return (
                                             <div key={index}>
                                                 {(data.status === "pending") && (
                                                     <>
 
-                                                        <div className='flex gap-x-4'>
+                                                        <div className='flex max-[420px]:flex-col gap-4'>
                                                             <button onClick={() => setCancel(!cancel)} className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                                                 Отклонить
                                                             </button>
