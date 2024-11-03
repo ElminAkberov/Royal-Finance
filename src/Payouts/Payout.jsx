@@ -129,51 +129,70 @@ const Payout = () => {
     let methodss = []
     let [method, setMethod] = useState([])
     const handleMethod = async () => {
+        let allMethods = [];
+        let page = 1;
+        let hasNextPage = true;
+    
         try {
-            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/?status=${selectStatus}&page=${currentPage === "" ? 1 : currentPage}`, {
-                method: "GET",
-                headers: {
-                    "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
-                }
-            });
-
-            if (response.status === 401) {
-                console.log("Unauthorized access, attempting to refresh token.");
-                const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
-                    method: "POST",
+            while (hasNextPage) {
+                const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/?status=${selectStatus}&page=${page}`, {
+                    method: "GET",
                     headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        refresh: localStorage.getItem("refresh"),
-                    }),
+                        "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
+                    }
                 });
-
-                if (refreshResponse.ok) {
-                    const refreshData = await refreshResponse.json();
-                    localStorage.setItem("access", refreshData.access);
-                    return handleMethod(); // Retry fetch with new token
+    
+                if (response.status === 401) {
+                    console.log("Unauthorized access, attempting to refresh token.");
+                    const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            refresh: localStorage.getItem("refresh"),
+                        }),
+                    });
+    
+                    if (refreshResponse.ok) {
+                        const refreshData = await refreshResponse.json();
+                        localStorage.setItem("access", refreshData.access);
+                        return handleMethod(); 
+                    } else {
+                        console.log("Failed to refresh token, redirecting to login.");
+                        navigate("/login");
+                        return; 
+                    }
+                } else if (response.ok) {
+                    const data = await response.json();
+                   
+                    const methodsOnPage = data.results
+                        .filter(item => (selectStatus ? selectStatus === item.status : true))
+                        .map(item => item.method["name"]);
+    
+                    allMethods = allMethods.concat(methodsOnPage);
+    
+                   
+                    hasNextPage = data.next !== null;
+                    page++; 
                 } else {
-                    console.log("Failed to refresh token, redirecting to login.");
-                    navigate("/login");
+                    console.log("Unexpected error:", response.status);
+                    hasNextPage = false; 
                 }
-            } else if (response.ok) {
-                const data = await response.json();
-                data?.results?.filter(item => selectStatus ? selectStatus == item.status : item).map(item => methodss.push(item.method["name"]))
-                setMethod(methodss)
-            } else {
-                console.log("Unexpected error:", response.status);
             }
+    
+            // Tüm sayfalardan toplanan method'ları state'e atıyoruz
+            setMethod(allMethods);
         } catch (error) {
             console.error("An error occurred:", error);
             navigate("/login");
         }
-    }
+    };
+    
     useEffect(() => {
-        if (currentPage) {
-            handleMethod();
-        }
+        handleMethod();
     }, [currentPage, selectStatus]);
+    
     const handleUpload = async (e) => {
         e.preventDefault();
         try {
@@ -573,7 +592,7 @@ const Payout = () => {
                         </div>
                     </div>
                     {/* filterler */}
-                    <div className={`${!filterBtn && "max-md:hidden"} flex max-md:grid max-md:grid-cols-2 max-md:justify-items-center max-[450px]:grid-cols-1  max-[1492px]:justify-center flex-wrap   py-[24px] pr-4 text-[14px] gap-2 text-[#717380]`}>
+                    <div className={`${!filterBtn && "max-md:hidden"} flex max-md:grid max-md:grid-cols-2 max-md:justify-items-center max-[450px]:grid-cols-1  max-[1200px]:justify-center flex-wrap   py-[24px] pr-4 text-[14px] gap-2 text-[#717380]`}>
                         {localStorage.getItem("role") !== "trader" &&
                             <input onChange={(e) => setMerchant(e.target.value)} placeholder='Мерчант' type="text" className={` h-[40px] w-[155px] pl-[12px] rounded-[4px] ${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
                         }
