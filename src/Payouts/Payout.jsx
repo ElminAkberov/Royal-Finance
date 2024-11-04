@@ -126,13 +126,13 @@ const Payout = () => {
             }, 2000)
         }
     }, [currentPage]);
-    let methodss = []
+
     let [method, setMethod] = useState([])
     const handleMethod = async () => {
         let allMethods = [];
         let page = 1;
         let hasNextPage = true;
-    
+
         try {
             while (hasNextPage) {
                 const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/?status=${selectStatus}&page=${page}`, {
@@ -141,7 +141,7 @@ const Payout = () => {
                         "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
                     }
                 });
-    
+
                 if (response.status === 401) {
                     console.log("Unauthorized access, attempting to refresh token.");
                     const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
@@ -153,46 +153,40 @@ const Payout = () => {
                             refresh: localStorage.getItem("refresh"),
                         }),
                     });
-    
                     if (refreshResponse.ok) {
                         const refreshData = await refreshResponse.json();
                         localStorage.setItem("access", refreshData.access);
-                        return handleMethod(); 
+                        return handleMethod();
                     } else {
                         console.log("Failed to refresh token, redirecting to login.");
                         navigate("/login");
-                        return; 
+                        return;
                     }
                 } else if (response.ok) {
                     const data = await response.json();
-                   
                     const methodsOnPage = data.results
                         .filter(item => (selectStatus ? selectStatus === item.status : true))
                         .map(item => item.method["name"]);
-    
                     allMethods = allMethods.concat(methodsOnPage);
-    
-                   
                     hasNextPage = data.next !== null;
-                    page++; 
+                    page++;
                 } else {
                     console.log("Unexpected error:", response.status);
-                    hasNextPage = false; 
+                    hasNextPage = false;
                 }
             }
-    
-            // Tüm sayfalardan toplanan method'ları state'e atıyoruz
+
             setMethod(allMethods);
         } catch (error) {
             console.error("An error occurred:", error);
             navigate("/login");
         }
     };
-    
+
     useEffect(() => {
         handleMethod();
     }, [currentPage, selectStatus]);
-    
+
     const handleUpload = async (e) => {
         e.preventDefault();
         try {
@@ -443,7 +437,9 @@ const Payout = () => {
                 setStatus((prevError) => ({ ...prevError, handleAccept: "error" }));
             } else {
                 setStatus((prevError) => ({ ...prevError, handleAccept: "success" }));
-                window.location.reload()
+                setTimeout(() => {
+                    window.location.reload()
+                }, 2000)
             }
         } catch (error) {
             setStatus((prevError) => ({ ...prevError, handleAccept: "error" }));
@@ -1103,6 +1099,34 @@ const Payout = () => {
                                     </svg>
                                     <h5 className='text-[14px] text-[#60626C]'>Подробная информация</h5>
                                 </div>
+                                {status["handleAccept"] == "error" &&
+                                    <div className={`pt-1 w-full absolute right-0 duration-300 max-md:mx-3 ${status["handleAccept"] == "error" ? "top-20" : "top-[-300px]"}`}>
+                                        <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
+                                            <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
+                                            <div className="relative mr-[8px] ml-[18px]">
+                                                <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
+                                            </div>
+                                            <div className="">
+                                                <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
+                                                <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                {status["handleAccept"] == "success" &&
+                                    <div className={`w-full pt-1 absolute max-md:px-3 right-0 ${status["handleAccept"] == "success" ? "top-20" : "top-[-300px]"} duration-300`}>
+                                        <div className="flex items-center max-w-[720px] mx-auto mb-5 border bg-white border-[#37B67E] rounded-md">
+                                            <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#37b67e]"></div>
+                                            <div className="relative mr-[8px] ml-[18px]">
+                                                <img src="/assets/img/check.svg" className='bg-[#37B67E] min-w-[26.67px] min-h-[26.67px] p-[6px] rounded-full' alt="" />
+                                            </div>
+                                            <div className="">
+                                                <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Успешно!</h4>
+                                                <p className='text-[14px] text-[#484951]'>Ваши изменения успешно сохранены.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
                                 <div className="">
                                     {details?.map((data, index) => (
                                         <div key={index} className='grid grid-cols-2 max-md:grid-cols-1 '>
