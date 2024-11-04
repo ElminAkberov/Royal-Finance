@@ -282,7 +282,7 @@ const Payout = () => {
             console.log(error)
             setStatus((prevError) => ({ ...prevError, "handleCancel": "error" }))
         }
-    };
+    }
     const handleDepositGet = async (e) => {
         e.preventDefault();
         try {
@@ -1089,7 +1089,7 @@ const Payout = () => {
                         })}
                     </div>
 
-                    <div className={`${!modal ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px] ${!cancelCheck ? "  overflow-y-hidden h-[90vh]" : ""} `}>
+                    <div className={`${!modal ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 shadow-2xl mx-auto w-full max-w-[784px] ${!cancelCheck ? "  overflow-y-hidden h-[90vh]" : ""} `}>
                         <div className="p-8 overflow-y-scroll max-h-[90vh]">
                             <div className="">
                                 <div className="mb-8 relative">
@@ -1229,8 +1229,8 @@ const Payout = () => {
                                 {/* cancel modal */}
 
                                 <div onClick={() => { setOtkImg(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${!cancel && "hidden"} fixed inset-0 h-[120vh] bg-[#2222224D] z-20`}></div>
-                                <form onSubmit={handleCancel} className={`${!cancel ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} pt-8 pl-8 pb-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full overflow-y-hidden  rounded-[24px]`}>
-                                    <div className="overflow-y-scroll max-h-[80vh]">
+                                <form onSubmit={handleCancel} className={`${!cancel ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} pt-8 pl-8 pb-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 shadow-sm shadow-black -translate-y-1/2 mx-auto w-full overflow-y-hidden  rounded-[24px]`}>
+                                    <div className={`${isDarkMode ? "scroll-black" : "scroll-white"} overflow-y-scroll max-h-[80vh]`}>
                                         <div className="relative mb-8 mr-8">
                                             <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Отклонить выплату</h3>
                                             <svg width="14" onClick={() => { setCancel(!cancel); setOtkImg(""); setReason(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })) }} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1335,7 +1335,7 @@ const Payout = () => {
                     {/* cek yuklemek ucun */}
                     <div onClick={() => { setCancelCheck(!cancelCheck); setImageSrc(""); setStatus((prevError) => ({ ...prevError, handleUpload: null })); }} className={`${!cancelCheck && "hidden"} fixed inset-0 bg-[#2222224D] z-30`}></div>
                     <form onSubmit={handleUpload} className={`${!cancelCheck ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} pt-8 pl-8 pb-8 md:pr-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[763px]  overflow-y-hidden rounded-[24px]`}>
-                        <div className="max-md:overflow-y-scroll max-md:max-h-[80vh]">
+                        <div className={`max-md:overflow-y-scroll max-md:max-h-[80vh] `}>
                             <div className="relative mb-8">
                                 <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Завершить</h3>
                                 <svg width="14" onClick={() => { setCancelCheck(!cancelCheck); setImageSrc(""); setStatus((prevError) => ({ ...prevError, handleUpload: null })); }} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-5`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
