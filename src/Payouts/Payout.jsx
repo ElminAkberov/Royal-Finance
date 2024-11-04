@@ -1229,67 +1229,70 @@ const Payout = () => {
                                 {/* cancel modal */}
 
                                 <div onClick={() => { setOtkImg(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${!cancel && "hidden"} fixed inset-0 h-[120vh] bg-[#2222224D] z-20`}></div>
-                                <form onSubmit={handleCancel} className={`${!cancel ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} p-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full overflow-y-scroll  rounded-[24px]`}>
-                                    <div className="relative mb-8 ">
-                                        <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Отклонить выплату</h3>
-                                        <svg width="14" onClick={() => { setCancel(!cancel); setOtkImg(""); setReason(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })) }} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
-                                        </svg>
-                                        <h5 className='text-[14px] text-[#60626C]'>Укажите причину</h5>
-                                    </div>
-                                    {/* errorm */}
-                                    {status["handleCancel"] == "error" &&
-                                        <div className={`pt-1 z-20  duration-300  w-full `}>
-                                            <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
-                                                <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
-                                                <div className="relative mr-[8px] ml-[18px]">
-                                                    <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
-                                                </div>
-                                                <div className="">
-                                                    <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
-                                                    <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    }
-                                    {status["handleCancel"] == "success" &&
-                                        <div className="w-full pt-1 ">
-                                            <div className="flex items-center max-w-[720px] mx-auto mb-5 border bg-white border-[#37B67E] rounded-md">
-                                                <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#37b67e]"></div>
-                                                <div className="relative mr-[8px] ml-[18px]">
-                                                    <img src="/assets/img/check.svg" className='bg-[#37B67E] min-w-[26.67px] min-h-[26.67px] p-[6px] rounded-full' alt="" />
-                                                </div>
-                                                <div className="">
-                                                    <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Успешно!</h4>
-                                                    <p className='text-[14px] text-[#484951]'>Ваши изменения успешно сохранены.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    }
-                                    <div className="modal_payout mb-8">
-                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} mb-2`}>Описание</h5>
-                                        <input onChange={(e) => setReason(e.target.value)} value={reason} required placeholder='Описание' type="text" className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
-                                    </div>
-                                    <div className=" flex max-[400px]:flex-col items-center">
-                                        {otkImg && <img src={otkImg} alt="Uploaded preview" className="mt-4 max-w-[300px] max-h-[400px]" />}
-                                        {otkImg &&
-                                            <svg onClick={() => setOtkImg("")} width="24" className='ml-3 cursor-pointer min-w-[24px]' height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
+                                <form onSubmit={handleCancel} className={`${!cancel ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} pt-8 pl-8 pb-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full overflow-y-hidden  rounded-[24px]`}>
+                                    <div className="overflow-y-scroll max-h-[80vh]">
+                                        <div className="relative mb-8 mr-8">
+                                            <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Отклонить выплату</h3>
+                                            <svg width="14" onClick={() => { setCancel(!cancel); setOtkImg(""); setReason(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })) }} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
                                             </svg>
-                                        }
-                                    </div>
-                                    <div className="mb-8">
-                                        <div
-                                            className='w-max text-[#2E70F5] cursor-pointer border-[#2E70F5] mt-4 border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'
-                                            onClick={() => document.getElementById('fileInputs').click()}>
-                                            Прикрепить Чек
+                                            <h5 className='text-[14px] text-[#60626C]'>Укажите причину</h5>
                                         </div>
-                                        <input id="fileInputs" type="file" className="hidden" onChange={handleFileClose} accept="image/*" />
-                                    </div>
-                                    <div className="flex justify-end">
-                                        <button type='submit' className=' bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                            Отклонить
-                                        </button>
+                                        {/* errorm */}
+                                        {status["handleCancel"] == "error" &&
+                                            <div className={`pt-1 z-20  duration-300  w-full `}>
+                                                <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
+                                                    <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
+                                                    <div className="relative mr-[8px] ml-[18px]">
+                                                        <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
+                                                    </div>
+                                                    <div className="">
+                                                        <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
+                                                        <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                        {status["handleCancel"] == "success" &&
+                                            <div className="w-full pt-1 ">
+                                                <div className="flex items-center max-w-[720px] mx-auto mb-5 border bg-white border-[#37B67E] rounded-md">
+                                                    <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#37b67e]"></div>
+                                                    <div className="relative mr-[8px] ml-[18px]">
+                                                        <img src="/assets/img/check.svg" className='bg-[#37B67E] min-w-[26.67px] min-h-[26.67px] p-[6px] rounded-full' alt="" />
+                                                    </div>
+                                                    <div className="">
+                                                        <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Успешно!</h4>
+                                                        <p className='text-[14px] text-[#484951]'>Ваши изменения успешно сохранены.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                        <div className="modal_payout mb-8 mr-8">
+                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} mb-2`}>Описание</h5>
+                                            <input onChange={(e) => setReason(e.target.value)} value={reason} required placeholder='Описание' type="text" className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
+                                        </div>
+                                        <div className=" flex max-[400px]:flex-col items-center mr-8">
+                                            {otkImg && <img src={otkImg} alt="Uploaded preview" className="mt-4 max-w-[300px] max-h-[400px]" />}
+                                            {otkImg &&
+                                                <svg onClick={() => setOtkImg("")} width="24" className='ml-3 cursor-pointer min-w-[24px]' height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
+                                                </svg>
+                                            }
+                                        </div>
+                                        <div className="mb-8">
+                                            <div
+                                                className='w-max text-[#2E70F5] cursor-pointer border-[#2E70F5] mt-4 border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'
+                                                onClick={() => document.getElementById('fileInputs').click()}>
+                                                Прикрепить Чек
+                                            </div>
+                                            <input id="fileInputs" type="file" className="hidden" onChange={handleFileClose} accept="image/*" />
+                                        </div>
+                                        <div className="flex justify-end pr-8">
+                                            <button type='submit' className=' bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                                Отклонить
+                                            </button>
+                                        </div>
+
                                     </div>
                                 </form>
                                 {/* buttonlar */}
