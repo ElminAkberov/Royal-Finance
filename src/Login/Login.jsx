@@ -139,7 +139,7 @@ const Login = () => {
                 className='absolute top-[34%] right-0 mr-[12px] cursor-pointer'
                 style={{ background: 'transparent', border: 'none' }}
               >
-                {showPassword ? <IoMdEye size={26} width="22" height="16" /> : <IoMdEyeOff size={26} width="22" height="16" />}
+                {showPassword ? <IoMdEye size={26} width="22" height="16" color={!isDarkMode ? "#000" : "#fff"} /> : <IoMdEyeOff size={26} width="22" height="16" color={!isDarkMode ? "#000" : "#fff"} />}
               </button>
             </label>
             <label htmlFor="otp">
