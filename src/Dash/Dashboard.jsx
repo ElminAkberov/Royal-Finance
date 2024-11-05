@@ -4,11 +4,12 @@ import { Column } from 'primereact/column';
 import { Navigate, NavLink, useNavigate } from 'react-router-dom';
 import Dark from '../Dark';
 import { Context } from '../context/ContextProvider';
-import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
+import { FaAngleLeft, FaAngleRight, FaArrowDownShortWide, FaArrowDownWideShort } from "react-icons/fa6";
 import Loading from '../Loading/Loading';
-import { LuCopy } from 'react-icons/lu';
+import { LuArrowDownUp, LuCopy } from 'react-icons/lu';
 
 const Dashboard = () => {
+    let [arrows, setArrow] = useState("amount")
     const [loading, setLoading] = useState(true);
     let [copy, setCopy] = useState(false)
     let [dropDown, setDropDown] = useState(false)
@@ -44,7 +45,7 @@ const Dashboard = () => {
     const handleFilter = async () => {
         setLoading(true)
         try {
-            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/refills/?method=${selectMethod && selectMethod}&status=${selectStatus && selectStatus}&created_at_before=${time_2 ? endDate + "T" + time_2 : endDate}&created_at_after=${time ? startDate + "T" + time : startDate}&hash=${hash && hash}&page=${currentPage === "" ? 1 : currentPage}`, {
+            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/refills/?method=${selectMethod && selectMethod}&o=${arrows}_in_usdt&status=${selectStatus && selectStatus}&created_at_before=${time_2 ? endDate + "T" + time_2 : endDate}&created_at_after=${time ? startDate + "T" + time : startDate}&hash=${hash && hash}&page=${currentPage === "" ? 1 : currentPage}`, {
                 method: "GET",
                 headers: {
                     "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
@@ -171,7 +172,9 @@ const Dashboard = () => {
             })
             .catch(err => console.error(err));
     };
-
+    useEffect(() => {
+        handleFilter();
+    }, [arrows]);
     return (
         <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border `}>
             <div className='flex'>
@@ -447,7 +450,7 @@ const Dashboard = () => {
                                 <DataTable scrollable scrollHeight="65vh" value={data?.results} rows={10} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
                                     <Column body={(rowData) => {
                                         return (
-                                            <div onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>
+                                            <div className="selectable-text" onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>
                                                 <img className='mx-auto' src='/assets/img/ion_eye.svg' />
                                             </div>
                                         );
@@ -456,7 +459,7 @@ const Dashboard = () => {
                                     <Column body={(rowData) => {
                                         return (
                                             <div>
-                                                <div>
+                                                <div className="selectable-text">
                                                     <h5>{rowData?.created_at?.split("T")[0]}</h5>
                                                     <p>{rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
                                                 </div>
@@ -465,27 +468,34 @@ const Dashboard = () => {
                                         )
                                     }} headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время"  ></Column>
 
-                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header="Метод" body={(rowData) => <div>{rowData?.method_name}</div>} ></Column>
+                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header="Метод" body={(rowData) => <div className="selectable-text">{rowData?.method_name}</div>} ></Column>
                                     {localStorage.getItem("role") == "admin" &&
-                                        <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="merchant" header="Мерчант" body={(rowData) => <div>{rowData?.merchant["username"]}</div>} ></Column>
+                                        <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="merchant" header="Мерчант" body={(rowData) => <div className="selectable-text">{rowData?.merchant["username"]}</div>} ></Column>
                                     }
 
-                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" sortable header={"Сумма"} headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} `} body={(rowData) => {
+                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" header={
+                                        <div onClick={() => { setArrow(arrows === "amount" ? "-amount" : "amount"); }} style={{ display: 'flex', alignItems: 'center' }}>
+                                            {arrows === "amount" ?
+                                                <FaArrowDownShortWide color={isDarkMode ? "#E7E7E7" : "#2B347C"} size={17} />
+                                                :
+                                                <FaArrowDownWideShort color={isDarkMode ? "#E7E7E7" : "#2B347C"} size={17} />
+                                            }
+                                            Сумма
+                                        </div>
+                                    } headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} cursor-pointer`} body={(rowData) => {
                                         return (
-                                            <div>
-                                                <>
-                                                    <div>{rowData.amount_in_usdt} USDT</div>
-                                                </>
+                                            <div className="selectable-text">
+                                                <div>{rowData.amount_in_usdt} USDT</div>
                                             </div>
-                                        )
-
-                                    }} ></Column>
+                                        );
+                                    }}
+                                    ></Column>
 
                                     <Column body={(rowData) => {
                                         return (
                                             <div>
                                                 <>
-                                                    <div>{rowData.course} {rowData.currency}</div>
+                                                    <div className="selectable-text">{rowData.course} {rowData.currency}</div>
                                                 </>
                                             </div>
                                         )
@@ -496,7 +506,7 @@ const Dashboard = () => {
                                         return (
                                             <div>
                                                 <>
-                                                    <div>{rowData.amount} RUB</div>
+                                                    <div className="selectable-text">{rowData.amount} RUB</div>
                                                 </>
                                             </div>
                                         )
@@ -506,7 +516,7 @@ const Dashboard = () => {
                                     <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} body={(rowData) => {
                                         return (
                                             <div >
-                                                <div>{rowData.hash.slice(0, 8)}...</div>
+                                                <div className="selectable-text">{rowData.hash.slice(0, 8)}...</div>
                                             </div>
                                         )
 
@@ -545,7 +555,7 @@ const Dashboard = () => {
                                 <DataTable value={data?.results} rows={10} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
                                     <Column body={(rowData) => {
                                         return (
-                                            <div onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>
+                                            <div  onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>
                                                 <img className='mx-auto' src='/assets/img/ion_eye.svg' />
                                             </div>
                                         );
@@ -555,34 +565,42 @@ const Dashboard = () => {
                                         return (
                                             <div>
                                                 <div>
-                                                    <h5>{rowData?.created_at?.split("T")[0]}</h5>
-                                                    <p>{rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
+                                                    <h5 className="selectable-text">{rowData?.created_at?.split("T")[0]}</h5>
+                                                    <p className="selectable-text">{rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
                                                 </div>
 
                                             </div>
                                         )
                                     }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время"  ></Column>
 
-                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header="Метод" body={(rowData) => <div>{rowData?.method_name}</div>} ></Column>
+                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header="Метод" body={(rowData) => <div className="selectable-text">{rowData?.method_name}</div>} ></Column>
                                     {localStorage.getItem("role") == "admin" &&
-                                        <Column headerStyle={{backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="merchant" header="Мерчант" body={(rowData) => <div>{rowData?.merchant["username"]}</div>} ></Column>
+                                        <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="merchant" header="Мерчант" body={(rowData) => <div className="selectable-text">{rowData?.merchant["username"]}</div>} ></Column>
                                     }
-                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" sortable header={"Сумма"} headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} `} body={(rowData) => {
+                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" header={
+                                        <div onClick={() => { setArrow(arrows === "amount" ? "-amount" : "amount"); }} style={{ display: 'flex', alignItems: 'center' }}>
+                                            {arrows === "amount" ?
+                                                <FaArrowDownShortWide color={isDarkMode ? "#E7E7E7" : "#2B347C"} size={17} />
+                                                :
+                                                <FaArrowDownWideShort color={isDarkMode ? "#E7E7E7" : "#2B347C"} size={17} />
+                                            }
+                                            Сумма
+                                        </div>
+                                    } headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} cursor-pointer`} body={(rowData) => {
                                         return (
                                             <div>
-                                                <>
-                                                    <div>{rowData.amount_in_usdt} USDT</div>
-                                                </>
+                                                <div className="selectable-text">{rowData.amount_in_usdt} USDT</div>
                                             </div>
-                                        )
+                                        );
+                                    }}
+                                    ></Column>
 
-                                    }} ></Column>
 
                                     <Column body={(rowData) => {
                                         return (
                                             <div>
                                                 <>
-                                                    <div>{rowData.course} {rowData.currency}</div>
+                                                    <div className="selectable-text">{rowData.course} {rowData.currency}</div>
                                                 </>
                                             </div>
                                         )
@@ -593,7 +611,7 @@ const Dashboard = () => {
                                         return (
                                             <div>
                                                 <>
-                                                    <div>{rowData.amount} RUB</div>
+                                                    <div className="selectable-text">{rowData.amount} RUB</div>
                                                 </>
                                             </div>
                                         )
@@ -603,8 +621,8 @@ const Dashboard = () => {
                                     <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} body={(rowData) => {
                                         return (
                                             <div >
-                                                <div className='group cursor-pointer'>{rowData.hash.slice(0, 8)}...
-                                                    <div onClick={() => { navigator.clipboard.writeText(rowData.hash); setCopy(true); setTimeout(() => { setCopy(false) }, 2000) }} className="group-hover:opacity-100 group-hover:visible duration-300  flex items-center gap-x-2 absolute right-0 p-1 opacity-0 invisible" style={{ background: isDarkMode ? "#121212" : "#dfdfec", color: isDarkMode ? "#fff" : "#121212" }}>{rowData.hash}  <LuCopy /></div>
+                                                <div  className='group cursor-pointer'>{rowData.hash.slice(0, 8)}...
+                                                    <div  onClick={() => { navigator.clipboard.writeText(rowData.hash); setCopy(true); setTimeout(() => { setCopy(false) }, 2000) }} className="group-hover:opacity-100 group-hover:visible duration-300  flex items-center gap-x-2 absolute right-0 p-1 opacity-0 invisible" style={{ background: isDarkMode ? "#121212" : "#dfdfec", color: isDarkMode ? "#fff" : "#121212" }}>{rowData.hash}  <LuCopy /></div>
                                                 </div>
                                             </div>
                                         )
@@ -682,7 +700,7 @@ const Dashboard = () => {
                         <div className="p-8">
                             <div className="">
                                 <div className="mb-8">
-                                    <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Детали пополнения</h3>
+                                    <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Детали депозита </h3>
                                     <h5 className='text-[14px] text-[#60626C]'>Подробная информация</h5>
                                 </div>
                                 {details?.map((data, index) => (

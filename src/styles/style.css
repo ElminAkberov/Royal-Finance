@@ -23,7 +23,12 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     color: #E7E7E7;
     margin-right: 3px;
 }
-
+.p-datatable td {
+    user-select: text !important;
+}
+.selectable-text{
+    user-select: text !important;
+}
 .bg-linear {
     min-height: 100vh;
     overflow: auto;
