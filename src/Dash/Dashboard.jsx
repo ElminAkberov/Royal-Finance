@@ -450,7 +450,7 @@ const Dashboard = () => {
                                 <DataTable scrollable scrollHeight="65vh" value={data?.results} rows={10} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
                                     <Column body={(rowData) => {
                                         return (
-                                            <div className="selectable-text" onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>
+                                            <div onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>
                                                 <img className='mx-auto' src='/assets/img/ion_eye.svg' />
                                             </div>
                                         );
