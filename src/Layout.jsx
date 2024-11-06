@@ -1,10 +1,18 @@
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Outlet, Navigate, useLocation } from 'react-router-dom'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { Context } from './context/ContextProvider';
 const Layout = () => {
     const location = useLocation();
 
+    const { isDarkMode } = useContext(Context);
+    useEffect(() => {
+      const favicon = document.querySelector("link[rel~='icon']");
+      if (favicon) {
+        favicon.href = isDarkMode ? '/assets/favicon/Favicon_dark.png' : '/assets/favicon/Favicon_Blue.png';
+      }
+    }, [isDarkMode]);
     if (localStorage.getItem("role") === "trader" && location.pathname === "/dash") {
         return <Navigate to={"/deposit"} replace />;
     }

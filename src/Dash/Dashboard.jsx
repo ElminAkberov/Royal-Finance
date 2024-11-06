@@ -180,7 +180,7 @@ const Dashboard = () => {
             <div className='flex'>
                 <div className="max-md:hidden">
                     <div className={`${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5] border"}  min-h-[100vh] h-full z-20  relative `}>
-                        <h3 className={`py-[20px] flex items-center justify-start  ml-[8px] font-medium px-[8px] ${isDarkMode ? "text-white" : "text-black"}`}>Лого</h3>
+                        <h3 className={`py-[15px] flex items-center justify-start ml-[8px] font-medium px-[8px] ${isDarkMode ? "text-white" : "text-black"}`}><img className='max-w-[40px]' src={`/assets/logo/${isDarkMode ? "Logo_dark.svg" : "Logo_light.svg"}`} /></h3>
                         <div className={` ${!open ? "min-w-[263px]" : "min-w-0"}  transition-all duration-300`}>
                             <div className="">
                                 {localStorage.getItem("role") !== "trader" &&
@@ -555,7 +555,7 @@ const Dashboard = () => {
                                 <DataTable value={data?.results} rows={10} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
                                     <Column body={(rowData) => {
                                         return (
-                                            <div  onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>
+                                            <div onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>
                                                 <img className='mx-auto' src='/assets/img/ion_eye.svg' />
                                             </div>
                                         );
@@ -621,8 +621,8 @@ const Dashboard = () => {
                                     <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} body={(rowData) => {
                                         return (
                                             <div >
-                                                <div  className='group cursor-pointer'>{rowData.hash.slice(0, 8)}...
-                                                    <div  onClick={() => { navigator.clipboard.writeText(rowData.hash); setCopy(true); setTimeout(() => { setCopy(false) }, 2000) }} className="group-hover:opacity-100 group-hover:visible duration-300  flex items-center gap-x-2 absolute right-0 p-1 opacity-0 invisible" style={{ background: isDarkMode ? "#121212" : "#dfdfec", color: isDarkMode ? "#fff" : "#121212" }}>{rowData.hash}  <LuCopy /></div>
+                                                <div className='group cursor-pointer'>{rowData.hash.slice(0, 8)}...
+                                                    <div onClick={() => { navigator.clipboard.writeText(rowData.hash); setCopy(true); setTimeout(() => { setCopy(false) }, 2000) }} className="group-hover:opacity-100 group-hover:visible duration-300  flex items-center gap-x-2 absolute right-0 p-1 opacity-0 invisible" style={{ background: isDarkMode ? "#121212" : "#dfdfec", color: isDarkMode ? "#fff" : "#121212" }}>{rowData.hash}  <LuCopy /></div>
                                                 </div>
                                             </div>
                                         )

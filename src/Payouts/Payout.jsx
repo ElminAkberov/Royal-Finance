@@ -11,7 +11,7 @@ import Loading from '../Loading/Loading';
 import Header from '../Header/Header';
 import Header_md from '../Header/Header-md';
 import { Swiper, SwiperSlide } from 'swiper/react';
-
+import { Document, Page, pdf } from '@react-pdf/renderer';
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/free-mode';
@@ -21,8 +21,18 @@ import 'swiper/css/thumbs';
 
 // import required modules
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
-
+import { PDFViewer } from '@react-pdf/renderer';
+import { Viewer, Worker } from '@react-pdf-viewer/core';
 const Payout = () => {
+    const images = [
+        "https://rf-static.ams3.digitaloceanspaces.com/payout-dev/ams3/2024-10-29/payouts/receipts/1fcc306a-e271-4072-9665-71a5d49b5b6c.pdf",
+        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
+        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
+        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
+        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
+        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
+    ]
+
     const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
     let [status, setStatus] = useState({ "handleCancel": null, "handleUpload": null, "handleAccept": null })
@@ -511,20 +521,13 @@ const Payout = () => {
     const handleDeleteImage = (index) => {
         setImageSrc(prevImages => prevImages.filter((_, i) => i !== index));
     };
-    const images = [
-        "https://wallpapercat.com/w/full/2/5/f/158856-3840x2160-desktop-4k-walle-wallpaper-photo.jpg",
-        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
-        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
-        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
-        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
-        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
-    ]
+
     return (
         <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border`}>
             <div className='flex'>
                 <div className={`max-md:hidden`}>
                     <div className={`${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5] border"}  min-h-[100vh] h-full z-20  relative `}>
-                        <h3 className={`py-[20px] flex items-center justify-start ml-[8px] font-medium px-[8px] ${isDarkMode ? "text-white" : "text-black"}`}>Лого</h3>
+                        <h3 className={`py-[15px] flex items-center justify-start ml-[8px] font-medium px-[8px] ${isDarkMode ? "text-white" : "text-black"}`}><img className='max-w-[40px]' src={`/assets/logo/${isDarkMode ? "Logo_dark.svg" : "Logo_light.svg"}`} /></h3>
                         <div className={` ${!open ? "min-w-[263px]" : "min-w-0"}  transition-all duration-300`}>
                             <Header open={open} setOpen={setOpen} />
                         </div>
@@ -1198,6 +1201,7 @@ const Payout = () => {
                             </div>
                         </div>
                     </form>
+                    
                     <div className="">
                         <div className={` ${!modal && "hidden"} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-50 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[763px]  ${!cancelCheck ? "  overflow-y-hidden h-[90vh]" : ""} `}>
                             <div className="p-8 overflow-y-scroll max-h-[90vh]">
@@ -1244,20 +1248,27 @@ const Payout = () => {
                                                     <div className="  ">
                                                         <Swiper
                                                             style={{
-                                                                '--swiper-navigation-color': `${isDarkMode ?"#F5F6FC" :"#272727"}`,
-                                                                '--swiper-pagination-color': `${isDarkMode ?"#F5F6FC" :"#272727"}`,
+                                                                '--swiper-navigation-color': `${isDarkMode ? "#F5F6FC" : "#272727"}`,
+                                                                '--swiper-pagination-color': `${isDarkMode ? "#F5F6FC" : "#272727"}`,
                                                             }}
-                                                                spaceBetween={10}
+                                                            spaceBetween={10}
                                                             navigation={true}
                                                             thumbs={{ swiper: thumbsSwiper }}
                                                             modules={[FreeMode, Navigation, Thumbs]}
-                                                            className={`mySwiper2 `} 
+                                                            className={`mySwiper2 mb-2`}
                                                         >
-                                                            {images.map(item => (
-                                                                <SwiperSlide>
-                                                                    <img src={item} className={`${!isDarkMode ?"bg-[#F5F6FC]" :"bg-[#272727]"}`} />
-                                                                </SwiperSlide>
-
+                                                            {images.map((item, index) => (
+                                                                <>
+                                                                    <SwiperSlide key={index}>
+                                                                        {item.endsWith(".pdf") ? (
+                                                                            <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+                                                                                <Viewer fileUrl={item} />
+                                                                            </Worker>
+                                                                        ) : (
+                                                                            <img src={item} className={`${!isDarkMode ? "bg-[#F5F6FC]" : "bg-[#272727]"}`} />
+                                                                        )}
+                                                                    </SwiperSlide>
+                                                                </>
                                                             ))}
                                                         </Swiper>
                                                         <Swiper
@@ -1270,18 +1281,24 @@ const Payout = () => {
                                                             className="mySwiper cursor-pointer"
                                                         >
                                                             {images.map(item => (
-                                                                <SwiperSlide>
-                                                                    <img src={item} />
-                                                                </SwiperSlide>
+                                                               <SwiperSlide key={index}>
+                                                                        {item.endsWith(".pdf") ? (
+                                                                            <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+                                                                                <Viewer fileUrl={item} />
+                                                                            </Worker>
+                                                                        ) : (
+                                                                            <img src={item} className={`${!isDarkMode ? "bg-[#F5F6FC]" : "bg-[#272727]"}`} />
+                                                                        )}
+                                                                    </SwiperSlide>
 
                                                             ))}
                                                         </Swiper>
                                                     </div>
-                                                    
+
 
                                                 </div>
                                                 <div className="">
-                                                <div className="modal_payout ">
+                                                    <div className="modal_payout ">
                                                         <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>ID</h5>
                                                         <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.id} </p>
                                                     </div>

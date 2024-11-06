@@ -67,7 +67,7 @@ const Deposit = () => {
           console.log("Failed to refresh token, redirecting to login.");
           navigate("/login");
         }
-      }else if (res.status == 400) {
+      } else if (res.status == 400) {
         setStatus("error");
       } else {
         setStatus("success");
@@ -81,7 +81,7 @@ const Deposit = () => {
     <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : "" }} className={`flex `}>
       <div className={`max-md:hidden`}>
         <div className={`${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5] border"}  min-h-[100vh] h-full z-20  relative `}>
-          <h3 className={`py-[20px] flex items-center justify-start ml-[8px] font-medium px-[8px] ${isDarkMode ? "text-white" : "text-black"}`}>Лого</h3>
+          <h3 className={`py-[15px] flex items-center justify-start ml-[8px] font-medium px-[8px] ${isDarkMode ? "text-white" : "text-black"}`}><img className='max-w-[40px]' src={`/assets/logo/${isDarkMode ? "Logo_dark.svg" : "Logo_light.svg"}`} /></h3>
           <div className={` ${!open ? "min-w-[263px]" : "min-w-0"} overflow-hidden transition-all duration-300`}>
             <div className="">
               {localStorage.getItem("role") !== "trader" &&
