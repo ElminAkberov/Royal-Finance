@@ -273,6 +273,7 @@ body {
     height: 20%;
     box-sizing: border-box;
     padding: 10px 0;
+    object-fit: contain;
 }
 
 .mySwiper .swiper-slide {
@@ -283,4 +284,7 @@ body {
 
 .mySwiper .swiper-slide-thumb-active {
     opacity: 1;
+}
+.rpv-core__text-layer{
+    display: none;
 }

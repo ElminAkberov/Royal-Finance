@@ -17,24 +17,67 @@ import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
-
+import 'keen-slider/keen-slider.min.css'
+import { useKeenSlider } from 'keen-slider/react'
 
 // import required modules
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
-import { PDFViewer } from '@react-pdf/renderer';
 import { Viewer, Worker } from '@react-pdf-viewer/core';
 const Payout = () => {
+
     const images = [
-        "https://rf-static.ams3.digitaloceanspaces.com/payout-dev/ams3/2024-10-29/payouts/receipts/1fcc306a-e271-4072-9665-71a5d49b5b6c.pdf",
+        // "https://rf-static.ams3.digitaloceanspaces.com/payout-dev/ams3/2024-10-29/payouts/receipts/1fcc306a-e271-4072-9665-71a5d49b5b6c.pdf",
         "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
-        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUebJfExQ2T7ahWecI22KcnKHbfDfdloQD2w&s",
         "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
         "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
         "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
     ]
 
-    const [thumbsSwiper, setThumbsSwiper] = useState(null);
+    const [sliderRef, instanceRef] = useKeenSlider({
+        slides: {
+            perView: 1,  // Number of slides to show per view
+        },
+        slideChanged(s) {
+            setActiveIndex(s.track.details.rel);  // Update activeIndex based on the current slide
+        },
+        spacing: 10,  // Optional: space between slides
+    });
+    const [sliderRef_thumb, instanceRef_thumb] = useKeenSlider({
+        slides: {
+            perView: 4,
+        },
 
+    })
+
+    let [activeIndex, setActiveIndex] = useState(0)
+    useEffect(() => {
+        if (instanceRef.current) {
+            instanceRef.current.moveToIdx(activeIndex);  // Ensure main slider moves when index changes
+        }
+    
+        // Automatically scroll thumbnail slider if the active thumbnail is out of view
+        if (instanceRef_thumb.current) {
+            const visibleThumbs = 4;  // Number of visible thumbnails
+            const startIdx = Math.max(0, activeIndex - Math.floor(visibleThumbs / 2));
+            instanceRef_thumb.current.moveToIdx(startIdx);
+        }
+    }, [activeIndex, instanceRef, instanceRef_thumb]);
+
+    // Handle thumbnail click
+    const handleThumbnailClick = (index) => {
+        setActiveIndex(index);
+    };
+    useEffect(() => {
+        // Force a reflow after the component mounts
+        setTimeout(() => {
+            if (instanceRef.current || instanceRef_thumb.current) {
+                instanceRef.current.update();
+                instanceRef_thumb.current.update()
+            }
+        }, 100); // Give the browser time to settle and apply styles
+    }, [images]);
+    const [thumbsSwiper, setThumbsSwiper] = useState(null);
     let [status, setStatus] = useState({ "handleCancel": null, "handleUpload": null, "handleAccept": null })
     const [imageSrc, setImageSrc] = useState(null);
     const [describeImg, setDescribeImg] = useState(null)
@@ -74,8 +117,8 @@ const Payout = () => {
     const [navBtn, setNavBtn] = useState(false)
 
     let [copy, setCopy] = useState(false)
-    let [otkImg, setOtkImg] = useState("")
-    let [otkImgDesc, setOtkImgDesc] = useState("")
+    let [otkImg, setOtkImg] = useState(null)
+    let [otkImgDesc, setOtkImgDesc] = useState(null)
 
 
 
@@ -212,7 +255,35 @@ const Payout = () => {
     useEffect(() => {
         handleMethod();
     }, [currentPage, selectStatus]);
+    const handleFileChange = (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length > 0) {
+            const filePreviews = [];
 
+            files.forEach((file, index) => {
+                // Eğer dosya sonu .pdf ile bitiyorsa direkt olarak URL olarak ekle
+                if (file.name.endsWith(".pdf")) {
+                    filePreviews.push(URL.createObjectURL(file));
+                    if (filePreviews.length === files.length) {
+                        setImageSrc(filePreviews); // Dosya önizlemelerini ayarla
+                    }
+                } else {
+                    // Diğer dosyalar için FileReader kullan
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        filePreviews.push(reader.result);
+                        if (filePreviews.length === files.length) {
+                            setImageSrc(filePreviews); // Dosya önizlemelerini ayarla
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            setDescribeImg(files); // Dosya arrayini kaydet
+        }
+        e.target.value = '';
+    };
     const handleUpload = async (e) => {
         e.preventDefault();
         try {
@@ -262,34 +333,16 @@ const Payout = () => {
         }
     };
 
-    const handleFileChange = (e) => {
-        const files = Array.from(e.target.files); // Convert FileList to Array
-        if (files.length > 0) {
-            const readers = new FileReader();
-            const filePreviews = [];
-
-            files.forEach((file, index) => {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    filePreviews.push(reader.result);
-                    if (filePreviews.length === files.length) {
-                        setImageSrc(filePreviews); // Set an array of file previews
-                    }
-                };
-                reader.readAsDataURL(file);
-            });
-
-            setDescribeImg(files); // Store array of files
-        }
-        e.target.value = '';
-    };
-
     const handleCancel = async (e) => {
         e.preventDefault();
         try {
             const formData = new FormData();
             formData.append('reason', reason);
-            formData.append('receipts', otkImgDesc);
+
+            // Loop through otkImgDesc array and append each image to FormData
+            otkImgDesc.forEach((img, index) => {
+                formData.append(`receipts[${index}]`, img); // 'receipts[]' is used to indicate an array of images
+            });
 
             const response = await axios.post(`https://dev.royal-pay.org/api/v1/internal/payouts/deny/${id}/`, formData, {
                 headers: {
@@ -312,7 +365,7 @@ const Payout = () => {
                 if (refreshResponse.ok) {
                     const refreshData = await refreshResponse.json();
                     localStorage.setItem("access", refreshData.access);
-                    return handleCancel();
+                    return handleCancel(); // Retry after refreshing the token
                 } else {
                     console.log("Failed to refresh token, redirecting to login.");
                     navigate("/login");
@@ -321,21 +374,23 @@ const Payout = () => {
                 const data = response.data;
                 setStatus((prevError) => ({ ...prevError, "handleCancel": "success" }));
                 setTimeout(() => {
-                    window.location.reload()
+                    window.location.reload();
                 }, 2000);
             } else {
                 console.log("Unexpected error:", response.status);
             }
-            if (response.status == 400) {
+
+            if (response.status === 400) {
                 setStatus((prevError) => ({ ...prevError, "handleCancel": "error" }));
             } else {
                 setStatus((prevError) => ({ ...prevError, "handleCancel": "success" }));
             }
         } catch (error) {
-            console.log(error)
-            setStatus((prevError) => ({ ...prevError, "handleCancel": "error" }))
+            console.log(error);
+            setStatus((prevError) => ({ ...prevError, "handleCancel": "error" }));
         }
     }
+
     const handleDepositGet = async (e) => {
         e.preventDefault();
         try {
@@ -432,16 +487,33 @@ const Payout = () => {
 
 
     const handleFileClose = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setOtkImg(reader.result);
-            };
-            reader.readAsDataURL(file);
-            setOtkImgDesc(file)
+        const files = Array.from(e.target.files);
+        if (files.length > 0) {
+            const filePreviews = [];
+
+            files.forEach((file, index) => {
+                // Eğer dosya sonu .pdf ile bitiyorsa direkt olarak URL olarak ekle
+                if (file.name.endsWith(".pdf")) {
+                    filePreviews.push(URL.createObjectURL(file));
+                    if (filePreviews.length === files.length) {
+                        setOtkImg(filePreviews); // Dosya önizlemelerini ayarla
+                    }
+                } else {
+                    // Diğer dosyalar için FileReader kullan
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        filePreviews.push(reader.result);
+                        if (filePreviews.length === files.length) {
+                            setOtkImg(filePreviews); // Dosya önizlemelerini ayarla
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            setOtkImgDesc(files); // Dosya arrayini kaydet
         }
-        e.target.value = ""
+        e.target.value = '';
     }
     const handleShow = (info) => {
         setDetails([info])
@@ -520,6 +592,9 @@ const Payout = () => {
     };
     const handleDeleteImage = (index) => {
         setImageSrc(prevImages => prevImages.filter((_, i) => i !== index));
+    };
+    const handleDeleteImage_Otk = (index) => {
+        setOtkImg(prevImages => prevImages.filter((_, i) => i !== index));
     };
 
     return (
@@ -1117,24 +1192,41 @@ const Payout = () => {
                     <div onClick={() => { setZoom(!zoom) }} className={`${(!zoom) && "hidden"} fixed inset-0 bg-[#2222224D] z-50`}></div>
 
                     {/* cek tam ekran */}
-                    <div>
-                        {details?.map((img, index) => {
-                            return (
-                                zoom &&
-                                <div key={index} className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50'>
-                                    {img.receipts.map(img => {
-                                        return (
-                                            <div className='relative'>
-                                                <img className='mx-auto' src={img && img.endsWith('.pdf') ? '/assets/img/check.jpg' : img} />
-                                                <svg onClick={() => setZoom(!zoom)} width="14" height="15" viewBox="0 0 14 15" className='absolute top-0 right-[-20px] cursor-pointer' xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" fill="#000" />
-                                                </svg>
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            )
-                        })}
+                    <div className='fixed top-1/2  left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[80%]'>
+                        <div ref={sliderRef} className="keen-slider">
+                            {images?.map((data, index) => {
+                                return (
+                                    zoom &&
+                                    <div className="keen-slider__slide">
+                                        <img src={data} alt="" className='flex justify-center items-center mx-auto' />
+                                    </div>
+                                    // <div key={index} className='fixed top-1/2 flex left-1/2 -translate-x-1/2 -translate-y-1/2 z-50'>
+                                    //     {data.receipts.map(img => {
+                                    //         return (
+                                    //             // <div className='relative '>
+                                    //             //     <img className='mx-auto' src={img && img.endsWith('.pdf') ? '/assets/img/check.jpg' : img} />
+                                    //             //     <svg onClick={() => setZoom(!zoom)} width="14" height="15" viewBox="0 0 14 15" className='absolute top-0 right-[-20px] cursor-pointer' xmlns="http://www.w3.org/2000/svg">
+                                    //             //         <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" fill="#000" />
+                                    //             //     </svg>
+                                    //             // </div>
+
+                                    //         )
+                                    //     })}
+                                    // </div>
+                                )
+                            })}
+                        </div>
+                        <div ref={sliderRef_thumb} className="keen-slider max-w-[20%] mx-auto">
+                            {images?.map((data, index) => {
+                                return (
+                                    zoom &&
+                                    <div onClick={() => handleThumbnailClick(index)} className={`keen-slider__slide duration-300 ${activeIndex == index ? "opacity-100" : "opacity-50"}`}>
+                                        <img src={data} alt="" className='object-contain justify-center items-center mx-auto max-w-[150px] flex w-full h-[60px] ' />
+                                    </div>
+                                )
+                            })}
+                        </div>
+
                     </div>
                     {/* cek yuklemek ucun */}
                     <div onClick={() => { setCancelCheck(!cancelCheck); setImageSrc(""); setStatus((prevError) => ({ ...prevError, handleUpload: null })); }} className={`${!cancelCheck && "hidden"} fixed inset-0 bg-[#2222224D] z-30`}></div>
@@ -1182,17 +1274,31 @@ const Payout = () => {
                                     onClick={() => document.getElementById('fileInput').click()}>
                                     Прикрепить Чек
                                 </div>
-                                <input id="fileInput" multiple type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
+                                <input id="fileInput" multiple type="file" className="hidden" onChange={handleFileChange} accept="image/*,application/pdf" />
                             </div>
                             <div className=" flex flex-col items-center ">
                                 {imageSrc && imageSrc.map((src, index) => (
-                                    <div key={index} className="relative m-2 flex items-center">
-                                        <img src={src} alt={`Uploaded preview ${index + 1}`} className="mt-4 max-w-[300px] max-h-[400px]" />
-                                        <svg onClick={() => handleDeleteImage(index)} width="24" className=" cursor-pointer min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
-                                        </svg>
+                                    <div key={index + `${src}`} className="relative m-2 flex items-center justify-center">
+                                        {src.startsWith("blob:") ? (
+                                            <div className='flex mx-auto justify-start relative right-[156px]'>
+                                                <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+                                                    <Viewer fileUrl={src} defaultScale={.5} />
+                                                </Worker>
+                                                <svg onClick={() => handleDeleteImage(index)} width="24" className="cursor-pointer absolute right-[-320px] top-1/2 min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
+                                                </svg>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <img src={src} alt={`Uploaded preview ${index + 1}`} className="mt-4 max-w-[300px] max-h-[400px]" />
+                                                <svg onClick={() => handleDeleteImage(index)} width="24" className="cursor-pointer min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
+                                                </svg>
+                                            </>
+                                        )}
                                     </div>
                                 ))}
+
                             </div>
                             <div className="flex justify-end my-4">
                                 <button type='submit' className='bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
@@ -1201,7 +1307,7 @@ const Payout = () => {
                             </div>
                         </div>
                     </form>
-                    
+
                     <div className="">
                         <div className={` ${!modal && "hidden"} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-50 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[763px]  ${!cancelCheck ? "  overflow-y-hidden h-[90vh]" : ""} `}>
                             <div className="p-8 overflow-y-scroll max-h-[90vh]">
@@ -1257,7 +1363,7 @@ const Payout = () => {
                                                             modules={[FreeMode, Navigation, Thumbs]}
                                                             className={`mySwiper2 mb-2`}
                                                         >
-                                                            {images.map((item, index) => (
+                                                            {data?.receipts?.map((item, index) => (
                                                                 <>
                                                                     <SwiperSlide key={index}>
                                                                         {item.endsWith(".pdf") ? (
@@ -1280,16 +1386,16 @@ const Payout = () => {
                                                             modules={[FreeMode, Navigation, Thumbs]}
                                                             className="mySwiper cursor-pointer"
                                                         >
-                                                            {images.map(item => (
-                                                               <SwiperSlide key={index}>
-                                                                        {item.endsWith(".pdf") ? (
-                                                                            <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-                                                                                <Viewer fileUrl={item} />
-                                                                            </Worker>
-                                                                        ) : (
-                                                                            <img src={item} className={`${!isDarkMode ? "bg-[#F5F6FC]" : "bg-[#272727]"}`} />
-                                                                        )}
-                                                                    </SwiperSlide>
+                                                            {data?.receipts?.map(item => (
+                                                                <SwiperSlide key={index}>
+                                                                    {item.endsWith(".pdf") ? (
+                                                                        <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+                                                                            <Viewer fileUrl={item} />
+                                                                        </Worker>
+                                                                    ) : (
+                                                                        <img src={item} className={`${!isDarkMode ? "bg-[#F5F6FC]" : "bg-[#272727]"}`} />
+                                                                    )}
+                                                                </SwiperSlide>
 
                                                             ))}
                                                         </Swiper>
@@ -1428,22 +1534,38 @@ const Payout = () => {
                                                 <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} mb-2`}>Описание</h5>
                                                 <input onChange={(e) => setReason(e.target.value)} value={reason} required placeholder='Описание' type="text" className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
                                             </div>
-                                            <div className=" flex max-[400px]:flex-col items-center mr-8">
-                                                {otkImg && <img src={otkImg} alt="Uploaded preview" className="mt-4 max-w-[300px] max-h-[400px]" />}
-                                                {otkImg &&
-                                                    <svg onClick={() => setOtkImg("")} width="24" className='ml-3 cursor-pointer min-w-[24px]' height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
-                                                    </svg>
-                                                }
-                                            </div>
                                             <div className="mb-8">
                                                 <div
                                                     className='w-max text-[#2E70F5] cursor-pointer border-[#2E70F5] mt-4 border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'
                                                     onClick={() => document.getElementById('fileInputs').click()}>
                                                     Прикрепить Чек
                                                 </div>
-                                                <input id="fileInputs" type="file" className="hidden" onChange={handleFileClose} accept="image/*" />
+                                                <input accept="image/*,application/pdf" multiple id="fileInputs" type="file" className="hidden" onChange={handleFileClose} />
                                             </div>
+                                            <div className=" flex flex-col items-center mr-8">
+                                                {otkImg && otkImg.map((src, index) => (
+                                                    <div key={index + `${src}`} className="relative m-2 flex items-center justify-center">
+                                                        {src.startsWith("blob:") ? (
+                                                            <div className='flex mx-auto justify-start relative right-[156px]'>
+                                                                <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+                                                                    <Viewer fileUrl={src} defaultScale={.5} />
+                                                                </Worker>
+                                                                <svg onClick={() => handleDeleteImage_Otk(index)} width="24" className="cursor-pointer absolute right-[-320px] top-1/2 min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
+                                                                </svg>
+                                                            </div>
+                                                        ) : (
+                                                            <>
+                                                                <img src={src} alt={`Uploaded preview ${index + 1}`} className="mt-4 max-w-[300px] max-h-[400px]" />
+                                                                <svg onClick={() => handleDeleteImage_Otk(index)} width="24" className="cursor-pointer min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
+                                                                </svg>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+
                                             <div className="flex justify-end pr-8">
                                                 <button type='submit' className=' bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                                     Отклонить
