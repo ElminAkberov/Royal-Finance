@@ -10,28 +10,21 @@ import { FaAngleLeft, FaAngleRight, FaChevronLeft, FaChevronRight } from "react-
 import Loading from '../Loading/Loading';
 import Header from '../Header/Header';
 import Header_md from '../Header/Header-md';
-import KeenSlider, { useKeenSlider } from 'keen-slider/react'
-import 'keen-slider/keen-slider.min.css'
+import { Swiper, SwiperSlide } from 'swiper/react';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/free-mode';
+import 'swiper/css/navigation';
+import 'swiper/css/thumbs';
+
+
+// import required modules
+import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
 
 const Payout = () => {
-    const [sliderRef, slider] = useKeenSlider({
-        slides: {
-            perView: 1.5,
-            spacing: 5,
-            origin: 'center',
-        },
-        breakpoints: {
-            '(max-width: 768px)': {
-                slides: {
-                    perView: 1,
-                },
-            },
-        },
-        slideChanged(slider) {
-            setCurrentSlide(slider.track.details.rel);
-        }
-    });
-    const [currentSlide, setCurrentSlide] = useState(0);
+    const [thumbsSwiper, setThumbsSwiper] = useState(null);
+
     let [status, setStatus] = useState({ "handleCancel": null, "handleUpload": null, "handleAccept": null })
     const [imageSrc, setImageSrc] = useState(null);
     const [describeImg, setDescribeImg] = useState(null)
@@ -519,10 +512,12 @@ const Payout = () => {
         setImageSrc(prevImages => prevImages.filter((_, i) => i !== index));
     };
     const images = [
-        "https://evoclub.pro/img/blog-img/evotor-kak-raspechatat-chek/21.jpg",
-        "https://evoclub.pro/img/blog-img/evotor-kak-raspechatat-chek/21.jpg",
-        "https://evoclub.pro/img/blog-img/evotor-kak-raspechatat-chek/21.jpg",
-        "https://evoclub.pro/img/blog-img/evotor-kak-raspechatat-chek/21.jpg"
+        "https://wallpapercat.com/w/full/2/5/f/158856-3840x2160-desktop-4k-walle-wallpaper-photo.jpg",
+        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
+        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
+        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
+        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
+        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
     ]
     return (
         <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border`}>
@@ -1204,510 +1199,282 @@ const Payout = () => {
                         </div>
                     </form>
                     <div className="">
-                        {details?.map(item => (item.receipts.length < 1 &&
-                            <div className={` ${!modal && "hidden"} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-40 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[763px]  ${!cancelCheck ? "  overflow-y-hidden h-[90vh]" : ""} `}>
-                                <div className="p-8 overflow-y-scroll max-h-[90vh]">
+                        <div className={` ${!modal && "hidden"} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-50 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[763px]  ${!cancelCheck ? "  overflow-y-hidden h-[90vh]" : ""} `}>
+                            <div className="p-8 overflow-y-scroll max-h-[90vh]">
+                                <div className="">
+                                    <div className="mb-8 relative">
+                                        <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Детали выплаты </h3>
+                                        <svg width="14" onClick={() => setModal(false)} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
+                                        </svg>
+                                        <h5 className='text-[14px] text-[#60626C]'>Подробная информация</h5>
+                                    </div>
+                                    {status["handleAccept"] == "error" &&
+                                        <div className={`pt-1 w-full absolute right-0 duration-300 max-md:mx-3 ${status["handleAccept"] == "error" ? "top-20" : "top-[-300px]"}`}>
+                                            <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
+                                                <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
+                                                <div className="relative mr-[8px] ml-[18px]">
+                                                    <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
+                                                </div>
+                                                <div className="">
+                                                    <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
+                                                    <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    {status["handleAccept"] == "success" &&
+                                        <div className={`w-full pt-1 absolute max-md:px-3 right-0 ${status["handleAccept"] == "success" ? "top-20" : "top-[-300px]"} duration-300`}>
+                                            <div className="flex items-center max-w-[720px] mx-auto mb-5 border bg-white border-[#37B67E] rounded-md">
+                                                <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#37b67e]"></div>
+                                                <div className="relative mr-[8px] ml-[18px]">
+                                                    <img src="/assets/img/check.svg" className='bg-[#37B67E] min-w-[26.67px] min-h-[26.67px] p-[6px] rounded-full' alt="" />
+                                                </div>
+                                                <div className="">
+                                                    <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Успешно!</h4>
+                                                    <p className='text-[14px] text-[#484951]'>Ваши изменения успешно сохранены.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
                                     <div className="">
-                                        <div className="mb-8 relative">
-                                            <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Детали выплаты </h3>
-                                            <svg width="14" onClick={() => setModal(false)} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
-                                            </svg>
-                                            <h5 className='text-[14px] text-[#60626C]'>Подробная информация</h5>
-                                        </div>
-                                        {status["handleAccept"] == "error" &&
-                                            <div className={`pt-1 w-full absolute right-0 duration-300 max-md:mx-3 ${status["handleAccept"] == "error" ? "top-20" : "top-[-300px]"}`}>
-                                                <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
-                                                    <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
-                                                    <div className="relative mr-[8px] ml-[18px]">
-                                                        <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
-                                                    </div>
-                                                    <div className="">
-                                                        <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
-                                                        <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        }
-                                        {status["handleAccept"] == "success" &&
-                                            <div className={`w-full pt-1 absolute max-md:px-3 right-0 ${status["handleAccept"] == "success" ? "top-20" : "top-[-300px]"} duration-300`}>
-                                                <div className="flex items-center max-w-[720px] mx-auto mb-5 border bg-white border-[#37B67E] rounded-md">
-                                                    <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#37b67e]"></div>
-                                                    <div className="relative mr-[8px] ml-[18px]">
-                                                        <img src="/assets/img/check.svg" className='bg-[#37B67E] min-w-[26.67px] min-h-[26.67px] p-[6px] rounded-full' alt="" />
-                                                    </div>
-                                                    <div className="">
-                                                        <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Успешно!</h4>
-                                                        <p className='text-[14px] text-[#484951]'>Ваши изменения успешно сохранены.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        }
-                                        <div className="">
-                                            {details?.map((data, index) => (
-                                                <div key={index} className='grid grid-cols-2 max-md:grid-cols-1 '>
-                                                    <div className="">
-                                                        <div className="modal_payout ">
-                                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>ID</h5>
-                                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.id} </p>
-                                                        </div>
-                                                        <div className="modal_payout">
-                                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Назначенный трейдер</h5>
-                                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.trader ? data.trader["username"] : "-"}</p>
-                                                        </div>
-                                                        <div className="modal_payout">
-                                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Мерчант </h5>
-                                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.merchant ? data.merchant["username"] : "-"}</p>
-                                                        </div>
-                                                        <div className="modal_payout">
-                                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Получатель</h5>
-                                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>-</p>
-                                                        </div>
-                                                        <div className="modal_payout">
-                                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Метод оплаты</h5>
-                                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.method["name"]}</p>
-                                                        </div>
-                                                        <div className="modal_payout">
-                                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Ставка мерчанта</h5>
-                                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.merchant_rate}</p>
-                                                        </div>
-                                                        <div className="modal_payout">
-                                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Ставка трейдера</h5>
-                                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.trader_rate}</p>
-                                                        </div>
-                                                        <div className="modal_payout relative w-max">
-                                                            {/* slice metodu */}
-                                                            <div className="flex items-center font-semibold gap-x-1">
-                                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} flex items-center gap-x-2 text-[12px] `}>Внешний ID</h5>
-                                                                <LuCopy className={`text-[16px]  top-0  ${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} cursor-pointer`} onClick={(e) => handleCopy(e)} />
-                                                            </div>
-                                                            <div className=" mb-0">
-                                                                <p style={{ fontSize: "14px" }} className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(0, 33) : '-'}</p>
-                                                                <p style={{ fontSize: "14px" }} className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(32) : ''}</p>
-                                                            </div>
-                                                        </div>
-                                                        {
-                                                            <div className={`fixed ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2  -translate-x-1/2 z-50 ${copy ? "top-32" : "top-[-200px] "} duration-300 mx-auto left-1/2 `}>
-                                                                <LuCopy size={18} color={`${isDarkMode ? "#E7E7E7" : "#18181B"}`} />
-                                                                <h4 className={`text-sm ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`} >Ссылка скопирована</h4>
-                                                            </div>
-                                                        }
-                                                        <div className="modal_payout">
-                                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма</h5>
-                                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.amount}</p>
-                                                        </div>
+                                        {details?.map((data, index) => (
+                                            <div key={index} className='grid grid-cols-2 gap-x-4 max-[500px]:grid-cols-1 '>
+                                                <div className="">
+                                                    <div className="  ">
+                                                        <Swiper
+                                                            style={{
+                                                                '--swiper-navigation-color': `${isDarkMode ?"#F5F6FC" :"#272727"}`,
+                                                                '--swiper-pagination-color': `${isDarkMode ?"#F5F6FC" :"#272727"}`,
+                                                            }}
+                                                                spaceBetween={10}
+                                                            navigation={true}
+                                                            thumbs={{ swiper: thumbsSwiper }}
+                                                            modules={[FreeMode, Navigation, Thumbs]}
+                                                            className={`mySwiper2 `} 
+                                                        >
+                                                            {images.map(item => (
+                                                                <SwiperSlide>
+                                                                    <img src={item} className={`${!isDarkMode ?"bg-[#F5F6FC]" :"bg-[#272727]"}`} />
+                                                                </SwiperSlide>
 
+                                                            ))}
+                                                        </Swiper>
+                                                        <Swiper
+                                                            onSwiper={setThumbsSwiper}
+                                                            spaceBetween={10}
+                                                            slidesPerView={4.5}
+                                                            freeMode={true}
+                                                            watchSlidesProgress={true}
+                                                            modules={[FreeMode, Navigation, Thumbs]}
+                                                            className="mySwiper cursor-pointer"
+                                                        >
+                                                            {images.map(item => (
+                                                                <SwiperSlide>
+                                                                    <img src={item} />
+                                                                </SwiperSlide>
+
+                                                            ))}
+                                                        </Swiper>
                                                     </div>
-                                                    <div className="">
-                                                        <div className="modal_payout">
-                                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Статус</h5>
-                                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.status === "pending" ? "В ожидании" : data?.status == "wait_confirm" ? "Ожидает подтверждения" : data?.status == "in_progress" ? "В обработке" : data?.status === "completed" ? "Завершено" : "Отклонено"}</p>
-                                                        </div>
-                                                        <div className="modal_payout">
-                                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Трейдеры на выбор</h5>
-                                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.selected_traders.length > 0 ? data.selected_traders.map((person, index) => <span key={index}>{person.username}{index !== data.selected_traders.length - 1 && ','}</span>) : "-"}</p>
-                                                        </div>
-                                                        <div className="modal_payout">
-                                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Банк</h5>
-                                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.bank} Банк</p>
-                                                        </div>
-                                                        <div className="modal_payout">
-                                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма с учетом ставки трейдера </h5>
-                                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.trader_amount_with_rate}</p>
-                                                        </div>
-                                                        <div className="modal_payout">
-                                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма с учетом ставки мерчанта</h5>
-                                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.merchant_amount_with_rate}</p>
-                                                        </div>
-                                                        <div className="modal_payout">
-                                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Время создания</h5>
-                                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.created_at?.split("T")[0]} {data?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
-                                                        </div>
-                                                        <div className="modal_payout">
-                                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Время обновления</h5>
-                                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.updated_at?.split("T")[0]} {data?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
-                                                        </div>
-                                                        <div className="modal_payout">
-                                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Реквизиты </h5>
-                                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.requisite} </p>
-                                                        </div>
-                                                    </div>
+                                                    
 
                                                 </div>
-                                            ))}
-                                        </div>
-                                        {/* cancel modal */}
-                                        <div onClick={() => { setOtkImg(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${!cancel && "hidden"} fixed inset-0 h-[120vh] bg-[#2222224D] z-20`}></div>
-                                        <form onSubmit={handleCancel} className={`${!cancel ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} pt-8 pl-8 pb-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 shadow-sm shadow-black -translate-y-1/2 mx-auto w-full overflow-y-hidden  rounded-[24px]`}>
-                                            <div className={`${isDarkMode ? "scroll-black" : "scroll-white"} overflow-y-scroll max-h-[80vh]`}>
-                                                <div className="relative mb-8 mr-8">
-                                                    <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Отклонить выплату</h3>
-                                                    <svg width="14" onClick={() => { setCancel(!cancel); setOtkImg(""); setReason(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })) }} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
-                                                    </svg>
-                                                    <h5 className='text-[14px] text-[#60626C]'>Укажите причину</h5>
-                                                </div>
-                                                {/* errorm */}
-                                                {status["handleCancel"] == "error" &&
-                                                    <div className={`pt-1 z-20  duration-300  w-full `}>
-                                                        <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
-                                                            <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
-                                                            <div className="relative mr-[8px] ml-[18px]">
-                                                                <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
-                                                            </div>
-                                                            <div className="">
-                                                                <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
-                                                                <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
-                                                            </div>
+                                                <div className="">
+                                                <div className="modal_payout ">
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>ID</h5>
+                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.id} </p>
+                                                    </div>
+                                                    <div className="modal_payout">
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Назначенный трейдер</h5>
+                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.trader ? data.trader["username"] : "-"}</p>
+                                                    </div>
+                                                    <div className="modal_payout">
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Мерчант </h5>
+                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.merchant ? data.merchant["username"] : "-"}</p>
+                                                    </div>
+                                                    <div className="modal_payout">
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Получатель</h5>
+                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>-</p>
+                                                    </div>
+                                                    <div className="modal_payout">
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Метод оплаты</h5>
+                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.method["name"]}</p>
+                                                    </div>
+                                                    <div className="modal_payout">
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Ставка мерчанта</h5>
+                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.merchant_rate}</p>
+                                                    </div>
+                                                    <div className="modal_payout">
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Ставка трейдера</h5>
+                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.trader_rate}</p>
+                                                    </div>
+                                                    <div className="modal_payout relative w-max">
+                                                        {/* slice metodu */}
+                                                        <div className="flex items-center font-semibold gap-x-1">
+                                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} flex items-center gap-x-2 text-[12px] `}>Внешний ID</h5>
+                                                            <LuCopy className={`text-[16px]  top-0  ${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} cursor-pointer`} onClick={(e) => handleCopy(e)} />
+                                                        </div>
+                                                        <div className=" mb-0">
+                                                            <p style={{ fontSize: "14px" }} className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(0, 33) : '-'}</p>
+                                                            <p style={{ fontSize: "14px" }} className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(32) : ''}</p>
                                                         </div>
                                                     </div>
-                                                }
-                                                {status["handleCancel"] == "success" &&
-                                                    <div className="w-full pt-1 ">
-                                                        <div className="flex items-center max-w-[720px] mx-auto mb-5 border bg-white border-[#37B67E] rounded-md">
-                                                            <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#37b67e]"></div>
-                                                            <div className="relative mr-[8px] ml-[18px]">
-                                                                <img src="/assets/img/check.svg" className='bg-[#37B67E] min-w-[26.67px] min-h-[26.67px] p-[6px] rounded-full' alt="" />
-                                                            </div>
-                                                            <div className="">
-                                                                <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Успешно!</h4>
-                                                                <p className='text-[14px] text-[#484951]'>Ваши изменения успешно сохранены.</p>
-                                                            </div>
+                                                    {
+                                                        <div className={`fixed ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2  -translate-x-1/2 z-50 ${copy ? "top-32" : "top-[-200px] "} duration-300 mx-auto left-1/2 `}>
+                                                            <LuCopy size={18} color={`${isDarkMode ? "#E7E7E7" : "#18181B"}`} />
+                                                            <h4 className={`text-sm ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`} >Ссылка скопирована</h4>
                                                         </div>
-                                                    </div>
-                                                }
-                                                <div className="modal_payout mb-8 mr-8">
-                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} mb-2`}>Описание</h5>
-                                                    <input onChange={(e) => setReason(e.target.value)} value={reason} required placeholder='Описание' type="text" className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
-                                                </div>
-                                                <div className=" flex max-[400px]:flex-col items-center mr-8">
-                                                    {otkImg && <img src={otkImg} alt="Uploaded preview" className="mt-4 max-w-[300px] max-h-[400px]" />}
-                                                    {otkImg &&
-                                                        <svg onClick={() => setOtkImg("")} width="24" className='ml-3 cursor-pointer min-w-[24px]' height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                            <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
-                                                        </svg>
                                                     }
-                                                </div>
-                                                <div className="mb-8">
-                                                    <div
-                                                        className='w-max text-[#2E70F5] cursor-pointer border-[#2E70F5] mt-4 border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'
-                                                        onClick={() => document.getElementById('fileInputs').click()}>
-                                                        Прикрепить Чек
+                                                    <div className="modal_payout">
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма</h5>
+                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.amount}</p>
                                                     </div>
-                                                    <input id="fileInputs" type="file" className="hidden" onChange={handleFileClose} accept="image/*" />
-                                                </div>
-                                                <div className="flex justify-end pr-8">
-                                                    <button type='submit' className=' bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                                        Отклонить
-                                                    </button>
+                                                    <div className="modal_payout">
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Статус</h5>
+                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.status === "pending" ? "В ожидании" : data?.status == "wait_confirm" ? "Ожидает подтверждения" : data?.status == "in_progress" ? "В обработке" : data?.status === "completed" ? "Завершено" : "Отклонено"}</p>
+                                                    </div>
+                                                    <div className="modal_payout">
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Трейдеры на выбор</h5>
+                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.selected_traders.length > 0 ? data.selected_traders.map((person, index) => <span key={index}>{person.username}{index !== data.selected_traders.length - 1 && ','}</span>) : "-"}</p>
+                                                    </div>
+                                                    <div className="modal_payout">
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Банк</h5>
+                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.bank} Банк</p>
+                                                    </div>
+                                                    <div className="modal_payout">
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма с учетом ставки трейдера </h5>
+                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.trader_amount_with_rate}</p>
+                                                    </div>
+                                                    <div className="modal_payout">
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма с учетом ставки мерчанта</h5>
+                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.merchant_amount_with_rate}</p>
+                                                    </div>
+                                                    <div className="modal_payout">
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Время создания</h5>
+                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.created_at?.split("T")[0]} {data?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
+                                                    </div>
+                                                    <div className="modal_payout">
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Время обновления</h5>
+                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.updated_at?.split("T")[0]} {data?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
+                                                    </div>
+                                                    <div className="modal_payout">
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Реквизиты </h5>
+                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.requisite} </p>
+                                                    </div>
                                                 </div>
 
                                             </div>
-                                        </form>
-                                        {/* buttonlar */}
-                                        <div className="flex w-full text-white md:justify-end gap-x-4 mt-2 ">
-                                            {details?.map((data, index) => {
-                                                return (
-                                                    <div key={index}>
-                                                        {(data.status === "pending") && (
-                                                            <>
-                                                                <div className='flex max-[420px]:flex-col gap-4'>
-                                                                    <button onClick={() => setCancel(!cancel)} className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                                                        Отклонить
-                                                                    </button>
-                                                                    <form onSubmit={handleAccept}>
-                                                                        <button type='submit' className='bg-[#2E70F5] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                                                            Взять в работу
-                                                                        </button>
-                                                                    </form>
-                                                                </div>
-                                                            </>
-                                                        )}
-                                                        {(data.status === "in_progress") && (
-                                                            <div className='flex max-[420px]:flex-col  gap-4'>
+                                        ))}
+                                    </div>
+                                    {/* cancel modal */}
+                                    <div onClick={() => { setOtkImg(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${!cancel && "hidden"} fixed inset-0 h-[120vh] bg-[#2222224D] z-20`}></div>
+                                    <form onSubmit={handleCancel} className={`${!cancel ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} pt-8 pl-8 pb-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 shadow-sm shadow-black -translate-y-1/2 mx-auto w-full overflow-y-hidden  rounded-[24px]`}>
+                                        <div className={`${isDarkMode ? "scroll-black" : "scroll-white"} overflow-y-scroll max-h-[80vh]`}>
+                                            <div className="relative mb-8 mr-8">
+                                                <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Отклонить выплату</h3>
+                                                <svg width="14" onClick={() => { setCancel(!cancel); setOtkImg(""); setReason(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })) }} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
+                                                </svg>
+                                                <h5 className='text-[14px] text-[#60626C]'>Укажите причину</h5>
+                                            </div>
+                                            {/* errorm */}
+                                            {status["handleCancel"] == "error" &&
+                                                <div className={`pt-1 z-20  duration-300  w-full `}>
+                                                    <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
+                                                        <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
+                                                        <div className="relative mr-[8px] ml-[18px]">
+                                                            <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
+                                                        </div>
+                                                        <div className="">
+                                                            <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
+                                                            <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            {status["handleCancel"] == "success" &&
+                                                <div className="w-full pt-1 ">
+                                                    <div className="flex items-center max-w-[720px] mx-auto mb-5 border bg-white border-[#37B67E] rounded-md">
+                                                        <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#37b67e]"></div>
+                                                        <div className="relative mr-[8px] ml-[18px]">
+                                                            <img src="/assets/img/check.svg" className='bg-[#37B67E] min-w-[26.67px] min-h-[26.67px] p-[6px] rounded-full' alt="" />
+                                                        </div>
+                                                        <div className="">
+                                                            <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Успешно!</h4>
+                                                            <p className='text-[14px] text-[#484951]'>Ваши изменения успешно сохранены.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            <div className="modal_payout mb-8 mr-8">
+                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} mb-2`}>Описание</h5>
+                                                <input onChange={(e) => setReason(e.target.value)} value={reason} required placeholder='Описание' type="text" className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
+                                            </div>
+                                            <div className=" flex max-[400px]:flex-col items-center mr-8">
+                                                {otkImg && <img src={otkImg} alt="Uploaded preview" className="mt-4 max-w-[300px] max-h-[400px]" />}
+                                                {otkImg &&
+                                                    <svg onClick={() => setOtkImg("")} width="24" className='ml-3 cursor-pointer min-w-[24px]' height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
+                                                    </svg>
+                                                }
+                                            </div>
+                                            <div className="mb-8">
+                                                <div
+                                                    className='w-max text-[#2E70F5] cursor-pointer border-[#2E70F5] mt-4 border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'
+                                                    onClick={() => document.getElementById('fileInputs').click()}>
+                                                    Прикрепить Чек
+                                                </div>
+                                                <input id="fileInputs" type="file" className="hidden" onChange={handleFileClose} accept="image/*" />
+                                            </div>
+                                            <div className="flex justify-end pr-8">
+                                                <button type='submit' className=' bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                                    Отклонить
+                                                </button>
+                                            </div>
+
+                                        </div>
+                                    </form>
+                                    {/* buttonlar */}
+                                    <div className="flex w-full text-white md:justify-end gap-x-4 mt-2 ">
+                                        {details?.map((data, index) => {
+                                            return (
+                                                <div key={index}>
+                                                    {(data.status === "pending") && (
+                                                        <>
+                                                            <div className='flex max-[420px]:flex-col gap-4'>
                                                                 <button onClick={() => setCancel(!cancel)} className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                                                     Отклонить
                                                                 </button>
-                                                                <button onClick={() => { setCancelCheck(!cancelCheck); setModal(!modal) }} type='submit' className='bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                                                    Завершить
-                                                                </button>
+                                                                <form onSubmit={handleAccept}>
+                                                                    <button type='submit' className='bg-[#2E70F5] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                                                        Взять в работу
+                                                                    </button>
+                                                                </form>
                                                             </div>
-                                                        )}
-                                                    </div>
-                                                )
-                                            })}
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-                {details?.map(item => (item.receipts.length > 0 &&
-                    <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 w-full px-5  max-[500px]:max-w-[500px] -translate-y-1/2 z-50 ">
-                        {modal &&
-                            <div ref={sliderRef} className="keen-slider flex items-center  z-50 absolute top-0 w-full ">
-                                <div className="keen-slider__slide">
-                                    <div className={`  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-40  mx-auto w-full max-w-[763px]  ${!cancelCheck ? "  overflow-y-hidden h-[90vh]" : ""} `}>
-                                        <div className="p-8 overflow-y-scroll max-h-[90vh]">
-                                            <div className="">
-                                                <div className="mb-8 relative">
-                                                    <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Детали выплаты </h3>
-                                                    <svg width="14" onClick={() => setModal(false)} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
-                                                    </svg>
-                                                    <h5 className='text-[14px] text-[#60626C]'>Подробная информация</h5>
-                                                </div>
-                                                {status["handleAccept"] == "error" &&
-                                                    <div className={`pt-1 w-full absolute right-0 duration-300 max-md:mx-3 ${status["handleAccept"] == "error" ? "top-20" : "top-[-300px]"}`}>
-                                                        <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
-                                                            <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
-                                                            <div className="relative mr-[8px] ml-[18px]">
-                                                                <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
-                                                            </div>
-                                                            <div className="">
-                                                                <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
-                                                                <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                }
-                                                {status["handleAccept"] == "success" &&
-                                                    <div className={`w-full pt-1 absolute max-md:px-3 right-0 ${status["handleAccept"] == "success" ? "top-20" : "top-[-300px]"} duration-300`}>
-                                                        <div className="flex items-center max-w-[720px] mx-auto mb-5 border bg-white border-[#37B67E] rounded-md">
-                                                            <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#37b67e]"></div>
-                                                            <div className="relative mr-[8px] ml-[18px]">
-                                                                <img src="/assets/img/check.svg" className='bg-[#37B67E] min-w-[26.67px] min-h-[26.67px] p-[6px] rounded-full' alt="" />
-                                                            </div>
-                                                            <div className="">
-                                                                <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Успешно!</h4>
-                                                                <p className='text-[14px] text-[#484951]'>Ваши изменения успешно сохранены.</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                }
-                                                <div className="">
-                                                    {details?.map((data, index) => (
-                                                        <div key={index} className='grid grid-cols-2 max-md:grid-cols-1 '>
-                                                            <div className="">
-                                                                <div className="modal_payout ">
-                                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>ID</h5>
-                                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.id} </p>
-                                                                </div>
-                                                                <div className="modal_payout">
-                                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Назначенный трейдер</h5>
-                                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.trader ? data.trader["username"] : "-"}</p>
-                                                                </div>
-                                                                <div className="modal_payout">
-                                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Мерчант </h5>
-                                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.merchant ? data.merchant["username"] : "-"}</p>
-                                                                </div>
-                                                                <div className="modal_payout">
-                                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Получатель</h5>
-                                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>-</p>
-                                                                </div>
-                                                                <div className="modal_payout">
-                                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Метод оплаты</h5>
-                                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.method["name"]}</p>
-                                                                </div>
-                                                                <div className="modal_payout">
-                                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Ставка мерчанта</h5>
-                                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.merchant_rate}</p>
-                                                                </div>
-                                                                <div className="modal_payout">
-                                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Ставка трейдера</h5>
-                                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.trader_rate}</p>
-                                                                </div>
-                                                                <div className="modal_payout relative w-max">
-                                                                    {/* slice metodu */}
-                                                                    <div className="flex items-center font-semibold gap-x-1">
-                                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} flex items-center gap-x-2 text-[12px] `}>Внешний ID</h5>
-                                                                        <LuCopy className={`text-[16px]  top-0  ${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} cursor-pointer`} onClick={(e) => handleCopy(e)} />
-                                                                    </div>
-                                                                    <div className=" mb-0">
-                                                                        <p style={{ fontSize: "14px" }} className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(0, 33) : '-'}</p>
-                                                                        <p style={{ fontSize: "14px" }} className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(32) : ''}</p>
-                                                                    </div>
-                                                                </div>
-                                                                {
-                                                                    <div className={`fixed ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2  -translate-x-1/2 z-50 ${copy ? "top-32" : "top-[-200px] "} duration-300 mx-auto left-1/2 `}>
-                                                                        <LuCopy size={18} color={`${isDarkMode ? "#E7E7E7" : "#18181B"}`} />
-                                                                        <h4 className={`text-sm ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`} >Ссылка скопирована</h4>
-                                                                    </div>
-                                                                }
-                                                                <div className="modal_payout">
-                                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма</h5>
-                                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.amount}</p>
-                                                                </div>
-
-                                                            </div>
-                                                            <div className="">
-                                                                <div className="modal_payout">
-                                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Статус</h5>
-                                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.status === "pending" ? "В ожидании" : data?.status == "wait_confirm" ? "Ожидает подтверждения" : data?.status == "in_progress" ? "В обработке" : data?.status === "completed" ? "Завершено" : "Отклонено"}</p>
-                                                                </div>
-                                                                <div className="modal_payout">
-                                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Трейдеры на выбор</h5>
-                                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.selected_traders.length > 0 ? data.selected_traders.map((person, index) => <span key={index}>{person.username}{index !== data.selected_traders.length - 1 && ','}</span>) : "-"}</p>
-                                                                </div>
-                                                                <div className="modal_payout">
-                                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Банк</h5>
-                                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.bank} Банк</p>
-                                                                </div>
-                                                                <div className="modal_payout">
-                                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма с учетом ставки трейдера </h5>
-                                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.trader_amount_with_rate}</p>
-                                                                </div>
-                                                                <div className="modal_payout">
-                                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма с учетом ставки мерчанта</h5>
-                                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.merchant_amount_with_rate}</p>
-                                                                </div>
-                                                                <div className="modal_payout">
-                                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Время создания</h5>
-                                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.created_at?.split("T")[0]} {data?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
-                                                                </div>
-                                                                <div className="modal_payout">
-                                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Время обновления</h5>
-                                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.updated_at?.split("T")[0]} {data?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
-                                                                </div>
-                                                                <div className="modal_payout">
-                                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Реквизиты </h5>
-                                                                    <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.requisite} </p>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                                {/* cancel modal */}
-                                                <div onClick={() => { setOtkImg(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${!cancel && "hidden"} fixed inset-0 h-[120vh] bg-[#2222224D] z-20`}></div>
-                                                <form onSubmit={handleCancel} className={`${!cancel ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} pt-8 pl-8 pb-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 shadow-sm shadow-black -translate-y-1/2 mx-auto w-full overflow-y-hidden  rounded-[24px]`}>
-                                                    <div className={`${isDarkMode ? "scroll-black" : "scroll-white"} overflow-y-scroll max-h-[80vh]`}>
-                                                        <div className="relative mb-8 mr-8">
-                                                            <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Отклонить выплату</h3>
-                                                            <svg width="14" onClick={() => { setCancel(!cancel); setOtkImg(""); setReason(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })) }} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
-                                                            </svg>
-                                                            <h5 className='text-[14px] text-[#60626C]'>Укажите причину</h5>
-                                                        </div>
-                                                        {/* errorm */}
-                                                        {status["handleCancel"] == "error" &&
-                                                            <div className={`pt-1 z-20  duration-300  w-full `}>
-                                                                <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
-                                                                    <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
-                                                                    <div className="relative mr-[8px] ml-[18px]">
-                                                                        <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
-                                                                    </div>
-                                                                    <div className="">
-                                                                        <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
-                                                                        <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        }
-                                                        {status["handleCancel"] == "success" &&
-                                                            <div className="w-full pt-1 ">
-                                                                <div className="flex items-center max-w-[720px] mx-auto mb-5 border bg-white border-[#37B67E] rounded-md">
-                                                                    <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#37b67e]"></div>
-                                                                    <div className="relative mr-[8px] ml-[18px]">
-                                                                        <img src="/assets/img/check.svg" className='bg-[#37B67E] min-w-[26.67px] min-h-[26.67px] p-[6px] rounded-full' alt="" />
-                                                                    </div>
-                                                                    <div className="">
-                                                                        <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Успешно!</h4>
-                                                                        <p className='text-[14px] text-[#484951]'>Ваши изменения успешно сохранены.</p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        }
-                                                        <div className="modal_payout mb-8 mr-8">
-                                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} mb-2`}>Описание</h5>
-                                                            <input onChange={(e) => setReason(e.target.value)} value={reason} required placeholder='Описание' type="text" className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
-                                                        </div>
-                                                        <div className=" flex max-[400px]:flex-col items-center mr-8">
-                                                            {otkImg && <img src={otkImg} alt="Uploaded preview" className="mt-4 max-w-[300px] max-h-[400px]" />}
-                                                            {otkImg &&
-                                                                <svg onClick={() => setOtkImg("")} width="24" className='ml-3 cursor-pointer min-w-[24px]' height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                    <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
-                                                                </svg>
-                                                            }
-                                                        </div>
-                                                        <div className="mb-8">
-                                                            <div
-                                                                className='w-max text-[#2E70F5] cursor-pointer border-[#2E70F5] mt-4 border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'
-                                                                onClick={() => document.getElementById('fileInputs').click()}>
-                                                                Прикрепить Чек
-                                                            </div>
-                                                            <input id="fileInputs" type="file" className="hidden" onChange={handleFileClose} accept="image/*" />
-                                                        </div>
-                                                        <div className="flex justify-end pr-8">
-                                                            <button type='submit' className=' bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                                        </>
+                                                    )}
+                                                    {(data.status === "in_progress") && (
+                                                        <div className='flex max-[420px]:flex-col  gap-4'>
+                                                            <button onClick={() => setCancel(!cancel)} className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                                                 Отклонить
                                                             </button>
+                                                            <button onClick={() => { setCancelCheck(!cancelCheck); setModal(!modal) }} type='submit' className='bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                                                Завершить
+                                                            </button>
                                                         </div>
-
-                                                    </div>
-                                                </form>
-                                                {/* buttonlar */}
-                                                <div className="flex w-full text-white md:justify-end gap-x-4 mt-2 ">
-                                                    {details?.map((data, index) => {
-                                                        return (
-                                                            <div key={index}>
-                                                                {(data.status === "pending") && (
-                                                                    <>
-                                                                        <div className='flex max-[420px]:flex-col gap-4'>
-                                                                            <button onClick={() => setCancel(!cancel)} className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                                                                Отклонить
-                                                                            </button>
-                                                                            <form onSubmit={handleAccept}>
-                                                                                <button type='submit' className='bg-[#2E70F5] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                                                                    Взять в работу
-                                                                                </button>
-                                                                            </form>
-                                                                        </div>
-                                                                    </>
-                                                                )}
-                                                                {(data.status === "in_progress") && (
-                                                                    <div className='flex max-[420px]:flex-col  gap-4'>
-                                                                        <button onClick={() => setCancel(!cancel)} className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                                                            Отклонить
-                                                                        </button>
-                                                                        <button onClick={() => { setCancelCheck(!cancelCheck); setModal(!modal) }} type='submit' className='bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                                                            Завершить
-                                                                        </button>
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        )
-                                                    })}
+                                                    )}
                                                 </div>
-                                            </div>
-
-                                        </div>
+                                            )
+                                        })}
                                     </div>
                                 </div>
-                                {details.map((data, index) => (
-                                    <>
-                                        {
-                                            data.receipts.length > 0 &&
-                                            <div className="keen-slider__slide z-50 ">
-                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}><img className='lg:max-w-[763px] object-cover' src={data.receipts[0] && data.receipts[0].endsWith('.pdf') ? '/assets/img/check.jpg' : data.receipts.map(item => item)} /> </p>
-                                            </div>
-                                        }
-                                    </>
-                                ))}
-                                <button className={`absolute left-0 top-1/2 transform -translate-y-1/2 z-[60] bg-gray-300 rounded-full p-2 ${currentSlide === 0 ? "opacity-50 cursor-not-allowed" : ""}`} onClick={() => slider.current?.prev()} disabled={currentSlide === 0}>
-                                    <FaChevronLeft />
-                                </button>
-                                <button
-                                    className={`absolute right-0 top-1/2 transform -translate-y-1/2 z-50 bg-gray-300 rounded-full p-2 ${currentSlide === images.length - 1 ? "opacity-50 cursor-not-allowed" : ""}`} onClick={() => slider.current?.next()} disabled={currentSlide === images.length - 1}>
-                                    <FaChevronRight />
-                                </button>
-                            </div>
-                        }
 
-                    </div>)
-                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div >
     )
