@@ -11,72 +11,77 @@ import Loading from '../Loading/Loading';
 import Header from '../Header/Header';
 import Header_md from '../Header/Header-md';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Document, Page, pdf } from '@react-pdf/renderer';
+import { useKeenSlider } from 'keen-slider/react'
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
-import 'keen-slider/keen-slider.min.css'
-import { useKeenSlider } from 'keen-slider/react'
-
-// import required modules
+import 'swiper/swiper-bundle.css';
+import Slider from "react-slick";
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
 import { Viewer, Worker } from '@react-pdf-viewer/core';
 const Payout = () => {
-
+    const settings = {
+        dots: true,
+        speed: 500,
+        slidesToShow: 1,
+        slidesToScroll: 1
+    };
     const images = [
         // "https://rf-static.ams3.digitaloceanspaces.com/payout-dev/ams3/2024-10-29/payouts/receipts/1fcc306a-e271-4072-9665-71a5d49b5b6c.pdf",
         "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
+        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
+        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUebJfExQ2T7ahWecI22KcnKHbfDfdloQD2w&s",
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUebJfExQ2T7ahWecI22KcnKHbfDfdloQD2w&s",
         "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
         "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
-        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
     ]
+    const [currentSlide, setCurrentSlide] = useState(0);
 
+    // Main image slider (Keen Slider instance)
     const [sliderRef, instanceRef] = useKeenSlider({
         slides: {
-            perView: 1,  // Number of slides to show per view
+            perView: 1,
+            spacing: 10,
         },
-        slideChanged(s) {
-            setActiveIndex(s.track.details.rel);  // Update activeIndex based on the current slide
-        },
-        spacing: 10,  // Optional: space between slides
+        loop: false,
+        initial: 0,
+        animationEnded(s) {
+            const newSlideIndex = s.track.details.rel;
+            setCurrentSlide(newSlideIndex);  // Update currentSlide after animation ends
+            scrollToThumbnail(newSlideIndex);   // Center the corresponding thumbnail
+        }
     });
-    const [sliderRef_thumb, instanceRef_thumb] = useKeenSlider({
+
+    // Thumbnail slider (Keen Slider instance)
+    const [thumbnailRef, thumbnailInstanceRef] = useKeenSlider({
         slides: {
             perView: 4,
+            spacing: 10,
         },
+        centered: true,
+    });
 
-    })
+    const scrollToThumbnail = (index) => {
+        const perViewThumbnails = 4;
 
-    let [activeIndex, setActiveIndex] = useState(0)
-    useEffect(() => {
-        if (instanceRef.current) {
-            instanceRef.current.moveToIdx(activeIndex);  // Ensure main slider moves when index changes
+        if (thumbnailInstanceRef.current) {
+            const targetPosition = Math.max(0, index - Math.floor(perViewThumbnails / 2));
+            thumbnailInstanceRef.current.moveToIdx(targetPosition);
         }
-    
-        // Automatically scroll thumbnail slider if the active thumbnail is out of view
-        if (instanceRef_thumb.current) {
-            const visibleThumbs = 4;  // Number of visible thumbnails
-            const startIdx = Math.max(0, activeIndex - Math.floor(visibleThumbs / 2));
-            instanceRef_thumb.current.moveToIdx(startIdx);
-        }
-    }, [activeIndex, instanceRef, instanceRef_thumb]);
+    };
 
     // Handle thumbnail click
     const handleThumbnailClick = (index) => {
-        setActiveIndex(index);
+        setCurrentSlide(index);
+        if (instanceRef.current) {
+            instanceRef.current.moveToIdx(index);
+        }
+        scrollToThumbnail(index);
     };
-    useEffect(() => {
-        // Force a reflow after the component mounts
-        setTimeout(() => {
-            if (instanceRef.current || instanceRef_thumb.current) {
-                instanceRef.current.update();
-                instanceRef_thumb.current.update()
-            }
-        }, 100); // Give the browser time to settle and apply styles
-    }, [images]);
+
     const [thumbsSwiper, setThumbsSwiper] = useState(null);
     let [status, setStatus] = useState({ "handleCancel": null, "handleUpload": null, "handleAccept": null })
     const [imageSrc, setImageSrc] = useState(null);
@@ -120,8 +125,9 @@ const Payout = () => {
     let [otkImg, setOtkImg] = useState(null)
     let [otkImgDesc, setOtkImgDesc] = useState(null)
 
-
-
+    useEffect(() => {
+        setThumbsSwiper(thumbsSwiper)
+    }, [thumbsSwiper]);
 
     const handleCopy = (e) => {
         const textElement = e.currentTarget.parentElement.nextElementSibling;
@@ -195,6 +201,7 @@ const Payout = () => {
             }, 2000)
         }
     }, [currentPage]);
+
 
     let [method, setMethod] = useState([])
     const handleMethod = async () => {
@@ -484,7 +491,9 @@ const Payout = () => {
         setTime_2(cleanedValue);
     };
 
-
+    useEffect(() => {
+        console.log(thumbsSwiper)
+    }, [thumbsSwiper]);
 
     const handleFileClose = (e) => {
         const files = Array.from(e.target.files);
@@ -1187,45 +1196,67 @@ const Payout = () => {
                             <p className={`text-right text-[14px] font-normal mr-4  z-30 duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data?.count ? data?.count : 0} результата</p>
                         </div>
                     }
-                    <div onClick={() => { setModal(!modal); setCancel(""); setOtkImg(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${(!modal) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
-                    <div onClick={() => { setModal(!modal); setCancel("") }} className={`${(!modalChek) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
-                    <div onClick={() => { setZoom(!zoom) }} className={`${(!zoom) && "hidden"} fixed inset-0 bg-[#2222224D] z-50`}></div>
+                    <div onClick={() => { setModal(!modal); setThumbsSwiper(null);handleThumbnailClick(0); setCancel(""); setOtkImg(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${(!modal) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+                    <div onClick={() => { setModal(!modal); setThumbsSwiper(null);handleThumbnailClick(0); setCancel("") }} className={`${(!modalChek) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+                    <div onClick={() => { setZoom(!zoom); setThumbsSwiper(null);handleThumbnailClick(0); }} className={`${(!zoom) && "hidden"} fixed inset-0 bg-[#2222224D] z-50`}></div>
 
                     {/* cek tam ekran */}
-                    <div className='fixed top-1/2  left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[80%]'>
-                        <div ref={sliderRef} className="keen-slider">
-                            {images?.map((data, index) => {
-                                return (
-                                    zoom &&
-                                    <div className="keen-slider__slide">
-                                        <img src={data} alt="" className='flex justify-center items-center mx-auto' />
-                                    </div>
-                                    // <div key={index} className='fixed top-1/2 flex left-1/2 -translate-x-1/2 -translate-y-1/2 z-50'>
-                                    //     {data.receipts.map(img => {
-                                    //         return (
-                                    //             // <div className='relative '>
-                                    //             //     <img className='mx-auto' src={img && img.endsWith('.pdf') ? '/assets/img/check.jpg' : img} />
-                                    //             //     <svg onClick={() => setZoom(!zoom)} width="14" height="15" viewBox="0 0 14 15" className='absolute top-0 right-[-20px] cursor-pointer' xmlns="http://www.w3.org/2000/svg">
-                                    //             //         <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" fill="#000" />
-                                    //             //     </svg>
-                                    //             // </div>
 
-                                    //         )
-                                    //     })}
-                                    // </div>
-                                )
-                            })}
-                        </div>
-                        <div ref={sliderRef_thumb} className="keen-slider max-w-[20%] mx-auto">
-                            {images?.map((data, index) => {
-                                return (
-                                    zoom &&
-                                    <div onClick={() => handleThumbnailClick(index)} className={`keen-slider__slide duration-300 ${activeIndex == index ? "opacity-100" : "opacity-50"}`}>
-                                        <img src={data} alt="" className='object-contain justify-center items-center mx-auto max-w-[150px] flex w-full h-[60px] ' />
-                                    </div>
-                                )
-                            })}
-                        </div>
+                    <div className='fixed top-1/2  left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[80%]'>
+                        {zoom &&
+                            <div ref={sliderRef} className="keen-slider">
+                                {details?.map((data, index) => {
+                                    return (
+                                        data?.receipts?.map((img, indexs) => (
+                                            <>
+                                                {img.endsWith(".pdf") ? (
+                                                    <div className='keen-slider__slide flex justify-center items-center w-full h-full'>
+                                                        <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+                                                            <Viewer
+                                                                fileUrl={img}
+                                                                defaultScale={0.5}
+                                                                renderMode="canvas"
+                                                                className="pdf-viewer"
+                                                            />
+                                                        </Worker>
+                                                    </div>
+                                                ) : (
+                                                    <div className='keen-slider__slide'>
+                                                        <img src={img} className={`flex justify-center max-w-[500px] max-h-[300px] object-contain items-center mx-auto`} />
+                                                    </div>
+                                                )}
+                                            </>
+                                        ))
+                                    )
+                                })}
+                            </div>
+                        }
+                        {zoom &&
+                            <div ref={thumbnailRef} className="keen-slider thumbnail-slider mt-4 mx-auto ">
+                                {details?.map((thumbnail, index) => (
+                                    thumbnail?.receipts?.map((img, indexs) => (
+                                        <div key={indexs} className='keen-slider__slide'>
+                                            {img.endsWith(".pdf") ? (
+                                                <div onClick={() => handleThumbnailClick(indexs)} className={`${indexs === currentSlide ? 'opacity-100' : 'opacity-50 '} max-w-[100px] max-h-[300px]  object-contain `}>
+                                                    <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+                                                        <Viewer fileUrl={img} defaultScale={0.2} />
+                                                    </Worker>
+
+                                                </div>
+                                            ) : (
+                                                <div
+                                                    className={`${indexs === currentSlide ? 'opacity-100' : 'opacity-50'}`}
+                                                    onClick={() => handleThumbnailClick(indexs)}
+                                                >
+                                                    <img src={img} alt="" className="w-20 h-20 object-contain cursor-pointer" />
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))
+                                ))}
+                            </div>
+
+                        }
 
                     </div>
                     {/* cek yuklemek ucun */}
@@ -1314,7 +1345,7 @@ const Payout = () => {
                                 <div className="">
                                     <div className="mb-8 relative">
                                         <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Детали выплаты </h3>
-                                        <svg width="14" onClick={() => setModal(false)} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <svg width="14" onClick={() => { setModal(false); setThumbsSwiper(null); }} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
                                         </svg>
                                         <h5 className='text-[14px] text-[#60626C]'>Подробная информация</h5>
@@ -1351,142 +1382,230 @@ const Payout = () => {
                                         {details?.map((data, index) => (
                                             <div key={index} className='grid grid-cols-2 gap-x-4 max-[500px]:grid-cols-1 '>
                                                 <div className="">
-                                                    <div className="  ">
-                                                        <Swiper
-                                                            style={{
-                                                                '--swiper-navigation-color': `${isDarkMode ? "#F5F6FC" : "#272727"}`,
-                                                                '--swiper-pagination-color': `${isDarkMode ? "#F5F6FC" : "#272727"}`,
-                                                            }}
-                                                            spaceBetween={10}
-                                                            navigation={true}
-                                                            thumbs={{ swiper: thumbsSwiper }}
-                                                            modules={[FreeMode, Navigation, Thumbs]}
-                                                            className={`mySwiper2 mb-2`}
-                                                        >
-                                                            {data?.receipts?.map((item, index) => (
-                                                                <>
+                                                    {data?.receipts?.length > 0 ? (
+                                                        <>
+                                                            <div ref={sliderRef} className="keen-slider">
+                                                                {data?.receipts?.map((img, indexs) => (
+                                                                    <>
+                                                                        {img.endsWith(".pdf") ? (
+                                                                            <div className='keen-slider__slide flex justify-center items-center w-full h-full'>
+                                                                                <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+                                                                                    <Viewer
+                                                                                        fileUrl={img}
+                                                                                        defaultScale={0.5}
+                                                                                        renderMode="canvas"
+                                                                                        className="pdf-viewer"
+                                                                                    />
+                                                                                </Worker>
+                                                                            </div>
+                                                                        ) : (
+                                                                            <div className='keen-slider__slide'>
+                                                                                <img src={img} className={`flex justify-center max-w-[500px] max-h-[300px] object-contain items-center mx-auto`} />
+                                                                            </div>
+                                                                        )}
+                                                                    </>
+                                                                ))}
+                                                            </div>
+                                                            <div ref={thumbnailRef} className="keen-slider thumbnail-slider mt-4 mx-auto ">
+                                                                {data?.receipts?.map((img, indexs) => (
+                                                                    <div key={indexs} className='keen-slider__slide'>
+                                                                        {img.endsWith(".pdf") ? (
+                                                                            <div onClick={() => handleThumbnailClick(indexs)} className={`${indexs === currentSlide ? 'opacity-100' : 'opacity-50 '} max-w-[100px] max-h-[300px]  object-contain `}>
+                                                                                <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+                                                                                    <Viewer fileUrl={img} defaultScale={0.2} />
+                                                                                </Worker>
+
+                                                                            </div>
+                                                                        ) : (
+                                                                            <div
+                                                                                className={`${indexs === currentSlide ? 'opacity-100' : 'opacity-50'}`}
+                                                                                onClick={() => handleThumbnailClick(indexs)}
+                                                                            >
+                                                                                <img src={img} alt="" className="w-20 h-20 object-contain cursor-pointer" />
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+
+                                                            {/* <Swiper
+                                                                style={{
+                                                                    '--swiper-navigation-color': `${isDarkMode ? "#F5F6FC" : "#272727"}`,
+                                                                    '--swiper-pagination-color': `${isDarkMode ? "#F5F6FC" : "#272727"}`,
+                                                                }}
+                                                                spaceBetween={10}
+                                                                navigation={true}
+                                                                freeMode={true}
+                                                                onSwiper={(swiper) => setThumbsSwiper(swiper)}
+                                                                modules={[FreeMode, Navigation, Thumbs]}
+                                                                className="mySwiper2 mb-2"
+                                                            >
+                                                                {data?.receipts?.length > 0 && data?.receipts?.map((item, index) => (
                                                                     <SwiperSlide key={index}>
                                                                         {item.endsWith(".pdf") ? (
                                                                             <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
                                                                                 <Viewer fileUrl={item} />
                                                                             </Worker>
                                                                         ) : (
-                                                                            <img src={item} className={`${!isDarkMode ? "bg-[#F5F6FC]" : "bg-[#272727]"}`} />
+                                                                            <img
+                                                                                src={item}
+                                                                                className={`${!isDarkMode ? "bg-[#F5F6FC]" : "bg-[#272727]"}`}
+                                                                            />
                                                                         )}
                                                                     </SwiperSlide>
-                                                                </>
-                                                            ))}
-                                                        </Swiper>
-                                                        <Swiper
-                                                            onSwiper={setThumbsSwiper}
-                                                            spaceBetween={10}
-                                                            slidesPerView={4.5}
-                                                            freeMode={true}
-                                                            watchSlidesProgress={true}
-                                                            modules={[FreeMode, Navigation, Thumbs]}
-                                                            className="mySwiper cursor-pointer"
-                                                        >
-                                                            {data?.receipts?.map(item => (
-                                                                <SwiperSlide key={index}>
-                                                                    {item.endsWith(".pdf") ? (
-                                                                        <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-                                                                            <Viewer fileUrl={item} />
-                                                                        </Worker>
-                                                                    ) : (
-                                                                        <img src={item} className={`${!isDarkMode ? "bg-[#F5F6FC]" : "bg-[#272727]"}`} />
-                                                                    )}
-                                                                </SwiperSlide>
+                                                                ))}
+                                                            </Swiper>
+                                                            <Swiper
+                                                                thumbs={{ swiper: thumbsSwiper }}
+                                                                spaceBetween={10}
+                                                                slidesPerView={4.5}
+                                                                freeMode={true}
+                                                                watchSlidesProgress={true}
+                                                                modules={[FreeMode, Navigation, Thumbs]}
+                                                                className="mySwiper cursor-pointer"
+                                                            >
+                                                                {data?.receipts?.length > 0 && data?.receipts?.map((item, index) => (
+                                                                    <div className=''>
+                                                                        <SwiperSlide key={index}>
+                                                                            {item.endsWith(".pdf") ? (
+                                                                                <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+                                                                                    <Viewer fileUrl={item} />
+                                                                                </Worker>
+                                                                            ) : (
+                                                                                <img
+                                                                                    src={item}
+                                                                                    className={` ${!isDarkMode ? "bg-[#F5F6FC]" : "bg-[#272727]"} `}
+                                                                                />
+                                                                            )}
+                                                                        </SwiperSlide>
+                                                                    </div>
+                                                                ))}
+                                                            </Swiper> */}
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <div className="modal_payout">
+                                                                {console.log("bura2")}
 
-                                                            ))}
-                                                        </Swiper>
-                                                    </div>
-
-
+                                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>ID</h5>
+                                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.id}</p>
+                                                            </div>
+                                                            <div className="modal_payout">
+                                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Назначенный трейдер</h5>
+                                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.trader ? data.trader["username"] : "-"}</p>
+                                                            </div>
+                                                            <div className="modal_payout">
+                                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Мерчант</h5>
+                                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.merchant ? data.merchant["username"] : "-"}</p>
+                                                            </div>
+                                                            <div className="modal_payout">
+                                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Получатель</h5>
+                                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>-</p>
+                                                            </div>
+                                                            <div className="modal_payout">
+                                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Метод оплаты</h5>
+                                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.method["name"]}</p>
+                                                            </div>
+                                                            <div className="modal_payout">
+                                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Ставка мерчанта</h5>
+                                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.merchant_rate}</p>
+                                                            </div>
+                                                            <div className="modal_payout">
+                                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Ставка трейдера</h5>
+                                                                <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.trader_rate}</p>
+                                                            </div>
+                                                            <div className="modal_payout relative w-max">
+                                                                {/* slice metodu */}
+                                                                <div className="flex items-center font-semibold gap-x-1">
+                                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} flex items-center gap-x-2 text-[12px] `}>Внешний ID</h5>
+                                                                    <LuCopy className={`text-[16px] top-0 ${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} cursor-pointer`} onClick={(e) => handleCopy(e)} />
+                                                                </div>
+                                                                <div className=" mb-0">
+                                                                    <p style={{ fontSize: "14px" }} className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(0, 33) : '-'}</p>
+                                                                    <p style={{ fontSize: "14px" }} className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(32) : ''}</p>
+                                                                </div>
+                                                            </div>
+                                                            {
+                                                                <div className={`fixed ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2 -translate-x-1/2 z-50 ${copy ? "top-32" : "top-[-200px] "} duration-300 mx-auto left-1/2 `}>
+                                                                    <LuCopy size={18} color={`${isDarkMode ? "#E7E7E7" : "#18181B"}`} />
+                                                                    <h4 className={`text-sm ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`} >Ссылка скопирована</h4>
+                                                                </div>
+                                                            }
+                                                        </>
+                                                    )}
                                                 </div>
+
                                                 <div className="">
-                                                    <div className="modal_payout ">
-                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>ID</h5>
-                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.id} </p>
-                                                    </div>
-                                                    <div className="modal_payout">
-                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Назначенный трейдер</h5>
-                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.trader ? data.trader["username"] : "-"}</p>
-                                                    </div>
-                                                    <div className="modal_payout">
-                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Мерчант </h5>
-                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.merchant ? data.merchant["username"] : "-"}</p>
-                                                    </div>
-                                                    <div className="modal_payout">
-                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Получатель</h5>
-                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>-</p>
-                                                    </div>
-                                                    <div className="modal_payout">
-                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Метод оплаты</h5>
-                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.method["name"]}</p>
-                                                    </div>
-                                                    <div className="modal_payout">
-                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Ставка мерчанта</h5>
-                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.merchant_rate}</p>
-                                                    </div>
-                                                    <div className="modal_payout">
-                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Ставка трейдера</h5>
-                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.trader_rate}</p>
-                                                    </div>
-                                                    <div className="modal_payout relative w-max">
-                                                        {/* slice metodu */}
-                                                        <div className="flex items-center font-semibold gap-x-1">
-                                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} flex items-center gap-x-2 text-[12px] `}>Внешний ID</h5>
-                                                            <LuCopy className={`text-[16px]  top-0  ${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} cursor-pointer`} onClick={(e) => handleCopy(e)} />
-                                                        </div>
-                                                        <div className=" mb-0">
-                                                            <p style={{ fontSize: "14px" }} className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(0, 33) : '-'}</p>
-                                                            <p style={{ fontSize: "14px" }} className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(32) : ''}</p>
-                                                        </div>
-                                                    </div>
-                                                    {
-                                                        <div className={`fixed ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2  -translate-x-1/2 z-50 ${copy ? "top-32" : "top-[-200px] "} duration-300 mx-auto left-1/2 `}>
-                                                            <LuCopy size={18} color={`${isDarkMode ? "#E7E7E7" : "#18181B"}`} />
-                                                            <h4 className={`text-sm ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`} >Ссылка скопирована</h4>
-                                                        </div>
+                                                    {data.receipts.length >= 1 &&
+                                                        <>
+                                                            <div className="modal_payout ">
+                                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>ID</h5><p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.id} </p>
+                                                            </div>
+                                                            <div className="modal_payout">
+                                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Назначенный трейдер</h5><p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.trader ? data.trader["username"] : "-"}</p>
+                                                            </div>
+                                                            <div className="modal_payout">
+                                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Мерчант </h5><p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.merchant ? data.merchant["username"] : "-"}</p>
+                                                            </div>
+                                                            <div className="modal_payout">
+                                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Получатель</h5><p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>-</p>
+                                                            </div>
+                                                            <div className="modal_payout">
+                                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Метод оплаты</h5><p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.method["name"]}</p>
+                                                            </div>
+                                                            <div className="modal_payout">
+                                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Ставка мерчанта</h5><p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.merchant_rate}</p>
+                                                            </div>
+                                                            <div className="modal_payout">
+                                                                <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Ставка трейдера</h5><p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.trader_rate}</p>
+                                                            </div>
+                                                            <div className="modal_payout relative w-max">
+                                                                {/* slice metodu */}
+                                                                <div className="flex items-center font-semibold gap-x-1">
+                                                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} flex items-center gap-x-2 text-[12px] `}>Внешний ID</h5>
+                                                                    <LuCopy className={`text-[16px]  top-0  ${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} cursor-pointer`} onClick={(e) => handleCopy(e)} />
+                                                                </div>
+                                                                <div className=" mb-0">
+                                                                    <p style={{ fontSize: "14px" }} className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(0, 33) : '-'}</p>
+                                                                    <p style={{ fontSize: "14px" }} className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"} `}>{data.outter_id ? data.outter_id.slice(32) : ''}</p>
+                                                                </div>
+                                                            </div>
+                                                            {
+                                                                <div className={`fixed ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2  -translate-x-1/2 z-50 ${copy ? "top-32" : "top-[-200px] "} duration-300 mx-auto left-1/2 `}>
+                                                                    <LuCopy size={18} color={`${isDarkMode ? "#E7E7E7" : "#18181B"}`} />
+                                                                    <h4 className={`text-sm ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`} >Ссылка скопирована</h4>
+                                                                </div>
+                                                            }
+                                                        </>
                                                     }
                                                     <div className="modal_payout">
-                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма</h5>
-                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.amount}</p>
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма</h5><p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.amount}</p>
                                                     </div>
                                                     <div className="modal_payout">
-                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Статус</h5>
-                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.status === "pending" ? "В ожидании" : data?.status == "wait_confirm" ? "Ожидает подтверждения" : data?.status == "in_progress" ? "В обработке" : data?.status === "completed" ? "Завершено" : "Отклонено"}</p>
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Статус</h5><p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.status === "pending" ? "В ожидании" : data?.status == "wait_confirm" ? "Ожидает подтверждения" : data?.status == "in_progress" ? "В обработке" : data?.status === "completed" ? "Завершено" : "Отклонено"}</p>
                                                     </div>
                                                     <div className="modal_payout">
-                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Трейдеры на выбор</h5>
-                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.selected_traders.length > 0 ? data.selected_traders.map((person, index) => <span key={index}>{person.username}{index !== data.selected_traders.length - 1 && ','}</span>) : "-"}</p>
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Трейдеры на выбор</h5><p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data.selected_traders.length > 0 ? data.selected_traders.map((person, index) => <span key={index}>{person.username}{index !== data.selected_traders.length - 1 && ','}</span>) : "-"}</p>
                                                     </div>
                                                     <div className="modal_payout">
-                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Банк</h5>
-                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.bank} Банк</p>
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Банк</h5><p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.bank} Банк</p>
                                                     </div>
                                                     <div className="modal_payout">
-                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма с учетом ставки трейдера </h5>
-                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.trader_amount_with_rate}</p>
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма с учетом ставки трейдера </h5><p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.trader_amount_with_rate}</p>
                                                     </div>
                                                     <div className="modal_payout">
-                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма с учетом ставки мерчанта</h5>
-                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.merchant_amount_with_rate}</p>
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма с учетом ставки мерчанта</h5><p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.merchant_amount_with_rate}</p>
                                                     </div>
                                                     <div className="modal_payout">
-                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Время создания</h5>
-                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.created_at?.split("T")[0]} {data?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Время создания</h5><p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.created_at?.split("T")[0]} {data?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
                                                     </div>
                                                     <div className="modal_payout">
-                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Время обновления</h5>
-                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.updated_at?.split("T")[0]} {data?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Время обновления</h5><p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.updated_at?.split("T")[0]} {data?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
                                                     </div>
                                                     <div className="modal_payout">
-                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Реквизиты </h5>
-                                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.requisite} </p>
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Реквизиты </h5><p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.requisite} </p>
                                                     </div>
                                                 </div>
-
                                             </div>
                                         ))}
                                     </div>
@@ -1530,13 +1649,13 @@ const Payout = () => {
                                                     </div>
                                                 </div>
                                             }
-                                            <div className="modal_payout mb-8 mr-8">
+                                            <div className="modal_payout mb-8 mr-8 ">
                                                 <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} mb-2`}>Описание</h5>
-                                                <input onChange={(e) => setReason(e.target.value)} value={reason} required placeholder='Описание' type="text" className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
+                                                <input onChange={(e) => setReason(e.target.value)} style={{ caretColor: '#000' }} value={reason} required placeholder='Описание' type="text" className={`${isDarkMode ? "text-white" : ""}  bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
                                             </div>
-                                            <div className="mb-8">
+                                            <div className="mb-8 ">
                                                 <div
-                                                    className='w-max text-[#2E70F5] cursor-pointer border-[#2E70F5] mt-4 border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'
+                                                    className='blur-0 w-max text-[#2E70F5] cursor-pointer border-[#2E70F5] mt-4 border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'
                                                     onClick={() => document.getElementById('fileInputs').click()}>
                                                     Прикрепить Чек
                                                 </div>

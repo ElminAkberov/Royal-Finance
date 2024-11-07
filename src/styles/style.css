@@ -270,7 +270,7 @@ body {
 }
 
 .mySwiper {
-    height: 20%;
+    height: 50px;
     box-sizing: border-box;
     padding: 10px 0;
     object-fit: contain;

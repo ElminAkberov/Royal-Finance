@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import { Outlet, Navigate, useLocation } from 'react-router-dom'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import 'keen-slider/keen-slider.min.css'
 import { Context } from './context/ContextProvider';
 const Layout = () => {
     const location = useLocation();

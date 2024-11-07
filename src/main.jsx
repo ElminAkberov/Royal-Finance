@@ -8,12 +8,11 @@ import Dashboard from "./Dash/Dashboard";
 import ContextProvider from "./context/ContextProvider";
 import Deposit from "./Deposit/Deposit";
 import Payout from "./Payouts/Payout";
-import Swiper from "./Swiper";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />, children: [{ path: "/login", element: <Login /> },{ path: "/", element: <Login /> },{ path: "/dash", element: <Dashboard /> },{ path: "/sw", element: <Swiper /> },,{ path: "/deposit", element: <Deposit /> },{ path: "/payout/", element: <Payout /> }]
+    element: <Layout />, children: [{ path: "/login", element: <Login /> },{ path: "/", element: <Login /> },{ path: "/dash", element: <Dashboard /> },{ path: "/deposit", element: <Deposit /> },{ path: "/payout/", element: <Payout /> }]
   },
   
 ]);
