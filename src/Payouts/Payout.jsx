@@ -901,7 +901,7 @@ const Payout = () => {
                                         );
                                     }} headerStyle={{ backgroundColor: '#D9D9D90A', color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Действия" ></Column>
 
-                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 8px", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C", userSelect: 'text', position: "relative", zIndex: "50" }} field="method" header=" ID " body={(rowData) => <div className='selectable-text'>{rowData.id}</div>} ></Column>
+                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 8px", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C", userSelect: 'text', position: "relative", }} field="method" header=" ID " body={(rowData) => <div className='selectable-text'>{rowData.id}</div>} ></Column>
 
                                     <Column body={(rowData) => {
                                         return (
@@ -1220,9 +1220,9 @@ const Payout = () => {
                             <p className={`text-right text-[14px] font-normal mr-4  z-30 duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data?.count ? data?.count : 0} результата</p>
                         </div>
                     }
-                    <div onClick={() => { setModal(!modal); setThumbsSwiper(null); setSwiperIndex(0); setCancel(""); setOtkImg(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${(!modal) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
-                    <div onClick={() => { setModal(!modal); setThumbsSwiper(null); setSwiperIndex(0); setCancel("") }} className={`${(!modalChek) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
-                    <div onClick={() => { setZoom(!zoom); setThumbsSwiper(null); setSwiperIndex(0); }} className={`${(!zoom) && "hidden"} fixed inset-0 bg-[#2222224D] z-50`}></div>
+                    <div onClick={() => { setModal(!modal); setThumbsSwiper(null); setSwiperIndex(0); setCancel(""); setOtkImg(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${(!modal) && "hidden"} fixed inset-0 ${isDarkMode ?"bg-[#00000093]" :"bg-[#2222224d]"} z-20`}></div>
+                    <div onClick={() => { setModal(!modal); setThumbsSwiper(null); setSwiperIndex(0); setCancel("") }} className={`${(!modalChek) && "hidden"} fixed inset-0 ${isDarkMode ?"bg-[#00000093]" :"bg-[#2222224d]"} z-20`}></div>
+                    <div onClick={() => { setZoom(!zoom); setThumbsSwiper(null); setSwiperIndex(0); }} className={`${(!zoom) && "hidden"} fixed inset-0 ${isDarkMode ?"bg-[#00000093]" :"bg-[#2222224d]"} z-50`}></div>
 
                     {/* cek tam ekran */}
 
@@ -1256,7 +1256,7 @@ const Payout = () => {
                                                     </div>
                                                 ) : (
                                                     <div className=''>
-                                                        <img src={img} className={`flex justify-center max-w-[500px] max-h-[300px] object-contain items-center mx-auto`} />
+                                                        <img src={img} className={`flex justify-center w-[500px] h-[300px] object-contain items-center mx-auto`} />
                                                     </div>
                                                 )}
                                             </div>
@@ -1271,17 +1271,17 @@ const Payout = () => {
                                     thumbnail?.receipts?.map((img, indexs) => (
                                         <div key={indexs} className='keen-slider__slide'>
                                             {img.endsWith(".pdf") ? (
-                                                <div style={{ width: '150px', height: '150px', flexShrink: 0 }} onClick={() => handleThumbnailClick(indexs)} className={`${indexs === currentSlide ? 'opacity-100' : 'opacity-50 '} object-contain `}>
+                                                <div style={{ width: '150px', height: '150px', flexShrink: 0 }} onClick={() => handleThumbnailClick(indexs)} className={`${indexs === currentSlide ? 'opacity-100' : 'opacity-80 '} object-contain `}>
                                                     <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
                                                         <Viewer fileUrl={img} />
                                                     </Worker>
                                                 </div>
                                             ) : (
                                                 <div
-                                                    className={`${indexs === currentSlide ? 'opacity-100' : 'opacity-50'}`}
+                                                    className={`${indexs === currentSlide ? 'opacity-100' : 'opacity-80'}`}
                                                     onClick={() => handleThumbnailClick(indexs)}
                                                 >
-                                                    <img src={img} alt="" className="max-w-[100px] max-h-[100px] object-contain cursor-pointer" />
+                                                    <img src={img} alt="" className="w-[100px] h-[100px] object-contain cursor-pointer" />
                                                 </div>
                                             )}
                                         </div>
