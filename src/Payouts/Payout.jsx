@@ -624,7 +624,7 @@ const Payout = () => {
         setOtkImg(prevImages => prevImages.filter((_, i) => i !== index));
     };
     useEffect(() => {
-        if (modal) {
+        if (modal && mainSwiperRef.current && mainSwiperRef.current.swiper) {
             mainSwiperRef.current?.swiper.slideTo(0);
             setSwiperIndex(0);
         }
