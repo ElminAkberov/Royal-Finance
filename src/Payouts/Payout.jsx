@@ -509,10 +509,6 @@ const Payout = () => {
         setTime_2(cleanedValue);
     };
 
-    useEffect(() => {
-        console.log(thumbsSwiper)
-    }, [thumbsSwiper]);
-
     const handleFileClose = (e) => {
         const files = Array.from(e.target.files);
         if (files.length > 0) {
@@ -1480,7 +1476,6 @@ const Payout = () => {
                                                     ) : (
                                                         <>
                                                             <div className="modal_payout">
-                                                                {console.log("bura2")}
 
                                                                 <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>ID</h5>
                                                                 <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.id}</p>
@@ -1644,11 +1639,11 @@ const Payout = () => {
                                                     </div>
                                                 </div>
                                             }
-                                            <div className="modal_payout mb-8 mr-8 ">
+                                            <div className="modal_payout blur-0 mb-8 mr-8 ">
                                                 <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} mb-2`}>Описание</h5>
                                                 <input onChange={(e) => setReason(e.target.value)} style={{ caretColor: '#000' }} value={reason} required placeholder='Описание' type="text" className={`${isDarkMode ? "text-white" : ""}  bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
                                             </div>
-                                            <div className="mb-8 ">
+                                            <div className="mb-8 blur-0">
                                                 <div
                                                     className='blur-0 w-max text-[#2E70F5] cursor-pointer border-[#2E70F5] mt-4 border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'
                                                     onClick={() => document.getElementById('fileInputs').click()}>
@@ -1656,7 +1651,7 @@ const Payout = () => {
                                                 </div>
                                                 <input accept="image/*,application/pdf" multiple id="fileInputs" type="file" className="hidden" onChange={handleFileClose} />
                                             </div>
-                                            <div className=" flex flex-col items-center mr-8">
+                                            <div className=" flex flex-col items-center mr-8 blur-0">
                                                 {otkImg && otkImg.map((src, index) => (
                                                     <div key={index + `${src}`} className="relative m-2 flex items-center justify-center">
                                                         {src.startsWith("blob:") ? (
@@ -1680,8 +1675,8 @@ const Payout = () => {
                                                 ))}
                                             </div>
 
-                                            <div className="flex justify-end pr-8">
-                                                <button type='submit' className=' bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                            <div className="flex justify-end pr-8 blur-0">
+                                                <button type='submit' className=' relative bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                                     Отклонить
                                                 </button>
                                             </div>
@@ -1695,7 +1690,7 @@ const Payout = () => {
                                                 <div key={index}>
                                                     {(data.status === "pending") && (
                                                         <>
-                                                            <div className='flex max-[420px]:flex-col gap-4'>
+                                                            <div className='flex  max-[420px]:flex-col gap-4'>
                                                                 <button onClick={() => setCancel(!cancel)} className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                                                     Отклонить
                                                                 </button>
