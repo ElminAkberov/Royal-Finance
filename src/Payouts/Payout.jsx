@@ -43,7 +43,7 @@ const Payout = () => {
             });
         }
     }, [swiperIndex]);
-    
+
     const images = [
         // "https://rf-static.ams3.digitaloceanspaces.com/payout-dev/ams3/2024-10-29/payouts/receipts/1fcc306a-e271-4072-9665-71a5d49b5b6c.pdf",
         "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
@@ -78,6 +78,7 @@ const Payout = () => {
             spacing: 10,
         },
         centered: true,
+       
     });
 
     const scrollToThumbnail = (index) => {
@@ -625,9 +626,14 @@ const Payout = () => {
     useEffect(() => {
         if (modal) {
             mainSwiperRef.current?.swiper.slideTo(0);
-            setSwiperIndex(0); 
+            setSwiperIndex(0);
         }
     }, [modal]);
+    useEffect(() => {
+        if (zoom) {
+            setCurrentSlide(0)
+        }
+    }, [zoom]);
     return (
         <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border`}>
             <div className='flex'>
@@ -1230,47 +1236,56 @@ const Payout = () => {
                                 {details?.map((data, index) => {
                                     return (
                                         data?.receipts?.map((img, indexs) => (
-                                            <>
+                                            <div className='keen-slider__slide flex justify-center'>
                                                 {img.endsWith(".pdf") ? (
-                                                    <div className='keen-slider__slide flex justify-center items-center w-full h-full'>
-                                                        <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-                                                            <Viewer
-                                                                fileUrl={img}
-                                                                defaultScale={0.5}
-                                                                renderMode="canvas"
-                                                                className="pdf-viewer"
-                                                            />
-                                                        </Worker>
+                                                    <div className='relative right-32 max-md:right-24 duration-300'>
+                                                        <div className="max-md:hidden block">
+                                                            <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+                                                                <Viewer
+                                                                    fileUrl={img}
+                                                                    renderMode="canvas"
+                                                                    defaultScale={0.45}
+                                                                />
+                                                            </Worker>
+                                                        </div>
+                                                        <div className="max-md:block hidden">
+                                                            <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+                                                                <Viewer
+                                                                    fileUrl={img}
+                                                                    renderMode="canvas"
+                                                                    defaultScale={0.35}
+                                                                />
+                                                            </Worker>
+                                                        </div>
                                                     </div>
                                                 ) : (
-                                                    <div className='keen-slider__slide'>
+                                                    <div className=''>
                                                         <img src={img} className={`flex justify-center max-w-[500px] max-h-[300px] object-contain items-center mx-auto`} />
                                                     </div>
                                                 )}
-                                            </>
+                                            </div>
                                         ))
                                     )
                                 })}
                             </div>
                         }
                         {zoom &&
-                            <div ref={thumbnailRef} className="keen-slider thumbnail-slider mt-4 mx-auto ">
+                            <div ref={thumbnailRef} className="keen-slider thumbnail-slider mt-4 mx-auto max-w-[400px]">
                                 {details?.map((thumbnail, index) => (
                                     thumbnail?.receipts?.map((img, indexs) => (
                                         <div key={indexs} className='keen-slider__slide'>
                                             {img.endsWith(".pdf") ? (
-                                                <div onClick={() => handleThumbnailClick(indexs)} className={`${indexs === currentSlide ? 'opacity-100' : 'opacity-50 '} max-w-[100px] max-h-[300px]  object-contain `}>
+                                                <div style={{ width: '150px', height: '150px', flexShrink: 0 }} onClick={() => handleThumbnailClick(indexs)} className={`${indexs === currentSlide ? 'opacity-100' : 'opacity-50 '} object-contain `}>
                                                     <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-                                                        <Viewer fileUrl={img} defaultScale={0.2} />
+                                                        <Viewer fileUrl={img} />
                                                     </Worker>
-
                                                 </div>
                                             ) : (
                                                 <div
                                                     className={`${indexs === currentSlide ? 'opacity-100' : 'opacity-50'}`}
                                                     onClick={() => handleThumbnailClick(indexs)}
                                                 >
-                                                    <img src={img} alt="" className="w-20 h-20 object-contain cursor-pointer" />
+                                                    <img src={img} alt="" className="max-w-[100px] max-h-[100px] object-contain cursor-pointer" />
                                                 </div>
                                             )}
                                         </div>
