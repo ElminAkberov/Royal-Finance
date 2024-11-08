@@ -288,3 +288,11 @@ body {
 .rpv-core__text-layer{
     display: none;
 }
+.x-scroll {
+    overflow-x: scroll;
+    scrollbar-width: none; 
+}
+
+.x-scroll::-webkit-scrollbar {
+    display: none;
+}

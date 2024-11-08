@@ -19,15 +19,31 @@ import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
 import 'swiper/swiper-bundle.css';
 import Slider from "react-slick";
+import KeenSlider from 'keen-slider'
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
 import { Viewer, Worker } from '@react-pdf-viewer/core';
+import { Carousel } from '@material-tailwind/react';
 const Payout = () => {
-    const settings = {
-        dots: true,
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1
-    };
+    const [swiperIndex, setSwiperIndex] = useState(0);
+    const mainSwiperRef = useRef(null);
+    const thumbsContainerRef = useRef(null);
+
+    // Aktif indeks değiştiğinde, küçük resimleri kaydır
+    useEffect(() => {
+        if (thumbsContainerRef.current) {
+            const thumbsContainer = thumbsContainerRef.current;
+            const activeThumb = thumbsContainer.children[swiperIndex];
+            const containerWidth = thumbsContainer.offsetWidth;
+            const activeThumbWidth = activeThumb.offsetWidth;
+            const scrollPosition = activeThumb.offsetLeft - (containerWidth / 2) + (activeThumbWidth / 2);
+
+            thumbsContainer.scrollTo({
+                left: scrollPosition,
+                behavior: 'smooth'
+            });
+        }
+    }, [swiperIndex]);
+    
     const images = [
         // "https://rf-static.ams3.digitaloceanspaces.com/payout-dev/ams3/2024-10-29/payouts/receipts/1fcc306a-e271-4072-9665-71a5d49b5b6c.pdf",
         "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
@@ -81,6 +97,7 @@ const Payout = () => {
         }
         scrollToThumbnail(index);
     };
+
 
     const [thumbsSwiper, setThumbsSwiper] = useState(null);
     let [status, setStatus] = useState({ "handleCancel": null, "handleUpload": null, "handleAccept": null })
@@ -605,7 +622,12 @@ const Payout = () => {
     const handleDeleteImage_Otk = (index) => {
         setOtkImg(prevImages => prevImages.filter((_, i) => i !== index));
     };
-
+    useEffect(() => {
+        if (modal) {
+            mainSwiperRef.current?.swiper.slideTo(0);
+            setSwiperIndex(0); 
+        }
+    }, [modal]);
     return (
         <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border`}>
             <div className='flex'>
@@ -1196,9 +1218,9 @@ const Payout = () => {
                             <p className={`text-right text-[14px] font-normal mr-4  z-30 duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data?.count ? data?.count : 0} результата</p>
                         </div>
                     }
-                    <div onClick={() => { setModal(!modal); setThumbsSwiper(null);handleThumbnailClick(0); setCancel(""); setOtkImg(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${(!modal) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
-                    <div onClick={() => { setModal(!modal); setThumbsSwiper(null);handleThumbnailClick(0); setCancel("") }} className={`${(!modalChek) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
-                    <div onClick={() => { setZoom(!zoom); setThumbsSwiper(null);handleThumbnailClick(0); }} className={`${(!zoom) && "hidden"} fixed inset-0 bg-[#2222224D] z-50`}></div>
+                    <div onClick={() => { setModal(!modal); setThumbsSwiper(null); setSwiperIndex(0); setCancel(""); setOtkImg(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${(!modal) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+                    <div onClick={() => { setModal(!modal); setThumbsSwiper(null); setSwiperIndex(0); setCancel("") }} className={`${(!modalChek) && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
+                    <div onClick={() => { setZoom(!zoom); setThumbsSwiper(null); setSwiperIndex(0); }} className={`${(!zoom) && "hidden"} fixed inset-0 bg-[#2222224D] z-50`}></div>
 
                     {/* cek tam ekran */}
 
@@ -1384,60 +1406,17 @@ const Payout = () => {
                                                 <div className="">
                                                     {data?.receipts?.length > 0 ? (
                                                         <>
-                                                            <div ref={sliderRef} className="keen-slider">
-                                                                {data?.receipts?.map((img, indexs) => (
-                                                                    <>
-                                                                        {img.endsWith(".pdf") ? (
-                                                                            <div className='keen-slider__slide flex justify-center items-center w-full h-full'>
-                                                                                <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-                                                                                    <Viewer
-                                                                                        fileUrl={img}
-                                                                                        defaultScale={0.5}
-                                                                                        renderMode="canvas"
-                                                                                        className="pdf-viewer"
-                                                                                    />
-                                                                                </Worker>
-                                                                            </div>
-                                                                        ) : (
-                                                                            <div className='keen-slider__slide'>
-                                                                                <img src={img} className={`flex justify-center max-w-[500px] max-h-[300px] object-contain items-center mx-auto`} />
-                                                                            </div>
-                                                                        )}
-                                                                    </>
-                                                                ))}
-                                                            </div>
-                                                            <div ref={thumbnailRef} className="keen-slider thumbnail-slider mt-4 mx-auto ">
-                                                                {data?.receipts?.map((img, indexs) => (
-                                                                    <div key={indexs} className='keen-slider__slide'>
-                                                                        {img.endsWith(".pdf") ? (
-                                                                            <div onClick={() => handleThumbnailClick(indexs)} className={`${indexs === currentSlide ? 'opacity-100' : 'opacity-50 '} max-w-[100px] max-h-[300px]  object-contain `}>
-                                                                                <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-                                                                                    <Viewer fileUrl={img} defaultScale={0.2} />
-                                                                                </Worker>
-
-                                                                            </div>
-                                                                        ) : (
-                                                                            <div
-                                                                                className={`${indexs === currentSlide ? 'opacity-100' : 'opacity-50'}`}
-                                                                                onClick={() => handleThumbnailClick(indexs)}
-                                                                            >
-                                                                                <img src={img} alt="" className="w-20 h-20 object-contain cursor-pointer" />
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-
-                                                            {/* <Swiper
+                                                            <Swiper
                                                                 style={{
                                                                     '--swiper-navigation-color': `${isDarkMode ? "#F5F6FC" : "#272727"}`,
                                                                     '--swiper-pagination-color': `${isDarkMode ? "#F5F6FC" : "#272727"}`,
                                                                 }}
+                                                                ref={mainSwiperRef}
                                                                 spaceBetween={10}
                                                                 navigation={true}
-                                                                freeMode={true}
-                                                                onSwiper={(swiper) => setThumbsSwiper(swiper)}
-                                                                modules={[FreeMode, Navigation, Thumbs]}
+                                                                initialSlide={0}
+                                                                onSlideChange={(swiper) => setSwiperIndex(swiper.activeIndex)} // Swiper değiştiğinde index'i güncelle
+                                                                modules={[Navigation, Thumbs]}
                                                                 className="mySwiper2 mb-2"
                                                             >
                                                                 {data?.receipts?.length > 0 && data?.receipts?.map((item, index) => (
@@ -1455,32 +1434,33 @@ const Payout = () => {
                                                                     </SwiperSlide>
                                                                 ))}
                                                             </Swiper>
-                                                            <Swiper
-                                                                thumbs={{ swiper: thumbsSwiper }}
-                                                                spaceBetween={10}
-                                                                slidesPerView={4.5}
-                                                                freeMode={true}
-                                                                watchSlidesProgress={true}
-                                                                modules={[FreeMode, Navigation, Thumbs]}
-                                                                className="mySwiper cursor-pointer"
-                                                            >
-                                                                {data?.receipts?.length > 0 && data?.receipts?.map((item, index) => (
-                                                                    <div className=''>
-                                                                        <SwiperSlide key={index}>
+                                                            <div className="thumbsWrapper overflow-hidden mt-2" style={{ maxWidth: '100%' }}>
+                                                                <div
+                                                                    ref={thumbsContainerRef}
+                                                                    className="thumbsContainer flex gap-2 x-scroll"
+                                                                >
+                                                                    {data?.receipts?.length > 0 && data?.receipts?.map((item, index) => (
+                                                                        <div
+                                                                            key={index}
+                                                                            className={`thumb cursor-pointer ${swiperIndex === index ? 'opacity-100' : 'opacity-50'}`}
+                                                                            onClick={() => mainSwiperRef.current.swiper.slideTo(index)}
+                                                                            style={{ width: '80px', height: '90px', flexShrink: 0 }}
+                                                                        >
                                                                             {item.endsWith(".pdf") ? (
                                                                                 <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-                                                                                    <Viewer fileUrl={item} />
+                                                                                    <Viewer fileUrl={item} defaultScale={0.1} />
                                                                                 </Worker>
                                                                             ) : (
                                                                                 <img
                                                                                     src={item}
-                                                                                    className={` ${!isDarkMode ? "bg-[#F5F6FC]" : "bg-[#272727]"} `}
+                                                                                    className={`thumbImage w-full h-full object-contain ${!isDarkMode ? "bg-[#F5F6FC]" : "bg-[#272727]"}`}
                                                                                 />
                                                                             )}
-                                                                        </SwiperSlide>
-                                                                    </div>
-                                                                ))}
-                                                            </Swiper> */}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+
                                                         </>
                                                     ) : (
                                                         <>
