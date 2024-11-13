@@ -78,7 +78,7 @@ const Payout = () => {
             spacing: 10,
         },
         centered: true,
-       
+
     });
 
     const scrollToThumbnail = (index) => {
@@ -214,9 +214,9 @@ const Payout = () => {
     };
     useEffect(() => {
         if (currentPage) {
-            setTimeout(() => {
-                handleFilter();
-            }, 2000)
+            handleFilter();
+            // setTimeout(() => {
+            // }, 2000)
         }
     }, [currentPage]);
 
@@ -706,8 +706,8 @@ const Payout = () => {
                     </div>
                 </div>
                 <div className={`mt-[94px] max-md:mt-[50px] w-full rounded-[24px] pr-[32px] pl-[32px] max-md:pl-4 max-md:pr-0 pt-[32px] ${isDarkMode ? "md:bg-[#1F1F1F]" : "md:bg-[#F5F6FC]"} overflow-x-auto md:mr-[40px] md:mx-[32px]   `}>
-                    <div className="flex max-lg:flex-col gap-x-2 justify-between items-center">
-                        <div className="flex max-[270px]:flex-wrap items-center justify-between w-full mb-4">
+                    <div className="flex max-lg:flex-col mb-4 gap-x-2 justify-between items-center">
+                        <div className="flex max-[270px]:flex-wrap items-center justify-between w-full ">
                             <h3 className={`font-semibold text-[24px] max-lg:mx-auto max-md:mx-0 md:text-center ${isDarkMode ? "text-[#E7E7E7]" : "text-[#3d457c]"}`}>Выплаты</h3>
                             {/* poisk */}
                             <div className="flex gap-x-2 md:hidden pr-4">
@@ -733,14 +733,14 @@ const Payout = () => {
                         {/* lazim */}
                         <div className={` flex max-lg:flex-col items-center max-md:w-full  ${!searchBtn && "max-md:hidden"} `}>
                             <div className="relative max-lg:my-3 max-md:pr-4 max-md:w-full">
-                                <input type="text" placeholder='Поиск' style={{ color: isDarkMode ? "#fff" : "#616E90" }} className={`border  ${isDarkMode ? "border-[#D9D9D940]" : "border-[#C5C7CD]"}   bg-transparent   pl-7 placeholder:text-[#616E90] placeholder:font-medium placeholder:text-xs  relative md:min-w-[252px] max-md:w-full py-[3px] md:mr-[15px] rounded-[8px] outline-none `} />
+                                <input type="text" placeholder='Поиск' style={{ color: isDarkMode ? "#fff" : "#616E90" }} className={`border  ${isDarkMode ? "border-[#D9D9D940]" : "border-[#C5C7CD]"}   bg-transparent   pl-7 placeholder:text-[#616E90] placeholder:font-medium placeholder:text-xs  relative md:max-w-[150px] max-md:w-full py-[9px] lg:mr-[15px] rounded-[8px] outline-none `} />
                                 <div className="flex items-center top-[3px] absolute">
-                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="#616E90" className='m-[6px]' xmlns="http://www.w3.org/2000/svg">
+                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="#616E90" className='m-[10px]' xmlns="http://www.w3.org/2000/svg">
                                         <path d="M13.1419 14L8.02728 8.88525C7.62011 9.22143 7.15187 9.48452 6.62256 9.67453C6.09324 9.86454 5.54567 9.95955 4.97984 9.95955C3.58802 9.95955 2.41008 9.47767 1.44605 8.51392C0.482017 7.55018 0 6.37253 0 4.98099C0 3.58959 0.481881 2.41154 1.44564 1.44684C2.40941 0.482281 3.58707 0 4.97862 0C6.37005 0 7.54811 0.482009 8.51283 1.44603C9.4774 2.41005 9.95969 3.58796 9.95969 4.97977C9.95969 5.56133 9.86211 6.11677 9.66694 6.64608C9.47163 7.17538 9.21111 7.63575 8.88538 8.02716L14 13.1417L13.1419 14ZM4.97984 8.73827C6.02911 8.73827 6.91782 8.37413 7.64597 7.64586C8.37425 6.91772 8.73839 6.02902 8.73839 4.97977C8.73839 3.93052 8.37425 3.04183 7.64597 2.31369C6.91782 1.58541 6.02911 1.22128 4.97984 1.22128C3.93058 1.22128 3.04187 1.58541 2.31372 2.31369C1.58544 3.04183 1.22129 3.93052 1.22129 4.97977C1.22129 6.02902 1.58544 6.91772 2.31372 7.64586C3.04187 8.37413 3.93058 8.73827 4.97984 8.73827Z" fill="#616E90" />
                                     </svg>
                                 </div>
                             </div>
-                            <button onClick={handleDownload} className='text-[#2D54DD] text-[14px] max-md:hidden mr-4 font-normal border-[#2D54DD] border-2 px-[24px] rounded-[8px] py-[8px] min-w-[145px]'>Скачать отчет</button>
+                            <button onClick={handleDownload} className='text-[#2D54DD] text-[14px] max-md:hidden lg:mr-4 font-normal border-[#2D54DD] border-2 rounded-[8px] py-[8px] min-w-[145px]'>Скачать отчет</button>
                         </div>
                     </div>
                     {/* filterler */}
@@ -1220,22 +1220,26 @@ const Payout = () => {
                             <p className={`text-right text-[14px] font-normal mr-4  z-30 duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data?.count ? data?.count : 0} результата</p>
                         </div>
                     }
-                    <div onClick={() => { setModal(!modal); setThumbsSwiper(null); setSwiperIndex(0); setCancel(""); setOtkImg(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${(!modal) && "hidden"} fixed inset-0 ${isDarkMode ?"bg-[#00000093]" :"bg-[#2222224d]"} z-20`}></div>
-                    <div onClick={() => { setModal(!modal); setThumbsSwiper(null); setSwiperIndex(0); setCancel("") }} className={`${(!modalChek) && "hidden"} fixed inset-0 ${isDarkMode ?"bg-[#00000093]" :"bg-[#2222224d]"} z-20`}></div>
-                    <div onClick={() => { setZoom(!zoom); setThumbsSwiper(null); setSwiperIndex(0); }} className={`${(!zoom) && "hidden"} fixed inset-0 ${isDarkMode ?"bg-[#00000093]" :"bg-[#2222224d]"} z-50`}></div>
+                    <div onClick={() => { setModal(!modal); setThumbsSwiper(null); setSwiperIndex(0); setCancel(""); setOtkImg(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${(!modal) && "hidden"} fixed inset-0 ${isDarkMode ? "bg-[#00000093]" : "bg-[#2222224d]"} z-20`}></div>
+                    <div onClick={() => { setModal(!modal); setThumbsSwiper(null); setSwiperIndex(0); setCancel("") }} className={`${(!modalChek) && "hidden"} fixed inset-0 ${isDarkMode ? "bg-[#00000093]" : "bg-[#2222224d]"} z-20`}></div>
+                    <div onClick={() => { setZoom(!zoom); setThumbsSwiper(null); setSwiperIndex(0); }} className={`${(!zoom) && "hidden"} fixed inset-0 ${isDarkMode ? "bg-[#00000093]" : "bg-[#2222224d]"} z-50`}></div>
 
                     {/* cek tam ekran */}
 
-                    <div className='fixed top-1/2  left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[80%]'>
+
+                    <div onClick={() => setZoom(!zoom)} className='fixed top-1/2  left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[80%]'>
                         {zoom &&
                             <div ref={sliderRef} className="keen-slider">
                                 {details?.map((data, index) => {
                                     return (
                                         data?.receipts?.map((img, indexs) => (
-                                            <div className='keen-slider__slide flex justify-center'>
+                                            <div
+                                                onClick={() => { setZoom(!zoom); }}
+                                                className='keen-slider__slide flex justify-center'
+                                            >
                                                 {img.endsWith(".pdf") ? (
                                                     <div className='relative right-32 max-md:right-24 duration-300'>
-                                                        <div className="max-md:hidden block">
+                                                        <div onClick={(e) => e.stopPropagation()} className="max-md:hidden flex w-full -order-1">
                                                             <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
                                                                 <Viewer
                                                                     fileUrl={img}
@@ -1243,8 +1247,9 @@ const Payout = () => {
                                                                     defaultScale={0.45}
                                                                 />
                                                             </Worker>
+
                                                         </div>
-                                                        <div className="max-md:block hidden">
+                                                        <div onClick={(e) => e.stopPropagation()} className="max-md:block hidden">
                                                             <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
                                                                 <Viewer
                                                                     fileUrl={img}
@@ -1255,23 +1260,39 @@ const Payout = () => {
                                                         </div>
                                                     </div>
                                                 ) : (
-                                                    <div className=''>
-                                                        <img src={img} className={`flex justify-center w-[500px] h-[300px] object-contain items-center mx-auto`} />
+                                                    <div className='flex items-start'>
+                                                        <img
+                                                            src={img}
+                                                            className="flex justify-center w-[500px] h-[300px] object-contain items-center mx-auto"
+                                                            onClick={(e) => e.stopPropagation()} // Click eventini engelle
+                                                        />
                                                     </div>
                                                 )}
                                             </div>
+
                                         ))
                                     )
                                 })}
                             </div>
                         }
                         {zoom &&
-                            <div ref={thumbnailRef} className="keen-slider thumbnail-slider mt-4 mx-auto max-w-[400px]">
+                            <div
+                                onClick={() => setZoom(!zoom)}
+                                ref={thumbnailRef}
+                                className="keen-slider thumbnail-slider mt-4 mx-auto max-w-[400px]"
+                            >
                                 {details?.map((thumbnail, index) => (
                                     thumbnail?.receipts?.map((img, indexs) => (
-                                        <div key={indexs} className='keen-slider__slide'>
+                                        <div onClick={() => setZoom(!zoom)} key={indexs} className='keen-slider__slide'>
                                             {img.endsWith(".pdf") ? (
-                                                <div style={{ width: '150px', height: '150px', flexShrink: 0 }} onClick={() => handleThumbnailClick(indexs)} className={`${indexs === currentSlide ? 'opacity-100' : 'opacity-80 '} object-contain `}>
+                                                <div
+                                                    style={{ width: '150px', height: '150px', flexShrink: 0 }}
+                                                    onClick={(e) => {
+                                                        handleThumbnailClick(indexs); // Önce handleThumbnailClick fonksiyonunu çalıştır
+                                                        e.stopPropagation(); // Sonra olayın üst div'e geçmesini engelle
+                                                    }}
+                                                    className={`${indexs === currentSlide ? 'opacity-100' : 'opacity-80 '} object-contain `}
+                                                >
                                                     <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
                                                         <Viewer fileUrl={img} />
                                                     </Worker>
@@ -1279,7 +1300,10 @@ const Payout = () => {
                                             ) : (
                                                 <div
                                                     className={`${indexs === currentSlide ? 'opacity-100' : 'opacity-80'}`}
-                                                    onClick={() => handleThumbnailClick(indexs)}
+                                                    onClick={(e) => {
+                                                        handleThumbnailClick(indexs); // Önce handleThumbnailClick fonksiyonunu çalıştır
+                                                        e.stopPropagation(); // Sonra olayın üst div'e geçmesini engelle
+                                                    }}
                                                 >
                                                     <img src={img} alt="" className="w-[100px] h-[100px] object-contain cursor-pointer" />
                                                 </div>
@@ -1288,9 +1312,14 @@ const Payout = () => {
                                     ))
                                 ))}
                             </div>
-
                         }
-
+                        {zoom &&
+                            <div onClick={() => setZoom(!zoom)} className="absolute top-[-40px] right-0 cursor-pointer" >
+                                <svg style={{ filter: 'drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.45))' }} className={`scale-150 ${isDarkMode ? "fill-white" : "fill-black"}  `} width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
+                                </svg>
+                            </div>
+                        }
                     </div>
                     {/* cek yuklemek ucun */}
                     <div onClick={() => { setCancelCheck(!cancelCheck); setImageSrc(""); setStatus((prevError) => ({ ...prevError, handleUpload: null })); }} className={`${!cancelCheck && "hidden"} fixed inset-0 bg-[#2222224D] z-30`}></div>
@@ -1304,8 +1333,8 @@ const Payout = () => {
                                 <h5 className='text-[14px] text-[#60626C]'>Заполните информацию</h5>
                             </div>
                             {status["handleUpload"] == "error" &&
-                                <div className={`pt-1 z-20 max-md:pr-5 w-full`}>
-                                    <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
+                                <div className={`pt-1 z-20 max-md:pr-5 w-full fixed right-0`}>
+                                    <div className="flex relative items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
                                         <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
                                         <div className="relative mr-[8px] ml-[18px]">
                                             <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
@@ -1314,11 +1343,12 @@ const Payout = () => {
                                             <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
                                             <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
                                         </div>
+                                        <img onClick={() => setStatus((prevError) => ({ ...prevError, handleUpload: null }))} src="/assets/img/Close.svg" className='absolute w-[15px] right-2 cursor-pointer' alt="" />
                                     </div>
                                 </div>
                             }
                             {status["handleUpload"] == "success" &&
-                                <div className="w-full pt-1 ">
+                                <div className="w-full pt-1 z-30 fixed right-0">
                                     <div className="flex items-center max-w-[720px] mx-auto mb-5 border bg-white border-[#37B67E] rounded-md">
                                         <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#37b67e]"></div>
                                         <div className="relative mr-[8px] ml-[18px]">
@@ -1348,14 +1378,14 @@ const Payout = () => {
                                                 <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
                                                     <Viewer fileUrl={src} defaultScale={.5} />
                                                 </Worker>
-                                                <svg onClick={() => handleDeleteImage(index)} width="24" className="cursor-pointer absolute right-[-320px] top-1/2 min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <svg onClick={() => handleDeleteImage(index)} width="24" className="cursor-pointer absolute right-[-335px] top-1/2 min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
                                                 </svg>
                                             </div>
                                         ) : (
                                             <>
                                                 <img src={src} alt={`Uploaded preview ${index + 1}`} className="mt-4 max-w-[300px] max-h-[400px]" />
-                                                <svg onClick={() => handleDeleteImage(index)} width="24" className="cursor-pointer min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <svg onClick={() => handleDeleteImage(index)} width="24" className="cursor-pointer min-w-[24px] ml-2" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
                                                 </svg>
                                             </>
@@ -1612,8 +1642,8 @@ const Payout = () => {
                                             </div>
                                             {/* errorm */}
                                             {status["handleCancel"] == "error" &&
-                                                <div className={`pt-1 z-20  duration-300  w-full `}>
-                                                    <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
+                                                <div className={`pt-1 z-20  duration-300  w-full fixed right-0`}>
+                                                    <div className="flex relative items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
                                                         <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
                                                         <div className="relative mr-[8px] ml-[18px]">
                                                             <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
@@ -1622,11 +1652,12 @@ const Payout = () => {
                                                             <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
                                                             <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
                                                         </div>
+                                                        <img onClick={() => setStatus((prevError) => ({ ...prevError, handleCancel: null }))} src="/assets/img/Close.svg" className='absolute w-[15px] right-2 cursor-pointer' alt="" />
                                                     </div>
                                                 </div>
                                             }
                                             {status["handleCancel"] == "success" &&
-                                                <div className="w-full pt-1 ">
+                                                <div className="w-full pt-1 fixed right-0 z-30">
                                                     <div className="flex items-center max-w-[720px] mx-auto mb-5 border bg-white border-[#37B67E] rounded-md">
                                                         <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#37b67e]"></div>
                                                         <div className="relative mr-[8px] ml-[18px]">
