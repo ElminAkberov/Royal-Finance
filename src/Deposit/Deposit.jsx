@@ -331,7 +331,7 @@ const Deposit = () => {
               </div>
               <div className="">
                 <h3 className={`text-[24px] mt-8 font-semibold ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сканировать QR код</h3>
-                <img className='max-w-[164px] mx-auto ' src="https://s3-alpha-sig.figma.com/img/1c53/97a2/b612206479cef267d121963033b57436?Expires=1730678400&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=m5dOgnwDKaZpvHBp~yqqkvovuhtjzFasTe4~W2rcNeJuhFRZNyMketIUldjEDznp8Z~WLE8e8eEWBfjHYrX9VmeO8K6DDltrRdZyRmw0gG7Nl7NNvc3N6T6h7t6Q4d0x61W~2klcVjP1TY-duKbUwnlONQ6PpJldWBKrssETyjFbSNyuj9WndZEI~BPdLTX6BuA1SPH3~0YUKoJJhg9qdhSLde35DAoUGGa8IElTVp-OJ1X6viTDU~9u2VSkYerAPPjBJutuJXBKM-euCSPdGRWX34pYtH6k5pbJ0bBA4JR9cPFCv1dA6I9wK7sHsy2FmxXmW6dcyq2JzOs~vJ31QA__" alt="" />
+                <img className='max-w-[164px] mx-auto ' src="/assets/img/qr.png" alt="" />
                 <div className="flex justify-center gap-x-2">
                   <LuCopy size={20} color={`${isDarkMode ? "#E7E7E7" : "#18181B"}`} className='cursor-pointer' onClick={(e) => handleCopy(e)} />
                   <p className={`text-[14px] text-center ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>0x14ofgm52341of13ofqofekqog1eqrog</p>

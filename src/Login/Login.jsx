@@ -70,6 +70,7 @@ const Login = () => {
           "Authorization": `Bearer ${localStorage.getItem("access")}`,
         }
       });
+      {console.log(response)}
       if (response.status === 401) {
         const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
           method: "POST",
@@ -97,7 +98,7 @@ const Login = () => {
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, []);
 
   const togglePasswordVisibility = (e) => {
     e.stopPropagation();
