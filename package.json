@@ -27,7 +27,7 @@
     "lightgallery": "^2.7.2",
     "localforage": "^1.10.0",
     "pdf-lib": "^1.17.1",
-    "pdfjs-dist": "^3.4.120",
+    "pdfjs-dist": "^3.11.174",
     "primereact": "^10.8.4",
     "react": "^18.3.1",
     "react-datepicker": "^7.5.0",

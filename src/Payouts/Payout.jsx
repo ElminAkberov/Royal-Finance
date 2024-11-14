@@ -22,6 +22,9 @@ import Slider from "react-slick";
 import KeenSlider from 'keen-slider'
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
 import { Viewer, Worker } from '@react-pdf-viewer/core';
+import { PDFDocument } from 'pdf-lib';
+import * as pdfjsLib from 'pdfjs-dist';
+import 'pdfjs-dist/build/pdf.worker.entry';
 import { Carousel } from '@material-tailwind/react';
 const Payout = () => {
     const [swiperIndex, setSwiperIndex] = useState(0);
@@ -43,17 +46,6 @@ const Payout = () => {
             });
         }
     }, [swiperIndex]);
-
-    const images = [
-        // "https://rf-static.ams3.digitaloceanspaces.com/payout-dev/ams3/2024-10-29/payouts/receipts/1fcc306a-e271-4072-9665-71a5d49b5b6c.pdf",
-        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
-        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
-        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUebJfExQ2T7ahWecI22KcnKHbfDfdloQD2w&s",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUebJfExQ2T7ahWecI22KcnKHbfDfdloQD2w&s",
-        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
-        "https://lh6.googleusercontent.com/proxy/oNBlG4x4yy86UD45A-LqUcuj6dyoURnaRcSG-X55c727_B49ScpJ-BTcRuXcjzSklNjglbBFV1-iwMfWqw5LrwJIKYmsxx9RbRhgEqCfeWS8XGJADnbeOb7jIFz2mA30apAF2UuhqA",
-    ]
     const [currentSlide, setCurrentSlide] = useState(0);
 
     // Main image slider (Keen Slider instance)
@@ -280,35 +272,130 @@ const Payout = () => {
     useEffect(() => {
         handleMethod();
     }, [currentPage, selectStatus]);
-    const handleFileChange = (e) => {
+
+    const [pdfBlobs, setPdfBlobs] = useState([]);
+
+    const handleFileChange = async (e) => {
         const files = Array.from(e.target.files);
         if (files.length > 0) {
             const filePreviews = [];
 
-            files.forEach((file, index) => {
-                // Eğer dosya sonu .pdf ile bitiyorsa direkt olarak URL olarak ekle
-                if (file.name.endsWith(".pdf")) {
-                    filePreviews.push(URL.createObjectURL(file));
-                    if (filePreviews.length === files.length) {
-                        setImageSrc(filePreviews); // Dosya önizlemelerini ayarla
-                    }
-                } else {
-                    // Diğer dosyalar için FileReader kullan
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                        filePreviews.push(reader.result);
-                        if (filePreviews.length === files.length) {
-                            setImageSrc(filePreviews); // Dosya önizlemelerini ayarla
-                        }
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
+            await Promise.all(
+                files.map(async (file) => {
+                    if (file.type === 'application/pdf') {
+                        try {
+                            const arrayBuffer = await file.arrayBuffer();
+                            const pdfDoc = await PDFDocument.load(arrayBuffer);
+                            const numPages = pdfDoc.getPages().length;
 
-            setDescribeImg(files); // Dosya arrayini kaydet
+                            const blobs = [];
+                            for (let i = 0; i < numPages; i++) {
+                                const newPdfDoc = await PDFDocument.create();
+                                const [copiedPage] = await newPdfDoc.copyPages(pdfDoc, [i]);
+                                newPdfDoc.addPage(copiedPage);
+
+                                const pdfBytes = await newPdfDoc.save();
+                                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                                blobs.push(blob);
+                            }
+                            filePreviews.push(blobs);
+                        } catch (error) {
+                            console.error('Error loading PDF:', error);
+                        }
+                    } else {
+                        const reader = new FileReader();
+                        const result = await new Promise((resolve) => {
+                            reader.onloadend = () => resolve(reader.result);
+                            reader.readAsDataURL(file);
+                        });
+                        filePreviews.push(result);
+                    }
+                })
+            );
+
+            setImageSrc(filePreviews); // Tüm dosyalar işlendiğinde ayarla
+            setDescribeImg(files);
         }
         e.target.value = '';
     };
+
+    const [images, setImages] = useState([]);
+    const [pdfLoading, setPdfLoading] = useState(true);
+
+    const [pdfUrls, setPdfUrls] = useState([])
+    let [zoom, setZoom] = useState(false)
+
+    useEffect(() => {
+        if (!zoom) {
+            setId("")
+        }
+        if (data?.results) {
+            const foundItem = data.results.find(item => item.id === id);
+            if (foundItem) {
+                setPdfUrls(foundItem.receipts);
+            }
+        }
+    }, [data, id, zoom]); // Re-run when `data` or `id` changes
+
+    // Second useEffect to load PDFs once pdfUrls is updated
+    useEffect(() => {
+        if (pdfUrls.length > 0) {
+            const loadPdf = async (url) => {
+                try {
+                    const loadingTask = pdfjsLib.getDocument(url);
+                    const pdf = await loadingTask.promise;
+                    const scale = 2; // Increase scale for better resolution
+                    const pages = [];
+
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const viewport = page.getViewport({ scale });
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        canvas.width = viewport.width;
+                        canvas.height = viewport.height;
+
+                        await page.render({ canvasContext: context, viewport }).promise;
+                        const imgData = canvas.toDataURL();
+                        pages.push(imgData);
+                    }
+
+                    return pages;
+                } catch (error) {
+                    console.error("Error loading PDF:", error);
+                    return [];
+                }
+            };
+
+            const loadAllPdfs = async () => {
+                const allImages = [];
+
+                for (const url of pdfUrls) {
+                    if (url.endsWith(".pdf")) {
+                        // If it's a PDF, load it and push the pages to the array
+                        const pdfImages = await loadPdf(url);
+                        allImages.push(...pdfImages);
+                    } else {
+                        // If it's an image, just push the image directly
+                        allImages.push(url);
+                    }
+                }
+
+                // Set all images (both PDFs and regular images)
+                setImages(allImages);
+            };
+
+            loadAllPdfs();
+        }
+    }, [pdfUrls]);
+
+
+    const handleImageLoad = () => {
+        // Tüm görseller yüklendikten sonra slider yeniden ayarlanabilir
+        instanceRef.current?.update();
+        thumbnailInstanceRef.current?.update();
+    };
+
     const handleUpload = async (e) => {
         e.preventDefault();
         try {
@@ -458,7 +545,6 @@ const Payout = () => {
             console.error("An error occurred:", error);
         }
     };
-    let [zoom, setZoom] = useState(false)
     // payout
     let [cancel, setCancel] = useState(false)
     let [cancelCheck, setCancelCheck] = useState(false)
@@ -613,9 +699,22 @@ const Payout = () => {
             })
             .catch(err => console.error(err));
     };
-    const handleDeleteImage = (index) => {
-        setImageSrc(prevImages => prevImages.filter((_, i) => i !== index));
+    const handleDeleteImage = (index, nestedIndex = null) => {
+        setImageSrc(prevImages => {
+            return prevImages.map((item, i) => {
+                if (i !== index) return item; // İlgili ana diziyi koruyoruz
+
+                if (Array.isArray(item)) {
+                    // İç içe dizide öğeyi sil
+                    return item.filter((_, j) => j !== nestedIndex);
+                } else {
+                    // İç içe dizi değilse öğeyi doğrudan kaldır
+                    return null;
+                }
+            }).filter(item => item !== null && item.length !== 0); // Boş veya null öğeleri kaldır
+        });
     };
+
     const handleDeleteImage_Otk = (index) => {
         setOtkImg(prevImages => prevImages.filter((_, i) => i !== index));
     };
@@ -873,7 +972,7 @@ const Payout = () => {
                                                             </div>
 
                                                             {rowData.receipts.length > 0 &&
-                                                                <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
+                                                                <div onClick={() => { handleShow(rowData); setZoom(!zoom); setId(rowData.id); }} className="cursor-pointer">
                                                                     <img className='mx-auto min-w-[20px]' src='/assets/img/Group.svg' />
                                                                 </div>
                                                             }
@@ -889,7 +988,7 @@ const Payout = () => {
                                                                 </div>
                                                             }
                                                             {rowData.receipts.length > 0 &&
-                                                                <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
+                                                                <div onClick={() => { handleShow(rowData); setZoom(!zoom); setId(rowData.id); }} className="cursor-pointer">
                                                                     <img className='mx-auto min-w-[20px]' src='/assets/img/Group.svg' />
                                                                 </div>
                                                             }
@@ -1227,90 +1326,52 @@ const Payout = () => {
                     {/* cek tam ekran */}
 
 
-                    <div onClick={() => setZoom(!zoom)} className='fixed top-1/2  left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[80%]'>
+                    <div onClick={() => { setZoom(!zoom); }} className='fixed top-1/2  left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[80%]'>
                         {zoom &&
-                            <div ref={sliderRef} className="keen-slider">
-                                {details?.map((data, index) => {
-                                    return (
-                                        data?.receipts?.map((img, indexs) => (
-                                            <div
-                                                onClick={() => { setZoom(!zoom); }}
-                                                className='keen-slider__slide flex justify-center'
-                                            >
-                                                {img.endsWith(".pdf") ? (
-                                                    <div className='relative right-32 max-md:right-24 duration-300'>
-                                                        <div onClick={(e) => e.stopPropagation()} className="max-md:hidden flex w-full -order-1">
-                                                            <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-                                                                <Viewer
-                                                                    fileUrl={img}
-                                                                    renderMode="canvas"
-                                                                    defaultScale={0.45}
-                                                                />
-                                                            </Worker>
-
-                                                        </div>
-                                                        <div onClick={(e) => e.stopPropagation()} className="max-md:block hidden">
-                                                            <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-                                                                <Viewer
-                                                                    fileUrl={img}
-                                                                    renderMode="canvas"
-                                                                    defaultScale={0.35}
-                                                                />
-                                                            </Worker>
-                                                        </div>
-                                                    </div>
-                                                ) : (
-                                                    <div className='flex items-start'>
-                                                        <img
-                                                            src={img}
-                                                            className="flex justify-center w-[500px] h-[300px] object-contain items-center mx-auto"
-                                                            onClick={(e) => e.stopPropagation()} // Click eventini engelle
-                                                        />
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                        ))
-                                    )
-                                })}
+                            <div  ref={sliderRef} className="keen-slider">
+                                {images.length > 0 ? (
+                                    images.map((imgSrc, index) => (
+                                        <div onClick={() => setZoom(!zoom)} className='keen-slider__slide flex justify-center'>
+                                            <img
+                                                onLoad={handleImageLoad}
+                                                
+                                                onClick={(e) => { e.stopPropagation(); }}
+                                                key={index}
+                                                src={imgSrc}
+                                                alt={`Image ${index}`}
+                                                style={{ maxWidth: '500px', height: '300px', objectFit: "contain" }}
+                                            />
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className='text-center'>Loading images...</p>
+                                )}
                             </div>
                         }
+
                         {zoom &&
                             <div
                                 onClick={() => setZoom(!zoom)}
                                 ref={thumbnailRef}
                                 className="keen-slider thumbnail-slider mt-4 mx-auto max-w-[400px]"
                             >
-                                {details?.map((thumbnail, index) => (
-                                    thumbnail?.receipts?.map((img, indexs) => (
-                                        <div onClick={() => setZoom(!zoom)} key={indexs} className='keen-slider__slide'>
-                                            {img.endsWith(".pdf") ? (
-                                                <div
-                                                    style={{ width: '150px', height: '150px', flexShrink: 0 }}
-                                                    onClick={(e) => {
-                                                        handleThumbnailClick(indexs); // Önce handleThumbnailClick fonksiyonunu çalıştır
-                                                        e.stopPropagation(); // Sonra olayın üst div'e geçmesini engelle
-                                                    }}
-                                                    className={`${indexs === currentSlide ? 'opacity-100' : 'opacity-80 '} object-contain `}
-                                                >
-                                                    <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-                                                        <Viewer fileUrl={img} />
-                                                    </Worker>
-                                                </div>
-                                            ) : (
-                                                <div
-                                                    className={`${indexs === currentSlide ? 'opacity-100' : 'opacity-80'}`}
-                                                    onClick={(e) => {
-                                                        handleThumbnailClick(indexs); // Önce handleThumbnailClick fonksiyonunu çalıştır
-                                                        e.stopPropagation(); // Sonra olayın üst div'e geçmesini engelle
-                                                    }}
-                                                >
-                                                    <img src={img} alt="" className="w-[100px] h-[100px] object-contain cursor-pointer" />
-                                                </div>
-                                            )}
-                                        </div>
+                                {images.length > 0 ? (
+                                    images.map((imgSrc, index) => (
+                                        <>
+                                            <img
+                                                onLoad={handleImageLoad}
+                                                className={`keen-slider__slide cursor-pointer ${index == currentSlide ? "opacity-100" : "opacity-50"}`}
+                                                onClick={(e) => { handleThumbnailClick(index); e.stopPropagation(); }}
+                                                key={index}
+                                                src={imgSrc}
+                                                alt={`Image ${index}`}
+                                                style={{ maxWidth: '100px', height: '100px', objectFit: "contain" }}
+                                            />
+                                        </>
                                     ))
-                                ))}
+                                ) : (
+                                    <p className='text-center'>Loading images...</p>
+                                )}
                             </div>
                         }
                         {zoom &&
@@ -1371,26 +1432,56 @@ const Payout = () => {
                                 <input id="fileInput" multiple type="file" className="hidden" onChange={handleFileChange} accept="image/*,application/pdf" />
                             </div>
                             <div className=" flex flex-col items-center ">
-                                {imageSrc && imageSrc.map((src, index) => (
-                                    <div key={index + `${src}`} className="relative m-2 flex items-center justify-center">
-                                        {src.startsWith("blob:") ? (
+                                {/* {pdfBlobs.map((blob, index) => (
+                                    <div key={index}>
+                                        <h3>Page {index + 1}</h3>
+                                        <a href={URL.createObjectURL(blob)} target="_blank" rel="noopener noreferrer">
+                                            Download Page {index + 1}
+                                        </a>
+                                    </div>
+                                ))} */}
+                                {/* <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+                                    {pdfBlobs.map((blob, index) => (
+                                        <>
+                                            <Viewer fileUrl={URL.createObjectURL(blob)} defaultScale={.5} />
+                                        </>
+                                    ))}
+                                </Worker> */}
+                                {imageSrc && imageSrc.flatMap((src, index) => (
+                                    Array.isArray(src) ? src.map((nestedSrc, nestedIndex) => (
+                                        <div key={nestedIndex + `${nestedSrc}`} className="relative m-2 flex items-center justify-center">
+                                            {console.log("bura")}
                                             <div className='flex mx-auto justify-start relative right-[156px]'>
-                                                <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-                                                    <Viewer fileUrl={src} defaultScale={.5} />
+                                                <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+                                                    <Viewer fileUrl={URL.createObjectURL(nestedSrc)} defaultScale={.5} />
                                                 </Worker>
-                                                <svg onClick={() => handleDeleteImage(index)} width="24" className="cursor-pointer absolute right-[-335px] top-1/2 min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <svg onClick={() => handleDeleteImage(index, nestedIndex)} width="24" className="cursor-pointer absolute right-[-335px] top-1/2 min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
                                                 </svg>
                                             </div>
-                                        ) : (
-                                            <>
-                                                <img src={src} alt={`Uploaded preview ${index + 1}`} className="mt-4 max-w-[300px] max-h-[400px]" />
-                                                <svg onClick={() => handleDeleteImage(index)} width="24" className="cursor-pointer min-w-[24px] ml-2" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
-                                                </svg>
-                                            </>
-                                        )}
-                                    </div>
+                                        </div>
+                                    )) : (
+                                        <div key={index + `${src}`} className="relative m-2 flex items-center justify-center">
+                                            {console.log("bura2")}
+                                            {(src.type == "application/pdf") ? (
+                                                <div className='flex mx-auto justify-start relative right-[156px]'>
+                                                    <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+                                                        <Viewer fileUrl={URL.createObjectURL(src)} defaultScale={.5} />
+                                                    </Worker>
+                                                    <svg onClick={() => handleDeleteImage(index)} width="24" className="cursor-pointer absolute right-[-335px] top-1/2 min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
+                                                    </svg>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <img src={src} alt={`Uploaded preview ${index + 1}`} className="mt-4 max-w-[300px] max-h-[400px]" />
+                                                    <svg onClick={() => handleDeleteImage(index)} width="24" className="cursor-pointer min-w-[24px] ml-2" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
+                                                    </svg>
+                                                </>
+                                            )}
+                                        </div>
+                                    )
                                 ))}
 
                             </div>
@@ -1460,43 +1551,30 @@ const Payout = () => {
                                                                 modules={[Navigation, Thumbs]}
                                                                 className="mySwiper2 mb-2"
                                                             >
-                                                                {data?.receipts?.length > 0 && data?.receipts?.map((item, index) => (
+                                                                {images?.map((item, index) => (
                                                                     <SwiperSlide key={index}>
-                                                                        {item.endsWith(".pdf") ? (
-                                                                            <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-                                                                                <Viewer fileUrl={item} />
-                                                                            </Worker>
-                                                                        ) : (
-                                                                            <img
-                                                                                src={item}
-                                                                                className={`${!isDarkMode ? "bg-[#F5F6FC]" : "bg-[#272727]"}`}
-                                                                            />
-                                                                        )}
+                                                                        <img src={item} />
                                                                     </SwiperSlide>
                                                                 ))}
                                                             </Swiper>
+
                                                             <div className="thumbsWrapper overflow-hidden mt-2" style={{ maxWidth: '100%' }}>
                                                                 <div
                                                                     ref={thumbsContainerRef}
                                                                     className="thumbsContainer flex gap-2 x-scroll"
                                                                 >
-                                                                    {data?.receipts?.length > 0 && data?.receipts?.map((item, index) => (
+                                                                    {images?.map((item, index) => (
                                                                         <div
                                                                             key={index}
                                                                             className={`thumb cursor-pointer ${swiperIndex === index ? 'opacity-100' : 'opacity-50'}`}
                                                                             onClick={() => mainSwiperRef.current.swiper.slideTo(index)}
                                                                             style={{ width: '80px', height: '90px', flexShrink: 0 }}
                                                                         >
-                                                                            {item.endsWith(".pdf") ? (
-                                                                                <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-                                                                                    <Viewer fileUrl={item} defaultScale={0.1} />
-                                                                                </Worker>
-                                                                            ) : (
-                                                                                <img
-                                                                                    src={item}
-                                                                                    className={`thumbImage w-full h-full object-contain ${!isDarkMode ? "bg-[#F5F6FC]" : "bg-[#272727]"}`}
-                                                                                />
-                                                                            )}
+
+                                                                            <img
+                                                                                src={item}
+                                                                                className={`thumbImage w-full h-full object-contain ${!isDarkMode ? "bg-[#F5F6FC]" : "bg-[#272727]"}`}
+                                                                            />
                                                                         </div>
                                                                     ))}
                                                                 </div>
