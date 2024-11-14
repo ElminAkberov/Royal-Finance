@@ -312,13 +312,12 @@ const Payout = () => {
                     }
                 })
             );
+            setImageSrc((prev) => [...(prev || []), ...filePreviews]);
+            setDescribeImg((prev) => [...(prev || []), ...files]);
 
-            setImageSrc(filePreviews); // Tüm dosyalar işlendiğinde ayarla
-            setDescribeImg(files);
         }
-        e.target.value = '';
+        // e.target.value = '';
     };
-
     const [images, setImages] = useState([]);
     const [pdfLoading, setPdfLoading] = useState(true);
 
@@ -719,19 +718,10 @@ const Payout = () => {
             .catch(err => console.error(err));
     };
     const handleDeleteImage = (index, nestedIndex = null) => {
-        setImageSrc(prevImages => {
-            return prevImages.map((item, i) => {
-                if (i !== index) return item; // İlgili ana diziyi koruyoruz
-
-                if (Array.isArray(item)) {
-                    // İç içe dizide öğeyi sil
-                    return item.filter((_, j) => j !== nestedIndex);
-                } else {
-                    // İç içe dizi değilse öğeyi doğrudan kaldır
-                    return null;
-                }
-            }).filter(item => item !== null && item.length !== 0); // Boş veya null öğeleri kaldır
-        });
+        setImageSrc(prevImages => prevImages.filter((_, i) => i !== index));
+        setDescribeImg(prevDescribe => 
+            prevDescribe.filter((_, i) => i !== index)
+        );
     };
 
     const handleDeleteImage_Otk = (index, nestedIndex = null) => {
@@ -1414,7 +1404,7 @@ const Payout = () => {
                         }
                     </div>
                     {/* cek yuklemek ucun */}
-                    <div onClick={() => { setCancelCheck(!cancelCheck); setImageSrc(""); setStatus((prevError) => ({ ...prevError, handleUpload: null })); }} className={`${!cancelCheck && "hidden"} fixed inset-0 bg-[#2222224D] z-30`}></div>
+                    <div onClick={() => { setCancelCheck(!cancelCheck); setDescribeImg(null); setImageSrc(""); setStatus((prevError) => ({ ...prevError, handleUpload: null })); }} className={`${!cancelCheck && "hidden"} fixed inset-0 bg-[#2222224D] z-30`}></div>
                     <form onSubmit={handleUpload} className={`${!cancelCheck ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} pt-8 pl-8 pb-8 md:pr-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[763px]  overflow-y-hidden rounded-[24px]`}>
                         <div className={`overflow-y-scroll max-h-[85vh] `}>
                             <div className="relative mb-8">
@@ -1463,21 +1453,6 @@ const Payout = () => {
                                 <input id="fileInput" multiple type="file" className="hidden" onChange={handleFileChange} accept="image/*,application/pdf" />
                             </div>
                             <div className=" flex flex-col items-center ">
-                                {/* {pdfBlobs.map((blob, index) => (
-                                    <div key={index}>
-                                        <h3>Page {index + 1}</h3>
-                                        <a href={URL.createObjectURL(blob)} target="_blank" rel="noopener noreferrer">
-                                            Download Page {index + 1}
-                                        </a>
-                                    </div>
-                                ))} */}
-                                {/* <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
-                                    {pdfBlobs.map((blob, index) => (
-                                        <>
-                                            <Viewer fileUrl={URL.createObjectURL(blob)} defaultScale={.5} />
-                                        </>
-                                    ))}
-                                </Worker> */}
                                 {imageSrc && imageSrc.flatMap((src, index) => (
                                     Array.isArray(src) ? src.map((nestedSrc, nestedIndex) => (
                                         <div key={nestedIndex + `${nestedSrc}`} className="relative m-2 flex items-center justify-center">
@@ -1485,9 +1460,11 @@ const Payout = () => {
                                                 <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
                                                     <Viewer fileUrl={URL.createObjectURL(nestedSrc)} defaultScale={.5} />
                                                 </Worker>
-                                                <svg onClick={() => handleDeleteImage(index, nestedIndex)} width="24" className="cursor-pointer absolute right-[-335px] top-1/2 min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
-                                                </svg>
+                                                {nestedIndex === 0 && (
+                                                    <svg onClick={() => handleDeleteImage(index, nestedIndex)} width="24" className="cursor-pointer absolute right-[-335px] top-1/2 min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
+                                                    </svg>)
+                                                }
                                             </div>
                                         </div>
                                     )) : (
@@ -1497,9 +1474,10 @@ const Payout = () => {
                                                     <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
                                                         <Viewer fileUrl={URL.createObjectURL(src)} defaultScale={.5} />
                                                     </Worker>
-                                                    <svg onClick={() => handleDeleteImage(index)} width="24" className="cursor-pointer absolute right-[-335px] top-1/2 min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
-                                                    </svg>
+                                                    {nestedIndex === 0 && (
+                                                        <svg onClick={() => handleDeleteImage(index)} width="24" className="cursor-pointer absolute right-[-335px] top-1/2 min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
+                                                        </svg>)}
                                                 </div>
                                             ) : (
                                                 <>
@@ -1512,7 +1490,6 @@ const Payout = () => {
                                         </div>
                                     )
                                 ))}
-
                             </div>
                             <div className="flex justify-end my-4">
                                 <button type='submit' className='bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
