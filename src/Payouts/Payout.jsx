@@ -326,9 +326,6 @@ const Payout = () => {
     let [zoom, setZoom] = useState(false)
 
     useEffect(() => {
-        if (!zoom) {
-            setId("")
-        }
         if (data?.results) {
             const foundItem = data.results.find(item => item.id === id);
             if (foundItem) {
@@ -671,6 +668,7 @@ const Payout = () => {
             console.error("An error occurred:", error);
         }
     };
+    
     const handleDownload = () => {
         fetch("https://dev.royal-pay.org/api/v1/internal/payouts/download/", {
             method: "GET",
@@ -1450,7 +1448,6 @@ const Payout = () => {
                                 {imageSrc && imageSrc.flatMap((src, index) => (
                                     Array.isArray(src) ? src.map((nestedSrc, nestedIndex) => (
                                         <div key={nestedIndex + `${nestedSrc}`} className="relative m-2 flex items-center justify-center">
-                                            {console.log("bura")}
                                             <div className='flex mx-auto justify-start relative right-[156px]'>
                                                 <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
                                                     <Viewer fileUrl={URL.createObjectURL(nestedSrc)} defaultScale={.5} />
@@ -1462,7 +1459,6 @@ const Payout = () => {
                                         </div>
                                     )) : (
                                         <div key={index + `${src}`} className="relative m-2 flex items-center justify-center">
-                                            {console.log("bura2")}
                                             {(src.type == "application/pdf") ? (
                                                 <div className='flex mx-auto justify-start relative right-[156px]'>
                                                     <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
