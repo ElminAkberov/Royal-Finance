@@ -97,8 +97,10 @@ const Login = () => {
   }, []);
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (success) {
+      fetchData();
+    }
+  }, [success, fetchData]);
 
   const togglePasswordVisibility = (e) => {
     e.stopPropagation();

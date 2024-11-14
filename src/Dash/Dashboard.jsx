@@ -165,7 +165,7 @@ const Dashboard = () => {
                 document.body.removeChild(link);
                 URL.revokeObjectURL(url);
             })
-            .catch(err =>'');
+            .catch(err => '');
     };
     useEffect(() => {
         handleFilter();
@@ -240,12 +240,12 @@ const Dashboard = () => {
                             {/* profile */}
                             <div className='max-md:flex items-center justify-between'>
                                 <div onClick={() => setDropDown(!dropDown)} className="bg-[#4CAF50] uppercase  rounded-[100px] text-white w-[48px] h-[48px] flex items-center justify-center">
-                                    {(localStorage.getItem("username") !== "undefined") ?
+                                    {(localStorage.getItem("username") && localStorage.getItem("username") !== "undefined") ? (
                                         <>
                                             {localStorage.getItem("username").split("_")[0][0]}
                                             {localStorage.getItem("username").split("_")[1][0]}
-                                        </> : ""
-                                    }
+                                        </>
+                                    ) : ""}
                                 </div>
                             </div>
                             <div onClick={() => setDropDown(!dropDown)} className="cursor-pointer">
@@ -456,8 +456,8 @@ const Dashboard = () => {
                                         return (
                                             <div>
                                                 <div className="selectable-text">
-                                                    <h5>{rowData?.created_at?.split("T")[0]}</h5>
-                                                    <p>{rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
+                                                    <h5>{rowData?.created_at && rowData?.created_at?.split("T")[0]}</h5>
+                                                    <p>{rowData?.created_at && rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
                                                 </div>
 
                                             </div>
@@ -561,8 +561,8 @@ const Dashboard = () => {
                                         return (
                                             <div>
                                                 <div>
-                                                    <h5 className="selectable-text">{rowData?.created_at?.split("T")[0]}</h5>
-                                                    <p className="selectable-text">{rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
+                                                    <h5 className="selectable-text">{rowData?.created_at && rowData?.created_at?.split("T")[0]}</h5>
+                                                    <p className="selectable-text">{rowData?.created_at && rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
                                                 </div>
 
                                             </div>
@@ -703,7 +703,7 @@ const Dashboard = () => {
                                     <div key={index}>
                                         <div className="modal">
                                             <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Дата и время пополнения</h5>
-                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.created_at?.split("T")[0]} {data?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
+                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.created_at && `${data?.created_at?.split("T")[0]} ${data?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}`}</p>
                                         </div>
                                         <div className="modal">
                                             <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Метод пополнения</h5>

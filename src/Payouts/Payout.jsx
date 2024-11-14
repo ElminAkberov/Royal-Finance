@@ -6,7 +6,7 @@ import Dark from '../Dark';
 import { Context } from '../context/ContextProvider';
 import axios from 'axios';
 import { LuCopy } from "react-icons/lu";
-import { FaAngleLeft, FaAngleRight} from "react-icons/fa6";
+import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
 import Loading from '../Loading/Loading';
 import Header from '../Header/Header';
 import Header_md from '../Header/Header-md';
@@ -54,8 +54,8 @@ const Payout = () => {
         initial: 0,
         animationEnded(s) {
             const newSlideIndex = s.track.details.rel;
-            setCurrentSlide(newSlideIndex); 
-            scrollToThumbnail(newSlideIndex);  
+            setCurrentSlide(newSlideIndex);
+            scrollToThumbnail(newSlideIndex);
         }
     });
 
@@ -759,13 +759,12 @@ const Payout = () => {
                             {/* profile */}
                             <div className='max-md:flex  items-center justify-between'>
                                 <div onClick={() => setDropDown(!dropDown)} className="bg-[#4CAF50] uppercase rounded-[100px] text-white w-[48px] h-[48px] flex items-center justify-center">
-                                    {(localStorage.getItem("username") !== "undefined") ?
+                                    {(localStorage.getItem("username") && localStorage.getItem("username") !== "undefined") ? (
                                         <>
                                             {localStorage.getItem("username").split("_")[0][0]}
                                             {localStorage.getItem("username").split("_")[1][0]}
                                         </>
-                                        : ""
-                                    }
+                                    ) : ""}
                                 </div>
                             </div>
                             <div onClick={() => setDropDown(!dropDown)} className="cursor-pointer ">
@@ -1005,8 +1004,8 @@ const Payout = () => {
                                         return (
                                             <div>
                                                 <div>
-                                                    <h5 className='selectable-text'>{rowData?.created_at?.split("T")[0]} {rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
-                                                    <h5 className='selectable-text'>{rowData?.updated_at?.split("T")[0]} {rowData?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
+                                                    <h5 className='selectable-text'>{rowData?.created_at && rowData?.created_at?.split("T")[0]} {rowData?.created_at && rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
+                                                    <h5 className='selectable-text'>{rowData?.created_at && rowData?.updated_at?.split("T")[0]} {rowData?.created_at && rowData?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
                                                 </div>
                                             </div>
                                         )
@@ -1172,8 +1171,8 @@ const Payout = () => {
                                         return (
                                             <div>
                                                 <div>
-                                                    <h5 className='selectable-text'>{rowData?.created_at?.split("T")[0]} {rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
-                                                    <h5 className='selectable-text'>{rowData?.updated_at?.split("T")[0]} {rowData?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
+                                                    <h5 className='selectable-text'>{rowData?.created_at && rowData?.created_at?.split("T")[0]} {rowData?.created_at && rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
+                                                    <h5 className='selectable-text'>{rowData?.created_at && rowData?.updated_at?.split("T")[0]} {rowData?.created_at && rowData?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
                                                 </div>
                                             </div>
                                         )
