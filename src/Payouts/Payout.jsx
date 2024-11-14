@@ -180,7 +180,7 @@ const Payout = () => {
         // Set interval to refresh token every 10 seconds
         const intervalId = setInterval(() => {
             refreshAuth();
-        }, 10000); // 10000 milliseconds = 10 seconds
+        }, 30000); // 10000 milliseconds = 10 seconds
 
         // Clean up interval on component unmount
         return () => clearInterval(intervalId);
