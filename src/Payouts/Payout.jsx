@@ -314,7 +314,7 @@ const Payout = () => {
             );
             setImageSrc((prev) => [...(prev || []), ...filePreviews]);
             setDescribeImg((prev) => [...(prev || []), ...files]);
-
+            e.target.value = '';
         }
         // e.target.value = '';
     };
@@ -635,6 +635,7 @@ const Payout = () => {
             );
             setOtkImg((prev) => [...(prev || []), ...filePreviews]); // Tüm dosyalar işlendiğinde ayarla
             setOtkImgDesc((prev) => [...(prev || []), ...files]);
+            e.target.value = '';
         }
     }
 
@@ -716,17 +717,39 @@ const Payout = () => {
             .catch(err => console.error(err));
     };
     const handleDeleteImage = (index, nestedIndex = null) => {
-        setImageSrc(prevImages => prevImages.filter((_, i) => i !== index));
-        setDescribeImg(prevDescribe =>
-            prevDescribe.filter((_, i) => i !== index)
-        );
+        setImageSrc(prevImages => {
+            const updatedImages = prevImages.filter((_, i) => i !== index);
+            if (updatedImages.length === 0) {
+                document.getElementById('fileInput').disabled = false;
+            }
+            return updatedImages;
+        });
+   
+        setDescribeImg(prevDescribe => {
+            const updatedDescribe = prevDescribe.filter((_, i) => i !== index);
+            if (updatedDescribe.length === 0) {
+                document.getElementById('fileInput').disabled = false;
+            }
+            return updatedDescribe;
+        });
     };
 
     const handleDeleteImage_Otk = (index, nestedIndex = null) => {
-        setOtkImg(prevImages => prevImages.filter((_, i) => i !== index));
-        setOtkImgDesc(prevDescribe =>
-            prevDescribe.filter((_, i) => i !== index)
-        );
+        setOtkImg(prevImages => {
+            const updatedImages = prevImages.filter((_, i) => i !== index);
+            if (updatedImages.length === 0) {
+                document.getElementById('fileInput').disabled = false;
+            }
+            return updatedImages;
+        });
+   
+        setOtkImgDesc(prevDescribe => {
+            const updatedDescribe = prevDescribe.filter((_, i) => i !== index);
+            if (updatedDescribe.length === 0) {
+                document.getElementById('fileInput').disabled = false;
+            }
+            return updatedDescribe;
+        });
     };
     useEffect(() => {
         if (modal && mainSwiperRef.current && mainSwiperRef.current.swiper) {
