@@ -53,7 +53,6 @@ const Dashboard = () => {
             });
 
             if (response.status === 401) {
-                console.log("Unauthorized access, attempting to refresh token.");
                 const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
                     method: "POST",
                     headers: {
@@ -69,11 +68,9 @@ const Dashboard = () => {
                     localStorage.setItem("access", refreshData.access);
                     return handleFilter();
                 } else {
-                    console.log("Failed to refresh token, redirecting to login.");
                     navigate("/login");
                 }
             } else if (response.status === 400) {
-                console.log("Bad Request");
             } else if (response.status === 404) {
                 setCurrentPage(1);
             } else if (response.ok) {
@@ -81,10 +78,8 @@ const Dashboard = () => {
                 setData(data);
             } else {
                 const errorText = await response.text();
-                console.log("Unexpected error:", response.status, errorText);
             }
         } catch (error) {
-            console.error("An error occurred:", error);
             navigate("/login");
         } finally {
             setLoading(false)
@@ -170,7 +165,7 @@ const Dashboard = () => {
                 document.body.removeChild(link);
                 URL.revokeObjectURL(url);
             })
-            .catch(err => console.error(err));
+            .catch(err =>'');
     };
     useEffect(() => {
         handleFilter();
@@ -245,11 +240,11 @@ const Dashboard = () => {
                             {/* profile */}
                             <div className='max-md:flex items-center justify-between'>
                                 <div onClick={() => setDropDown(!dropDown)} className="bg-[#4CAF50] uppercase  rounded-[100px] text-white w-[48px] h-[48px] flex items-center justify-center">
-                                    {(localStorage.getItem("username") !== "undefined") &&
+                                    {(localStorage.getItem("username") !== "undefined") ?
                                         <>
                                             {localStorage.getItem("username").split("_")[0][0]}
                                             {localStorage.getItem("username").split("_")[1][0]}
-                                        </>
+                                        </> : ""
                                     }
                                 </div>
                             </div>
@@ -328,7 +323,7 @@ const Dashboard = () => {
                 <div className={`mt-[50px] md:mt-[94px] w-full rounded-[24px] pr-[32px] pl-[32px] max-md:pl-4 max-md:pr-0 pt-[32px] ${isDarkMode ? "md:bg-[#1F1F1F]" : "md:bg-[#F5F6FC]"}  overflow-x-auto md:mr-[40px] md:mx-[32px]  `}>
                     <div className="flex max-lg:flex-col relative gap-x-2 justify-between pr-4 items-center mb-4">
                         <div className="flex max-[270px]:flex-wrap items-center justify-between w-full ">
-                           
+
                             <h3 className={`font-semibold text-[24px] max-lg:mx-auto max-md:mx-0 md:text-center ${isDarkMode ? "text-[#E7E7E7]" : "text-[#3d457c]"}`}>Управления депозитами</h3>
                             {/* poisk */}
                             <div className="flex gap-x-2 md:hidden ">

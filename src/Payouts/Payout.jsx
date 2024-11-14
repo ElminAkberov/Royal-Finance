@@ -6,26 +6,22 @@ import Dark from '../Dark';
 import { Context } from '../context/ContextProvider';
 import axios from 'axios';
 import { LuCopy } from "react-icons/lu";
-import { FaAngleLeft, FaAngleRight, FaChevronLeft, FaChevronRight } from "react-icons/fa6";
+import { FaAngleLeft, FaAngleRight} from "react-icons/fa6";
 import Loading from '../Loading/Loading';
 import Header from '../Header/Header';
 import Header_md from '../Header/Header-md';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { useKeenSlider } from 'keen-slider/react'
-// Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
 import 'swiper/swiper-bundle.css';
-import Slider from "react-slick";
-import KeenSlider from 'keen-slider'
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
 import { Viewer, Worker } from '@react-pdf-viewer/core';
 import { PDFDocument } from 'pdf-lib';
 import * as pdfjsLib from 'pdfjs-dist';
 import 'pdfjs-dist/build/pdf.worker.entry';
-import { Carousel } from '@material-tailwind/react';
 const Payout = () => {
     const [swiperIndex, setSwiperIndex] = useState(0);
     const mainSwiperRef = useRef(null);
@@ -58,12 +54,11 @@ const Payout = () => {
         initial: 0,
         animationEnded(s) {
             const newSlideIndex = s.track.details.rel;
-            setCurrentSlide(newSlideIndex);  // Update currentSlide after animation ends
-            scrollToThumbnail(newSlideIndex);   // Center the corresponding thumbnail
+            setCurrentSlide(newSlideIndex); 
+            scrollToThumbnail(newSlideIndex);  
         }
     });
 
-    // Thumbnail slider (Keen Slider instance)
     const [thumbnailRef, thumbnailInstanceRef] = useKeenSlider({
         slides: {
             perView: 4,
@@ -152,7 +147,6 @@ const Payout = () => {
             })
             .catch(err => {
                 setCopy(false);
-                console.error('An error occurred while copying the text:', err);
             });
     };
     const handleFilterApply = async () => {
@@ -170,7 +164,6 @@ const Payout = () => {
             });
 
             if (response.status === 401) {
-                console.log("Unauthorized access, attempting to refresh token.");
                 const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
                     method: "POST",
                     headers: {
@@ -186,7 +179,6 @@ const Payout = () => {
                     localStorage.setItem("access", refreshData.access);
                     return handleFilter(); // Retry fetch with new token
                 } else {
-                    console.log("Failed to refresh token, redirecting to login.");
                     navigate("/login");
                 }
             } else if (response.status === 404) {
@@ -195,10 +187,8 @@ const Payout = () => {
                 const data = await response.json();
                 setData(data);
             } else {
-                console.log("Unexpected error:", response.status);
             }
         } catch (error) {
-            console.error("An error occurred:", error);
             navigate("/login");
         } finally {
             setLoading(false)
@@ -229,7 +219,6 @@ const Payout = () => {
                 });
 
                 if (response.status === 401) {
-                    console.log("Unauthorized access, attempting to refresh token.");
                     const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
                         method: "POST",
                         headers: {
@@ -244,7 +233,6 @@ const Payout = () => {
                         localStorage.setItem("access", refreshData.access);
                         return handleMethod();
                     } else {
-                        console.log("Failed to refresh token, redirecting to login.");
                         navigate("/login");
                         return;
                     }
@@ -257,14 +245,12 @@ const Payout = () => {
                     hasNextPage = data.next !== null;
                     page++;
                 } else {
-                    console.log("Unexpected error:", response.status);
                     hasNextPage = false;
                 }
             }
 
             setMethod(allMethods);
         } catch (error) {
-            console.error("An error occurred:", error);
             navigate("/login");
         }
     };
@@ -273,7 +259,6 @@ const Payout = () => {
         handleMethod();
     }, [currentPage, selectStatus]);
 
-    const [pdfBlobs, setPdfBlobs] = useState([]);
     // lazm
     const handleFileChange = async (e) => {
         const files = Array.from(e.target.files);
@@ -300,7 +285,6 @@ const Payout = () => {
                             }
                             filePreviews.push(blobs);
                         } catch (error) {
-                            console.error('Error loading PDF:', error);
                         }
                     } else {
                         const reader = new FileReader();
@@ -319,7 +303,6 @@ const Payout = () => {
         // e.target.value = '';
     };
     const [images, setImages] = useState([]);
-    const [pdfLoading, setPdfLoading] = useState(true);
 
     const [pdfUrls, setPdfUrls] = useState([])
     let [zoom, setZoom] = useState(false)
@@ -333,7 +316,6 @@ const Payout = () => {
         }
     }, [data, id, zoom]); // Re-run when `data` or `id` changes
 
-    // Second useEffect to load PDFs once pdfUrls is updated
     useEffect(() => {
         if (pdfUrls.length > 0) {
             const loadPdf = async (url) => {
@@ -358,7 +340,6 @@ const Payout = () => {
 
                     return pages;
                 } catch (error) {
-                    console.error("Error loading PDF:", error);
                     return [];
                 }
             };
@@ -408,7 +389,6 @@ const Payout = () => {
             });
 
             if (response.status === 401) {
-                console.log("Unauthorized access, attempting to refresh token.");
                 const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
                     method: "POST",
                     headers: {
@@ -424,7 +404,6 @@ const Payout = () => {
                     localStorage.setItem("access", refreshData.access);
                     return handleUpload();
                 } else {
-                    console.log("Failed to refresh token, redirecting to login.");
                     navigate("/login");
                 }
             } else if (response.status == 400) {
@@ -436,7 +415,6 @@ const Payout = () => {
                 }, 2000);
             }
         } catch (error) {
-            console.log(error);
             setStatus((prevError) => ({ ...prevError, "handleUpload": "error" }));
         }
     };
@@ -463,7 +441,6 @@ const Payout = () => {
 
             // Handle the response
             if (response.status === 401) {
-                console.log("Unauthorized access, attempting to refresh token.");
                 const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
                     method: "POST",
                     headers: {
@@ -479,7 +456,6 @@ const Payout = () => {
                     localStorage.setItem("access", refreshData.access);
                     return handleCancel();  // Retry after refreshing the token
                 } else {
-                    console.log("Failed to refresh token, redirecting to login.");
                     navigate("/login");
                 }
             } else if (response.status === 200) {
@@ -489,17 +465,14 @@ const Payout = () => {
                     window.location.reload();
                 }, 2000);
             } else {
-                console.log("Unexpected error:", response.status);
             }
 
-            // Handle error states
             if (response.status === 400) {
                 setStatus((prevError) => ({ ...prevError, "handleCancel": "error" }));
             } else {
                 setStatus((prevError) => ({ ...prevError, "handleCancel": "success" }));
             }
         } catch (error) {
-            console.log(error);
             setStatus((prevError) => ({ ...prevError, "handleCancel": "error" }));
         }
     };
@@ -517,9 +490,7 @@ const Payout = () => {
                 throw new Error(`Error: ${response.status} ${response.statusText}`);
             }
             const data = await response.json();
-            console.log("Data received:", data);
         } catch (error) {
-            console.error("An error occurred:", error);
         }
     };
     let [depositAmount, setDepositAmount] = useState("")
@@ -541,9 +512,7 @@ const Payout = () => {
                 throw new Error(`Error: ${response.status} ${response.statusText}`);
             }
             const data = await response.json();
-            console.log("Data received:", data);
         } catch (error) {
-            console.error("An error occurred:", error);
         }
     };
     // payout
@@ -621,7 +590,6 @@ const Payout = () => {
                             }
                             filePreviews.push(blobs);
                         } catch (error) {
-                            console.error('Error loading PDF:', error);
                         }
                     } else {
                         const reader = new FileReader();
@@ -655,7 +623,6 @@ const Payout = () => {
             });
             const data = await response.json();
             if (response.status === 401) {
-                console.log("Unauthorized access, attempting to refresh token.");
                 const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
                     method: "POST",
                     headers: {
@@ -671,7 +638,6 @@ const Payout = () => {
                     localStorage.setItem("access", refreshData.access);
                     return handleAccept();
                 } else {
-                    console.log("Failed to refresh token, redirecting to login.");
                     navigate("/login");
                 }
             } else if (response.status == 400) {
@@ -684,7 +650,6 @@ const Payout = () => {
             }
         } catch (error) {
             setStatus((prevError) => ({ ...prevError, handleAccept: "error" }));
-            console.error("An error occurred:", error);
         }
     };
 
@@ -714,7 +679,7 @@ const Payout = () => {
                 document.body.removeChild(link);
                 URL.revokeObjectURL(url);
             })
-            .catch(err => console.error(err));
+            .catch(err => "");
     };
     const handleDeleteImage = (index, nestedIndex = null) => {
         setImageSrc(prevImages => {
@@ -724,7 +689,7 @@ const Payout = () => {
             }
             return updatedImages;
         });
-   
+
         setDescribeImg(prevDescribe => {
             const updatedDescribe = prevDescribe.filter((_, i) => i !== index);
             if (updatedDescribe.length === 0) {
@@ -742,7 +707,7 @@ const Payout = () => {
             }
             return updatedImages;
         });
-   
+
         setOtkImgDesc(prevDescribe => {
             const updatedDescribe = prevDescribe.filter((_, i) => i !== index);
             if (updatedDescribe.length === 0) {
@@ -794,11 +759,12 @@ const Payout = () => {
                             {/* profile */}
                             <div className='max-md:flex  items-center justify-between'>
                                 <div onClick={() => setDropDown(!dropDown)} className="bg-[#4CAF50] uppercase rounded-[100px] text-white w-[48px] h-[48px] flex items-center justify-center">
-                                    {(localStorage.getItem("username") !== "undefined") &&
+                                    {(localStorage.getItem("username") !== "undefined") ?
                                         <>
                                             {localStorage.getItem("username").split("_")[0][0]}
                                             {localStorage.getItem("username").split("_")[1][0]}
                                         </>
+                                        : ""
                                     }
                                 </div>
                             </div>
@@ -1352,7 +1318,7 @@ const Payout = () => {
                             <p className={`text-right text-[14px] font-normal mr-4  z-30 duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data?.count ? data?.count : 0} результата</p>
                         </div>
                     }
-                    <div onClick={() => { setModal(!modal); setThumbsSwiper(null);setOtkImgDesc(null); setSwiperIndex(0); setCancel(""); setOtkImg(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${(!modal) && "hidden"} fixed inset-0 ${isDarkMode ? "bg-[#00000093]" : "bg-[#2222224d]"} z-20`}></div>
+                    <div onClick={() => { setModal(!modal); setThumbsSwiper(null); setOtkImgDesc(null); setSwiperIndex(0); setCancel(""); setOtkImg(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${(!modal) && "hidden"} fixed inset-0 ${isDarkMode ? "bg-[#00000093]" : "bg-[#2222224d]"} z-20`}></div>
                     <div onClick={() => { setModal(!modal); setThumbsSwiper(null); setSwiperIndex(0); setCancel("") }} className={`${(!modalChek) && "hidden"} fixed inset-0 ${isDarkMode ? "bg-[#00000093]" : "bg-[#2222224d]"} z-20`}></div>
                     <div onClick={() => { setZoom(!zoom); setThumbsSwiper(null); setSwiperIndex(0); }} className={`${(!zoom) && "hidden"} fixed inset-0 ${isDarkMode ? "bg-[#00000093]" : "bg-[#2222224d]"} z-50`}></div>
 
@@ -1417,8 +1383,8 @@ const Payout = () => {
                     </div>
                     {/* cek yuklemek ucun */}
                     <div onClick={() => { setCancelCheck(!cancelCheck); setDescribeImg(null); setImageSrc(""); setStatus((prevError) => ({ ...prevError, handleUpload: null })); }} className={`${!cancelCheck && "hidden"} fixed inset-0 bg-[#2222224D] z-30`}></div>
-                    <form onSubmit={handleUpload} className={`${!cancelCheck ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} pt-8 pl-8 pb-8 md:pr-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[763px]  overflow-y-hidden rounded-[24px]`}>
-                        <div className={`overflow-y-scroll max-h-[85vh] `}>
+                    <form onSubmit={handleUpload} className={`${!cancelCheck ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} pt-8 pl-8 pb-8 md:pr-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[763px]  overflow-y-hidden  rounded-[24px]`}>
+                        <div className={`overflow-y-scroll max-h-[85vh] ${isDarkMode ? "scroll-black" : "scroll-white"} `}>
                             <div className="relative mb-8">
                                 <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Завершить</h3>
                                 <svg width="14" onClick={() => { setCancelCheck(!cancelCheck); setImageSrc(""); setStatus((prevError) => ({ ...prevError, handleUpload: null })); }} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-5`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1503,7 +1469,7 @@ const Payout = () => {
                                     )
                                 ))}
                             </div>
-                            <div className="flex justify-end my-4">
+                            <div className="flex justify-end my-4 mr-4">
                                 <button type='submit' className='bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                     Завершить
                                 </button>
@@ -1721,12 +1687,15 @@ const Payout = () => {
                                                     <div className="modal_payout">
                                                         <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Реквизиты </h5><p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.requisite} </p>
                                                     </div>
+                                                    <div className="modal_payout">
+                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Причина </h5><p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.reason && data?.reason} </p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
                                     {/* cancel modal */}
-                                    <div onClick={() => { setOtkImg("");setOtkImgDesc(null); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${!cancel && "hidden"} fixed inset-0 h-[120vh] bg-[#2222224D] z-20`}></div>
+                                    <div onClick={() => { setOtkImg(""); setOtkImgDesc(null); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${!cancel && "hidden"} fixed inset-0 h-[120vh] bg-[#2222224D] z-20`}></div>
                                     <form onSubmit={handleCancel} className={`${!cancel ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} pt-8 pl-8 pb-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 shadow-sm shadow-black -translate-y-1/2 mx-auto w-full overflow-y-hidden  rounded-[24px]`}>
                                         <div className={`${isDarkMode ? "scroll-black" : "scroll-white"} overflow-y-scroll max-h-[80vh]`}>
                                             <div className="relative mb-8 mr-8">
@@ -1768,7 +1737,7 @@ const Payout = () => {
                                             }
                                             <div className="modal_payout blur-0 mb-8 mr-8 ">
                                                 <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} mb-2`}>Описание</h5>
-                                                <input onChange={(e) => setReason(e.target.value)} style={{ caretColor: '#000' }} value={reason} required placeholder='Описание' type="text" className={`${isDarkMode ? "text-white" : ""}  bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
+                                                <input onChange={(e) => setReason(e.target.value)} style={{ caretColor: `${isDarkMode ? "#fff" : "#000"}` }} value={reason} required placeholder='Описание' type="text" className={`${isDarkMode ? "text-white" : ""}  bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
                                             </div>
                                             <div className="mb-8 blur-0">
                                                 <div
@@ -1849,7 +1818,7 @@ const Payout = () => {
                                                             <button onClick={() => setCancel(!cancel)} className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                                                 Отклонить
                                                             </button>
-                                                            <button onClick={() => { setCancelCheck(!cancelCheck); setModal(!modal) }} type='submit' className='bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                                            <button onClick={() => { setCancelCheck(!cancelCheck); setModal(!modal) }} type='submit' className='bg-[#2E70F5]  text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                                                 Завершить
                                                             </button>
                                                         </div>

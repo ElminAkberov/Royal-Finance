@@ -29,7 +29,6 @@ const Deposit = () => {
       })
       .catch(err => {
         setCopy(false);
-        console.error('Metin kopyalanırken bir hata oluştu:', err);
       });
   }
   const handleSubmit = async (e) => {
@@ -64,7 +63,6 @@ const Deposit = () => {
           localStorage.setItem("access", refreshData.access);
           return handleSubmit(e);
         } else {
-          console.log("Failed to refresh token, redirecting to login.");
           navigate("/login");
         }
       } else if (res.status == 400) {
@@ -73,7 +71,6 @@ const Deposit = () => {
         setStatus("success");
       }
     } catch (error) {
-      console.error("Error:", error);
       setStatus("error");
     }
   };
@@ -146,11 +143,11 @@ const Deposit = () => {
             {/* profile */}
             <div className='max-md:flex items-center justify-between'>
               <div onClick={() => setDropDown(!dropDown)} className="bg-[#4CAF50] uppercase rounded-[100px] text-white w-[48px] h-[48px] flex items-center justify-center">
-                {(localStorage.getItem("username") !== "undefined") &&
+                {(localStorage.getItem("username") !== "undefined") ?
                   <>
                     {localStorage.getItem("username").split("_")[0][0]}
                     {localStorage.getItem("username").split("_")[1][0]}
-                  </>
+                  </> : ""
                 }
               </div>
             </div>

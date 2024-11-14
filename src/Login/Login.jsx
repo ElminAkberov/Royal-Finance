@@ -35,7 +35,7 @@ const Login = () => {
     })
       .then((res) => {
         if (!res.ok) {
-          return Promise.reject(`HTTP error! status: ${res.status}`);
+          return;
         }
         return res.json();
       })
@@ -70,11 +70,28 @@ const Login = () => {
           "Authorization": `Bearer ${localStorage.getItem("access")}`,
         }
       });
+      if (response.status === 401) {
+        const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            refresh: localStorage.getItem("refresh"),
+          }),
+        });
 
+        if (refreshResponse.ok) {
+          const refreshData = await refreshResponse.json();
+          localStorage.setItem("access", refreshData.access);
+          return fetchData();
+        } else {
+          navigate("/login");
+        }
+      }
       let data = await response.json();
       localStorage.setItem("username", data.username);
     } catch (error) {
-      console.log(error);
     }
   }, []);
 
