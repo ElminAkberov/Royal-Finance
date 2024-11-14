@@ -274,7 +274,7 @@ const Payout = () => {
     }, [currentPage, selectStatus]);
 
     const [pdfBlobs, setPdfBlobs] = useState([]);
-
+    // lazm
     const handleFileChange = async (e) => {
         const files = Array.from(e.target.files);
         if (files.length > 0) {
@@ -446,19 +446,23 @@ const Payout = () => {
         e.preventDefault();
         try {
             const formData = new FormData();
-            formData.append('reason', reason);
+            formData.append('reason', reason);  // Append the reason
 
-            // Loop through otkImgDesc array and append each image to FormData
-            otkImgDesc.forEach((img, index) => {
-                formData.append(`receipts[${index}]`, img); // 'receipts[]' is used to indicate an array of images
-            });
+            // Check if otkImgDesc has any images before appending them
+            if (otkImgDesc && otkImgDesc.length > 0) {
+                otkImgDesc.forEach((img, index) => {
+                    formData.append(`receipts[${index}]`, img);  // Append each image to the FormData
+                });
+            }
 
+            // Make the API request
             const response = await axios.post(`https://dev.royal-pay.org/api/v1/internal/payouts/deny/${id}/`, formData, {
                 headers: {
                     "Authorization": `Bearer ${localStorage.getItem("access")}`,
                 }
             });
 
+            // Handle the response
             if (response.status === 401) {
                 console.log("Unauthorized access, attempting to refresh token.");
                 const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
@@ -474,7 +478,7 @@ const Payout = () => {
                 if (refreshResponse.ok) {
                     const refreshData = await refreshResponse.json();
                     localStorage.setItem("access", refreshData.access);
-                    return handleCancel(); // Retry after refreshing the token
+                    return handleCancel();  // Retry after refreshing the token
                 } else {
                     console.log("Failed to refresh token, redirecting to login.");
                     navigate("/login");
@@ -489,6 +493,7 @@ const Payout = () => {
                 console.log("Unexpected error:", response.status);
             }
 
+            // Handle error states
             if (response.status === 400) {
                 setStatus((prevError) => ({ ...prevError, "handleCancel": "error" }));
             } else {
@@ -498,7 +503,7 @@ const Payout = () => {
             console.log(error);
             setStatus((prevError) => ({ ...prevError, "handleCancel": "error" }));
         }
-    }
+    };
 
     const handleDepositGet = async (e) => {
         e.preventDefault();
@@ -591,36 +596,52 @@ const Payout = () => {
 
         setTime_2(cleanedValue);
     };
-
-    const handleFileClose = (e) => {
+    // lazm
+    const handleFileClose = async (e) => {
         const files = Array.from(e.target.files);
         if (files.length > 0) {
             const filePreviews = [];
 
-            files.forEach((file, index) => {
-                // Eğer dosya sonu .pdf ile bitiyorsa direkt olarak URL olarak ekle
-                if (file.name.endsWith(".pdf")) {
-                    filePreviews.push(URL.createObjectURL(file));
-                    if (filePreviews.length === files.length) {
-                        setOtkImg(filePreviews); // Dosya önizlemelerini ayarla
-                    }
-                } else {
-                    // Diğer dosyalar için FileReader kullan
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                        filePreviews.push(reader.result);
-                        if (filePreviews.length === files.length) {
-                            setOtkImg(filePreviews); // Dosya önizlemelerini ayarla
-                        }
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
+            await Promise.all(
+                files.map(async (file) => {
+                    if (file.type === 'application/pdf') {
+                        try {
+                            const arrayBuffer = await file.arrayBuffer();
+                            const pdfDoc = await PDFDocument.load(arrayBuffer);
+                            const numPages = pdfDoc.getPages().length;
 
-            setOtkImgDesc(files); // Dosya arrayini kaydet
+                            const blobs = [];
+                            for (let i = 0; i < numPages; i++) {
+                                const newPdfDoc = await PDFDocument.create();
+                                const [copiedPage] = await newPdfDoc.copyPages(pdfDoc, [i]);
+                                newPdfDoc.addPage(copiedPage);
+
+                                const pdfBytes = await newPdfDoc.save();
+                                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                                blobs.push(blob);
+                            }
+                            filePreviews.push(blobs);
+                        } catch (error) {
+                            console.error('Error loading PDF:', error);
+                        }
+                    } else {
+                        const reader = new FileReader();
+                        const result = await new Promise((resolve) => {
+                            reader.onloadend = () => resolve(reader.result);
+                            reader.readAsDataURL(file);
+                        });
+                        filePreviews.push(result);
+                    }
+                })
+            );
+
+            setOtkImg(filePreviews); // Tüm dosyalar işlendiğinde ayarla
+            setOtkImgDesc(files);
         }
         e.target.value = '';
     }
+
+
     const handleShow = (info) => {
         setDetails([info])
     }
@@ -668,7 +689,7 @@ const Payout = () => {
             console.error("An error occurred:", error);
         }
     };
-    
+
     const handleDownload = () => {
         fetch("https://dev.royal-pay.org/api/v1/internal/payouts/download/", {
             method: "GET",
@@ -713,8 +734,20 @@ const Payout = () => {
         });
     };
 
-    const handleDeleteImage_Otk = (index) => {
-        setOtkImg(prevImages => prevImages.filter((_, i) => i !== index));
+    const handleDeleteImage_Otk = (index, nestedIndex = null) => {
+        setOtkImg(prevImages => {
+            return prevImages.map((item, i) => {
+                if (i !== index) return item; // İlgili ana diziyi koruyoruz
+
+                if (Array.isArray(item)) {
+                    // İç içe dizide öğeyi sil
+                    return item.filter((_, j) => j !== nestedIndex);
+                } else {
+                    // İç içe dizi değilse öğeyi doğrudan kaldır
+                    return null;
+                }
+            }).filter(item => item !== null && item.length !== 0); // Boş veya null öğeleri kaldır
+        });
     };
     useEffect(() => {
         if (modal && mainSwiperRef.current && mainSwiperRef.current.swiper) {
@@ -1326,13 +1359,13 @@ const Payout = () => {
 
                     <div onClick={() => { setZoom(!zoom); }} className='fixed top-1/2  left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[80%]'>
                         {zoom &&
-                            <div  ref={sliderRef} className="keen-slider">
+                            <div ref={sliderRef} className="keen-slider">
                                 {images.length > 0 ? (
                                     images.map((imgSrc, index) => (
                                         <div onClick={() => setZoom(!zoom)} className='keen-slider__slide flex justify-center'>
                                             <img
                                                 onLoad={handleImageLoad}
-                                                
+
                                                 onClick={(e) => { e.stopPropagation(); }}
                                                 key={index}
                                                 src={imgSrc}
@@ -1757,26 +1790,39 @@ const Payout = () => {
                                                 <input accept="image/*,application/pdf" multiple id="fileInputs" type="file" className="hidden" onChange={handleFileClose} />
                                             </div>
                                             <div className=" flex flex-col items-center mr-8 blur-0">
-                                                {otkImg && otkImg.map((src, index) => (
-                                                    <div key={index + `${src}`} className="relative m-2 flex items-center justify-center">
-                                                        {src.startsWith("blob:") ? (
+                                                {otkImg && otkImg.flatMap((src, index) => (
+                                                    Array.isArray(src) ? src.map((nestedSrc, nestedIndex) => (
+                                                        <div key={nestedIndex + `${nestedSrc}`} className="relative m-2 flex items-center justify-center">
                                                             <div className='flex mx-auto justify-start relative right-[156px]'>
-                                                                <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-                                                                    <Viewer fileUrl={src} defaultScale={.5} />
+                                                                <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+                                                                    <Viewer fileUrl={URL.createObjectURL(nestedSrc)} defaultScale={.5} />
                                                                 </Worker>
-                                                                <svg onClick={() => handleDeleteImage_Otk(index)} width="24" className="cursor-pointer absolute right-[-320px] top-1/2 min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                <svg onClick={() => handleDeleteImage_Otk(index, nestedIndex)} width="24" className="cursor-pointer absolute right-[-335px] top-1/2 min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                                     <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
                                                                 </svg>
                                                             </div>
-                                                        ) : (
-                                                            <>
-                                                                <img src={src} alt={`Uploaded preview ${index + 1}`} className="mt-4 max-w-[300px] max-h-[400px]" />
-                                                                <svg onClick={() => handleDeleteImage_Otk(index)} width="24" className="cursor-pointer min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                    <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
-                                                                </svg>
-                                                            </>
-                                                        )}
-                                                    </div>
+                                                        </div>
+                                                    )) : (
+                                                        <div key={index + `${src}`} className="relative m-2 flex items-center justify-center">
+                                                            {(src.type == "application/pdf") ? (
+                                                                <div className='flex mx-auto justify-start relative right-[156px]'>
+                                                                    <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+                                                                        <Viewer fileUrl={URL.createObjectURL(src)} defaultScale={.5} />
+                                                                    </Worker>
+                                                                    <svg onClick={() => handleDeleteImage_Otk(index)} width="24" className="cursor-pointer absolute right-[-335px] top-1/2 min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                        <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
+                                                                    </svg>
+                                                                </div>
+                                                            ) : (
+                                                                <>
+                                                                    <img src={src} alt={`Uploaded preview ${index + 1}`} className="mt-4 max-w-[300px] max-h-[400px]" />
+                                                                    <svg onClick={() => handleDeleteImage_Otk(index)} width="24" className="cursor-pointer min-w-[24px] ml-2" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                        <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
+                                                                    </svg>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                    )
                                                 ))}
                                             </div>
 
