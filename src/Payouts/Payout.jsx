@@ -153,8 +153,32 @@ const Payout = () => {
         setCurrentPage(1);
         handleFilter();
     };
+
+
+    let [method,setMethod] = useState([])
+    const refreshAuth = async () => {
+        const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                refresh: localStorage.getItem("refresh"),
+            }),
+        });
+    
+        if (refreshResponse.ok) {
+            const refreshData = await refreshResponse.json();
+            localStorage.setItem("access", refreshData.access);
+            return true; // Token refreshed successfully
+        } else {
+            navigate("/login");
+            return false; // Failed to refresh token
+        }
+    };
+    
     const handleFilter = async () => {
-        setLoading(true)
+        setLoading(true);
         try {
             const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/?status=${selectStatus}&merchant=${merchant}&trader=${trader}&method=${selectMethod}&created_at_after=${time ? startDate + "T" + time : startDate}&created_at_before=${time_2 ? endDate + "T" + time_2 : endDate}&page=${currentPage === "" ? 1 : currentPage}`, {
                 method: "GET",
@@ -162,53 +186,30 @@ const Payout = () => {
                     "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
                 }
             });
-
+    
             if (response.status === 401) {
-                const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        refresh: localStorage.getItem("refresh"),
-                    }),
-                });
-
-                if (refreshResponse.ok) {
-                    const refreshData = await refreshResponse.json();
-                    localStorage.setItem("access", refreshData.access);
+                const tokenRefreshed = await refreshAuth();
+                if (tokenRefreshed) {
                     return handleFilter(); // Retry fetch with new token
-                } else {
-                    navigate("/login");
                 }
             } else if (response.status === 404) {
                 setCurrentPage(1);
             } else if (response.ok) {
                 const data = await response.json();
                 setData(data);
-            } else {
             }
         } catch (error) {
             navigate("/login");
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     };
-    useEffect(() => {
-        if (currentPage) {
-            handleFilter();
-            // setTimeout(() => {
-            // }, 2000)
-        }
-    }, [currentPage]);
-
-
-    let [method, setMethod] = useState([])
+    
     const handleMethod = async () => {
         let allMethods = [];
         let page = 1;
         let hasNextPage = true;
-
+    
         try {
             while (hasNextPage) {
                 const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/?status=${selectStatus}&page=${page}`, {
@@ -217,24 +218,11 @@ const Payout = () => {
                         "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
                     }
                 });
-
+    
                 if (response.status === 401) {
-                    const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            refresh: localStorage.getItem("refresh"),
-                        }),
-                    });
-                    if (refreshResponse.ok) {
-                        const refreshData = await refreshResponse.json();
-                        localStorage.setItem("access", refreshData.access);
-                        return handleMethod();
-                    } else {
-                        navigate("/login");
-                        return;
+                    const tokenRefreshed = await refreshAuth();
+                    if (tokenRefreshed) {
+                        return handleMethod(); // Retry fetch with new token
                     }
                 } else if (response.ok) {
                     const data = await response.json();
@@ -248,16 +236,22 @@ const Payout = () => {
                     hasNextPage = false;
                 }
             }
-
+    
             setMethod(allMethods);
         } catch (error) {
             navigate("/login");
         }
     };
-
+    
     useEffect(() => {
         handleMethod();
     }, [currentPage, selectStatus]);
+    
+    useEffect(() => {
+        if (currentPage) {
+            handleFilter();
+        }
+    }, [currentPage]);
 
     // lazm
     const handleFileChange = async (e) => {
