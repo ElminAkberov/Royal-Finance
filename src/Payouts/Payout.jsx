@@ -176,14 +176,22 @@ const Payout = () => {
             return false; // Failed to refresh token
         }
     };
-    
+    useEffect(() => {
+        // Set interval to refresh token every 10 seconds
+        const intervalId = setInterval(() => {
+            refreshAuth();
+        }, 10000); // 10000 milliseconds = 10 seconds
+
+        // Clean up interval on component unmount
+        return () => clearInterval(intervalId);
+    }, []);
     const handleFilter = async () => {
         setLoading(true);
         try {
             const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/?status=${selectStatus}&merchant=${merchant}&trader=${trader}&method=${selectMethod}&created_at_after=${time ? startDate + "T" + time : startDate}&created_at_before=${time_2 ? endDate + "T" + time_2 : endDate}&page=${currentPage === "" ? 1 : currentPage}`, {
                 method: "GET",
                 headers: {
-                    "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
+                    "Authorization": `Bearer ${localStorage.getItem("access")}`,
                 }
             });
     
@@ -215,7 +223,7 @@ const Payout = () => {
                 const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/?status=${selectStatus}&page=${page}`, {
                     method: "GET",
                     headers: {
-                        "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
+                        "Authorization": `Bearer ${localStorage.getItem("access")}`,
                     }
                 });
     
@@ -252,6 +260,7 @@ const Payout = () => {
             handleFilter();
         }
     }, [currentPage]);
+    
 
     // lazm
     const handleFileChange = async (e) => {
