@@ -296,3 +296,8 @@ body {
 .x-scroll::-webkit-scrollbar {
     display: none;
 }
+canvas {
+    width: 300px !important;
+    backdrop-filter: blur(0);
+    object-fit: contain !important;
+}

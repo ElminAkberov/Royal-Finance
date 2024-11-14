@@ -633,11 +633,9 @@ const Payout = () => {
                     }
                 })
             );
-
-            setOtkImg(filePreviews); // Tüm dosyalar işlendiğinde ayarla
-            setOtkImgDesc(files);
+            setOtkImg((prev) => [...(prev || []), ...filePreviews]); // Tüm dosyalar işlendiğinde ayarla
+            setOtkImgDesc((prev) => [...(prev || []), ...files]);
         }
-        e.target.value = '';
     }
 
 
@@ -719,25 +717,16 @@ const Payout = () => {
     };
     const handleDeleteImage = (index, nestedIndex = null) => {
         setImageSrc(prevImages => prevImages.filter((_, i) => i !== index));
-        setDescribeImg(prevDescribe => 
+        setDescribeImg(prevDescribe =>
             prevDescribe.filter((_, i) => i !== index)
         );
     };
 
     const handleDeleteImage_Otk = (index, nestedIndex = null) => {
-        setOtkImg(prevImages => {
-            return prevImages.map((item, i) => {
-                if (i !== index) return item; // İlgili ana diziyi koruyoruz
-
-                if (Array.isArray(item)) {
-                    // İç içe dizide öğeyi sil
-                    return item.filter((_, j) => j !== nestedIndex);
-                } else {
-                    // İç içe dizi değilse öğeyi doğrudan kaldır
-                    return null;
-                }
-            }).filter(item => item !== null && item.length !== 0); // Boş veya null öğeleri kaldır
-        });
+        setOtkImg(prevImages => prevImages.filter((_, i) => i !== index));
+        setOtkImgDesc(prevDescribe =>
+            prevDescribe.filter((_, i) => i !== index)
+        );
     };
     useEffect(() => {
         if (modal && mainSwiperRef.current && mainSwiperRef.current.swiper) {
@@ -1340,7 +1329,7 @@ const Payout = () => {
                             <p className={`text-right text-[14px] font-normal mr-4  z-30 duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data?.count ? data?.count : 0} результата</p>
                         </div>
                     }
-                    <div onClick={() => { setModal(!modal); setThumbsSwiper(null); setSwiperIndex(0); setCancel(""); setOtkImg(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${(!modal) && "hidden"} fixed inset-0 ${isDarkMode ? "bg-[#00000093]" : "bg-[#2222224d]"} z-20`}></div>
+                    <div onClick={() => { setModal(!modal); setThumbsSwiper(null);setOtkImgDesc(null); setSwiperIndex(0); setCancel(""); setOtkImg(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${(!modal) && "hidden"} fixed inset-0 ${isDarkMode ? "bg-[#00000093]" : "bg-[#2222224d]"} z-20`}></div>
                     <div onClick={() => { setModal(!modal); setThumbsSwiper(null); setSwiperIndex(0); setCancel("") }} className={`${(!modalChek) && "hidden"} fixed inset-0 ${isDarkMode ? "bg-[#00000093]" : "bg-[#2222224d]"} z-20`}></div>
                     <div onClick={() => { setZoom(!zoom); setThumbsSwiper(null); setSwiperIndex(0); }} className={`${(!zoom) && "hidden"} fixed inset-0 ${isDarkMode ? "bg-[#00000093]" : "bg-[#2222224d]"} z-50`}></div>
 
@@ -1714,7 +1703,7 @@ const Payout = () => {
                                         ))}
                                     </div>
                                     {/* cancel modal */}
-                                    <div onClick={() => { setOtkImg(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${!cancel && "hidden"} fixed inset-0 h-[120vh] bg-[#2222224D] z-20`}></div>
+                                    <div onClick={() => { setOtkImg("");setOtkImgDesc(null); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${!cancel && "hidden"} fixed inset-0 h-[120vh] bg-[#2222224D] z-20`}></div>
                                     <form onSubmit={handleCancel} className={`${!cancel ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} pt-8 pl-8 pb-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 shadow-sm shadow-black -translate-y-1/2 mx-auto w-full overflow-y-hidden  rounded-[24px]`}>
                                         <div className={`${isDarkMode ? "scroll-black" : "scroll-white"} overflow-y-scroll max-h-[80vh]`}>
                                             <div className="relative mb-8 mr-8">
@@ -1770,13 +1759,14 @@ const Payout = () => {
                                                 {otkImg && otkImg.flatMap((src, index) => (
                                                     Array.isArray(src) ? src.map((nestedSrc, nestedIndex) => (
                                                         <div key={nestedIndex + `${nestedSrc}`} className="relative m-2 flex items-center justify-center">
-                                                            <div className='flex mx-auto justify-start relative right-[156px]'>
+                                                            <div className='flex mx-auto  relative right-[156px] justify-start'>
                                                                 <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
                                                                     <Viewer fileUrl={URL.createObjectURL(nestedSrc)} defaultScale={.5} />
                                                                 </Worker>
-                                                                <svg onClick={() => handleDeleteImage_Otk(index, nestedIndex)} width="24" className="cursor-pointer absolute right-[-335px] top-1/2 min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                    <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
-                                                                </svg>
+                                                                {nestedIndex === 0 && (
+                                                                    <svg onClick={() => handleDeleteImage_Otk(index, nestedIndex)} width="24" className="cursor-pointer absolute right-[-340px] top-1/2 min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                        <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
+                                                                    </svg>)}
                                                             </div>
                                                         </div>
                                                     )) : (
@@ -1786,9 +1776,10 @@ const Payout = () => {
                                                                     <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
                                                                         <Viewer fileUrl={URL.createObjectURL(src)} defaultScale={.5} />
                                                                     </Worker>
-                                                                    <svg onClick={() => handleDeleteImage_Otk(index)} width="24" className="cursor-pointer absolute right-[-335px] top-1/2 min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                        <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
-                                                                    </svg>
+                                                                    {nestedIndex === 0 && (
+                                                                        <svg onClick={() => handleDeleteImage_Otk(index)} width="24" className="cursor-pointer absolute right-[-340px] top-1/2 min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                            <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
+                                                                        </svg>)}
                                                                 </div>
                                                             ) : (
                                                                 <>
