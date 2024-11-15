@@ -171,19 +171,14 @@ const Payout = () => {
                 const refreshData = await refreshResponse.json();
                 localStorage.setItem("access", refreshData.access);
                 return true;
-            } else {
-                navigate("/login");
-                return false; 
             }
         } catch (error) {
-            navigate("/login");
-            return false;
         }
     };
     useEffect(() => {
         const intervalId = setInterval(async () => {
             await refreshAuth();
-        }, 15000); 
+        }, 15000);
 
         return () => clearInterval(intervalId);
     }, []);
@@ -482,7 +477,6 @@ const Payout = () => {
         }
     };
 
-
     const handleDepositGet = async (e) => {
         e.preventDefault();
         try {
@@ -493,20 +487,11 @@ const Payout = () => {
                     "Accept": "application/json",
                 }
             });
-            console.log("Response status:", response.status)
-            const data = await response.json()
-            console.log(data)
-
-            if (response.status === 403) {
-                console.error("Access forbidden. Unauthorized request.")
-                return
-            }
+            if (response.status == 403) { }
             if (!response.ok) {
-                console.error("Request failed with status:", response.status)
-                return
             }
         } catch (error) {
-            console.log("Network error:", error)
+            return
         }
     };
 
@@ -1703,9 +1688,11 @@ const Payout = () => {
                                                     <div className="modal_payout">
                                                         <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Реквизиты </h5><p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.requisite} </p>
                                                     </div>
-                                                    <div className="modal_payout">
-                                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Причина </h5><p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.reason && data?.reason} </p>
-                                                    </div>
+                                                    {data?.reason &&
+                                                        <div className="modal_payout">
+                                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Причина </h5><p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.reason && data?.reason.split(": ")[1].split("|")[0].trim()} </p>
+                                                        </div>
+                                                    }
                                                 </div>
                                             </div>
                                         ))}
