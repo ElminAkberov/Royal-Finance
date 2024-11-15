@@ -899,19 +899,19 @@ const Payout = () => {
                             <input value={time_2} onChange={handleEndTimeChange} type="text" className='bg-transparent outline-none pl-7' placeholder='23:59' />
                         </div>
                         <div className="flex justify-center mb-2 max-w-[160px] max-md:hidden">
-                            <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff]  py-[10px] font-normal px-4 text-[14px] rounded-[8px]'>
+                            <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff]  py-[9.5px] font-normal min-w-[156px]  text-[14px] rounded-[8px]'>
                                 Применить фильтр
                             </button>
                         </div>
                         <div className="flex justify-center w-full min-[450px]:hidden mb-2 ">
-                            <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff] px-[37.5px] py-[10px] font-normal  text-[14px] rounded-[8px]'>
+                            <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px]'>
                                 Применить фильтр
                             </button>
                         </div>
                     </div>
 
                     <div className={`hidden justify-center w-full  ${filterBtn && "max-md:flex"} max-[450px]:hidden mb-2 `}>
-                        <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff] px-[37.5px] py-[10px] font-normal  text-[14px] rounded-[8px]'>
+                        <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px]'>
                             Применить фильтр
                         </button>
                     </div>
@@ -1082,7 +1082,7 @@ const Payout = () => {
                                     <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
                                         if (rowData.status == "in_progress") {
                                             return (
-                                                <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] rounded-[100px] '>
                                                     В обработке
                                                 </div>
                                             );
@@ -1094,7 +1094,7 @@ const Payout = () => {
                                             );
                                         } else if (rowData.status == "pending") {
                                             return (
-                                                <div className=' bg-[#FFC107]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                <div className=' bg-[#FFC107]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] rounded-[100px] '>
                                                     В ожидании
                                                 </div>
                                             )
@@ -1250,7 +1250,7 @@ const Payout = () => {
                                     <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
                                         if (rowData.status == "in_progress") {
                                             return (
-                                                <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px]  rounded-[100px] '>
                                                     В обработке
                                                 </div>
                                             );
@@ -1262,7 +1262,7 @@ const Payout = () => {
                                             );
                                         } else if (rowData.status == "pending") {
                                             return (
-                                                <div className=' bg-[#FFC107]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                <div className=' bg-[#FFC107]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px]  rounded-[100px] '>
                                                     В ожидании
                                                 </div>
                                             )

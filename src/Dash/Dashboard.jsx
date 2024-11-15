@@ -406,18 +406,18 @@ const Dashboard = () => {
                             <input value={time_2} onChange={handleEndTimeChange} type="text" className='bg-transparent outline-none pl-7' placeholder='23:59' />
                         </div>
                         <div className="flex justify-center mb-2 max-w-[160px] max-md:hidden">
-                            <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff]  py-[10px] font-normal px-4 text-[14px] rounded-[8px]'>
+                            <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff]  py-[9.5px] font-normal min-w-[156px] text-[14px] rounded-[8px]'>
                                 Применить фильтр
                             </button>
                         </div>
                         <div className="flex justify-center w-full min-[450px]:hidden mb-2 ">
-                            <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff] px-[37.5px] py-[10px] font-normal  text-[14px] rounded-[8px]'>
+                            <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px]'>
                                 Применить фильтр
                             </button>
                         </div>
                     </div>
                     <div className={`hidden justify-center w-full  ${filterBtn && "max-md:flex"} max-[450px]:hidden mb-2 `}>
-                        <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff] px-[37.5px] py-[10px] font-normal  text-[14px] rounded-[8px]'>
+                        <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px]'>
                             Применить фильтр
                         </button>
                     </div>
