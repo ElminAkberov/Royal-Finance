@@ -5,29 +5,30 @@ import "slick-carousel/slick/slick-theme.css";
 import 'keen-slider/keen-slider.min.css'
 import { Context } from './context/ContextProvider';
 const Layout = () => {
-  console.log = function () {};
-console.error = function () {};
-console.warn = function () {};
-console.info = function () {};
-console.debug = function () {};
-    const location = useLocation();
+  console.log = function () { };
+  console.error = function () { };
+  console.warn = function () { };
+  console.info = function () { };
+  console.debug = function () { };
 
-    const { isDarkMode } = useContext(Context);
-    useEffect(() => {
-      const favicon = document.querySelector("link[rel~='icon']");
-      if (favicon) {
-        favicon.href = isDarkMode ? '/assets/favicon/Favicon_dark.png' : '/assets/favicon/Favicon_Blue.png';
-      }
-    }, [isDarkMode]);
-    if (localStorage.getItem("role") === "trader" && location.pathname === "/dash") {
-        return <Navigate to={"/deposit"} replace />;
+  const location = useLocation();
+
+  const { isDarkMode } = useContext(Context);
+  useEffect(() => {
+    const favicon = document.querySelector("link[rel~='icon']");
+    if (favicon) {
+      favicon.href = isDarkMode ? '/assets/favicon/Favicon_dark.png' : '/assets/favicon/Favicon_Blue.png';
     }
-    
-    return (
-        <div className='inter'>
-            <Outlet />
-        </div>
-    );
+  }, [isDarkMode]);
+  if (localStorage.getItem("role") === "trader" && location.pathname === "/dash") {
+    return <Navigate to={"/deposit"} replace />;
+  }
+
+  return (
+    <div className='inter'>
+      <Outlet />
+    </div>
+  );
 }
 
 export default Layout;

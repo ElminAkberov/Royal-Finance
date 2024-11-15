@@ -155,34 +155,36 @@ const Payout = () => {
     };
 
 
-    let [method,setMethod] = useState([])
+    let [method, setMethod] = useState([])
     const refreshAuth = async () => {
-        const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                refresh: localStorage.getItem("refresh"),
-            }),
-        });
-    
-        if (refreshResponse.ok) {
-            const refreshData = await refreshResponse.json();
-            localStorage.setItem("access", refreshData.access);
-            return true; // Token refreshed successfully
-        } else {
+        try {
+            const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    refresh: localStorage.getItem("refresh"),
+                }),
+            });
+            if (refreshResponse.ok) {
+                const refreshData = await refreshResponse.json();
+                localStorage.setItem("access", refreshData.access);
+                return true;
+            } else {
+                navigate("/login");
+                return false; 
+            }
+        } catch (error) {
             navigate("/login");
-            return false; // Failed to refresh token
+            return false;
         }
     };
     useEffect(() => {
-        // Set interval to refresh token every 10 seconds
-        const intervalId = setInterval(() => {
-            refreshAuth();
-        }, 30000); // 10000 milliseconds = 10 seconds
+        const intervalId = setInterval(async () => {
+            await refreshAuth();
+        }, 15000); 
 
-        // Clean up interval on component unmount
         return () => clearInterval(intervalId);
     }, []);
     const handleFilter = async () => {
@@ -194,11 +196,11 @@ const Payout = () => {
                     "Authorization": `Bearer ${localStorage.getItem("access")}`,
                 }
             });
-    
+
             if (response.status === 401) {
                 const tokenRefreshed = await refreshAuth();
                 if (tokenRefreshed) {
-                    return handleFilter(); // Retry fetch with new token
+                    handleFilter(); // Retry fetch with new token
                 }
             } else if (response.status === 404) {
                 setCurrentPage(1);
@@ -212,12 +214,12 @@ const Payout = () => {
             setLoading(false);
         }
     };
-    
+
     const handleMethod = async () => {
         let allMethods = [];
         let page = 1;
         let hasNextPage = true;
-    
+
         try {
             while (hasNextPage) {
                 const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/?status=${selectStatus}&page=${page}`, {
@@ -226,11 +228,11 @@ const Payout = () => {
                         "Authorization": `Bearer ${localStorage.getItem("access")}`,
                     }
                 });
-    
+
                 if (response.status === 401) {
                     const tokenRefreshed = await refreshAuth();
                     if (tokenRefreshed) {
-                        return handleMethod(); // Retry fetch with new token
+                        handleMethod(); // Retry fetch with new token
                     }
                 } else if (response.ok) {
                     const data = await response.json();
@@ -244,23 +246,23 @@ const Payout = () => {
                     hasNextPage = false;
                 }
             }
-    
+
             setMethod(allMethods);
         } catch (error) {
             navigate("/login");
         }
     };
-    
+
     useEffect(() => {
         handleMethod();
     }, [currentPage, selectStatus]);
-    
+
     useEffect(() => {
         if (currentPage) {
             handleFilter();
         }
     }, [currentPage]);
-    
+
 
     // lazm
     const handleFileChange = async (e) => {
@@ -480,22 +482,35 @@ const Payout = () => {
         }
     };
 
+
     const handleDepositGet = async (e) => {
         e.preventDefault();
         try {
             const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/retransfer/`, {
                 method: "GET",
                 headers: {
-                    "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
+                    "Authorization": `Bearer ${localStorage.getItem("access")}`,
+                    "Accept": "application/json",
                 }
             });
-            if (!response.ok) {
-                throw new Error(`Error: ${response.status} ${response.statusText}`);
+            console.log("Response status:", response.status)
+            const data = await response.json()
+            console.log(data)
+
+            if (response.status === 403) {
+                console.error("Access forbidden. Unauthorized request.")
+                return
             }
-            const data = await response.json();
+            if (!response.ok) {
+                console.error("Request failed with status:", response.status)
+                return
+            }
         } catch (error) {
+            console.log("Network error:", error)
         }
     };
+
+
     let [depositAmount, setDepositAmount] = useState("")
     let [depositModal, setDepositModal] = useState(false)
     const handleDepositPost = async (e) => {
@@ -512,8 +527,9 @@ const Payout = () => {
                 }),
             });
             if (!response.ok) {
-                throw new Error(`Error: ${response.status} ${response.statusText}`);
+                // throw new Error(`Error: ${response.status} ${response.statusText}`);
             }
+
             const data = await response.json();
         } catch (error) {
         }
@@ -924,7 +940,7 @@ const Payout = () => {
                             </form>
 
                             <div className=' justify-end' >
-                                <button onClick={() => setDepositModal(!depositModal)} className='bg-[#2E70F5] mb-3 text-[#fff]  px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                <button onClick={() => setDepositModal(!depositModal)} className='bg-[#2E70F5] mb-3 text-[#fff]  px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px] max-md:mr-4'>
                                     Пополнить депозит
                                 </button>
                             </div>
@@ -1325,8 +1341,6 @@ const Payout = () => {
                     <div onClick={() => { setZoom(!zoom); setThumbsSwiper(null); setSwiperIndex(0); }} className={`${(!zoom) && "hidden"} fixed inset-0 ${isDarkMode ? "bg-[#00000093]" : "bg-[#2222224d]"} z-50`}></div>
 
                     {/* cek tam ekran */}
-
-
                     <div onClick={() => { setZoom(!zoom); }} className='fixed top-1/2  left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[80%]'>
                         {zoom &&
                             <div ref={sliderRef} className="keen-slider">
