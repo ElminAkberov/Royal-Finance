@@ -154,8 +154,8 @@ const Payout = () => {
         handleFilter();
     };
 
-
     let [method, setMethod] = useState([])
+
     const refreshAuth = async () => {
         try {
             const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
