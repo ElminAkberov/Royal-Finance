@@ -42,32 +42,32 @@ const Dashboard = () => {
         setCurrentPage(1);
         handleFilter();
     };
-    const refreshAuth = async () => {
-        try {
-            const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    refresh: localStorage.getItem("refresh"),
-                }),
-            });
-            if (refreshResponse.ok) {
-                const refreshData = await refreshResponse.json();
-                localStorage.setItem("access", refreshData.access);
-                return true;
-            }
-        } catch (error) {
-        }
-    };
-    useEffect(() => {
-        const intervalId = setInterval(async () => {
-            await refreshAuth();
-        }, 15000);
+    // const refreshAuth = async () => {
+    //     try {
+    //         const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
+    //             method: "POST",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //             },
+    //             body: JSON.stringify({
+    //                 refresh: localStorage.getItem("refresh"),
+    //             }),
+    //         });
+    //         if (refreshResponse.ok) {
+    //             const refreshData = await refreshResponse.json();
+    //             localStorage.setItem("access", refreshData.access);
+    //             return true;
+    //         }
+    //     } catch (error) {
+    //     }
+    // };
+    // useEffect(() => {
+    //     const intervalId = setInterval(async () => {
+    //         await refreshAuth();
+    //     }, 15000);
 
-        return () => clearInterval(intervalId);
-    }, []);
+    //     return () => clearInterval(intervalId);
+    // }, []);
     const handleFilter = async () => {
         setLoading(true)
         try {
