@@ -20,10 +20,11 @@ const Layout = () => {
       favicon.href = isDarkMode ? '/assets/favicon/Favicon_dark.png' : '/assets/favicon/Favicon_Blue.png';
     }
   }, [isDarkMode]);
+
   if (localStorage.getItem("role") === "trader" && location.pathname === "/dash") {
     return <Navigate to={"/deposit"} replace />;
   }
-
+ 
   return (
     <div className='inter'>
       <Outlet />

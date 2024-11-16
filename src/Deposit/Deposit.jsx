@@ -198,7 +198,7 @@ const Deposit = () => {
       <div className={`flex w-full md:justify-end max-md:px-4 ${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5]"} absolute right-0 pr-[16px] py-2 items-center `}>
         <div className="flex max-md:w-full items-center justify-between">
           <div className="mr-[16px] max-md:hidden">
-            <h4 className={`text-[14px] font-normal ${!isDarkMode ? "text-[#18181B]" : "text-[#E7E7E7]"} capitalize `}>{localStorage.getItem("username").split("_").join(' ')}</h4>
+            <h4 className={`text-[14px] font-normal ${!isDarkMode ? "text-[#18181B]" : "text-[#E7E7E7]"} capitalize `}>{localStorage.getItem("username") && localStorage.getItem("username").split("_").join(' ')}</h4>
             <p className='text-[14px] font-normal text-[#60626C]'>{localStorage.getItem("role") == "admin" ? "Админ" : localStorage.getItem("role") == "merchant" ? "Мерчант" : "Трейдер"}</p>
           </div>
           <div className="flex items-center  cursor-pointer justify-between">

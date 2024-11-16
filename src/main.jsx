@@ -12,11 +12,12 @@ import Dashboard from "./Dash/Dashboard";
 import ContextProvider from "./context/ContextProvider";
 import Deposit from "./Deposit/Deposit";
 import Payout from "./Payouts/Payout";
+import Error from "./Error/Error";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />, children: [{ path: "/login", element: <Login /> },{ path: "/", element: <Login /> },{ path: "/dash", element: <Dashboard /> },{ path: "/deposit", element: <Deposit /> },{ path: "/payout/", element: <Payout /> }]
+    element: <Layout />,errorElement: <Error />, children: [{ path: "/login", element: <Login /> },{ path: "/", element: <Login /> },{ path: "/dash", element: <Dashboard /> },{ path: "/deposit", element: <Deposit /> },{ path: "/payout/", element: <Payout /> },{ path: "*", element: <Error /> }]
   },
   
 ]);

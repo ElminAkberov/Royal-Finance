@@ -178,6 +178,7 @@ const Payout = () => {
                 return true;
             }
         } catch (error) {
+            navigate("/login");
         }
     };
     useEffect(() => {
