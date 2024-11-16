@@ -92,7 +92,7 @@ const Dashboard = () => {
                 if (refreshResponse.ok) {
                     const refreshData = await refreshResponse.json();
                     localStorage.setItem("access", refreshData.access);
-                     handleFilter();
+                    return handleFilter();
                 } else {
                     navigate("/login");
                 }
