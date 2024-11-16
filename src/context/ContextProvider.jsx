@@ -10,7 +10,7 @@ const ContextProvider = ({ children }) => {
     const toggleDarkMode = (checked) => {
         setIsDarkMode(checked);
         localStorage.setItem("dark", checked);
-        fetchData();
+        // fetchData()
     };
 
     return (
