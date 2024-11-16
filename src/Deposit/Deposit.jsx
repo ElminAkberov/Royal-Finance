@@ -74,6 +74,68 @@ const Deposit = () => {
       setStatus("error");
     }
   };
+  let [data, setData] = useState([])
+  const refreshAuth = async () => {
+    try {
+      const refreshToken = localStorage.getItem("refresh");
+      if (!refreshToken) {
+        return;
+      }
+      const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          refresh: refreshToken,
+        }),
+      });
+
+      if (refreshResponse.ok) {
+        const refreshData = await refreshResponse.json();
+        localStorage.setItem("access", refreshData.access);
+        return true;
+      }
+    } catch (error) {
+    }
+  };
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      const refreshToken = localStorage.getItem("refresh");
+      if (refreshToken) {
+        await refreshAuth();
+      }
+    }, 15000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const accessToken = localStorage.getItem("access");
+        if (!accessToken) {
+          navigate("/login");
+          return;
+        }
+        const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/refills/wallets/`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${accessToken}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setData(data);
+        } else {
+          console.error("Error fetching data:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
   return (
     <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : "" }} className={`flex `}>
       <div className={`max-md:hidden`}>
@@ -331,11 +393,15 @@ const Deposit = () => {
               </div>
               <div className="">
                 <h3 className={`text-[24px] mt-8 font-semibold ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сканировать QR код</h3>
-                <img className='max-w-[164px] mx-auto ' src="/assets/img/qr.png" alt="" />
-                <div className="flex justify-center gap-x-2">
-                  <LuCopy size={20} color={`${isDarkMode ? "#E7E7E7" : "#18181B"}`} className='cursor-pointer' onClick={(e) => handleCopy(e)} />
-                  <p className={`text-[14px] text-center ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>0x14ofgm52341of13ofqofekqog1eqrog</p>
-                </div>
+                {data?.map(item => (
+                  <>
+                    <img className='max-w-[164px] mx-auto ' src="" alt="" />
+                    <div className="flex justify-center gap-x-2">
+                      <LuCopy size={20} color={`${isDarkMode ? "#E7E7E7" : "#18181B"}`} className='cursor-pointer' onClick={(e) => handleCopy(e)} />
+                      <p className={`text-[14px] text-center ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>0x14ofgm52341of13ofqofekqog1eqrog</p>
+                    </div>
+                  </>
+                ))}
               </div>
               <div className="flex w-full text-white justify-end">
                 <button type='submit' className='bg-[#2E70F5] px-[37.5px] py-[10px] mt-[32px] font-normal text-[14px] rounded-[8px]'>

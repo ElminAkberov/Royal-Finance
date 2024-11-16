@@ -203,7 +203,7 @@ const Payout = () => {
             if (response.status === 401) {
                 const tokenRefreshed = await refreshAuth();
                 if (tokenRefreshed) {
-                    handleFilter(); // Retry fetch with new token
+                    handleFilter(); 
                 }
             } else if (response.status === 404) {
                 setCurrentPage(1);
