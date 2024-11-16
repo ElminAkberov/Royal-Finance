@@ -158,15 +158,20 @@ const Payout = () => {
 
     const refreshAuth = async () => {
         try {
+            const refreshToken = localStorage.getItem("refresh");
+            if (!refreshToken) {
+                return;
+            }
             const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    refresh: localStorage.getItem("refresh"),
+                    refresh: refreshToken,
                 }),
             });
+
             if (refreshResponse.ok) {
                 const refreshData = await refreshResponse.json();
                 localStorage.setItem("access", refreshData.access);
@@ -177,7 +182,10 @@ const Payout = () => {
     };
     useEffect(() => {
         const intervalId = setInterval(async () => {
-            await refreshAuth();
+            const refreshToken = localStorage.getItem("refresh");
+            if (refreshToken) {
+                await refreshAuth();
+            }
         }, 15000);
 
         return () => clearInterval(intervalId);
@@ -211,6 +219,12 @@ const Payout = () => {
     };
 
     const handleMethod = async () => {
+        const accessToken = localStorage.getItem("access");
+        if (!accessToken) {
+            navigate("/login");
+            return;
+        }
+
         let allMethods = [];
         let page = 1;
         let hasNextPage = true;
@@ -220,14 +234,21 @@ const Payout = () => {
                 const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/?status=${selectStatus}&page=${page}`, {
                     method: "GET",
                     headers: {
-                        "Authorization": `Bearer ${localStorage.getItem("access")}`,
+                        "Authorization": `Bearer ${accessToken}`,
                     }
                 });
 
                 if (response.status === 401) {
+                    // Token yenilemeyi dene
                     const tokenRefreshed = await refreshAuth();
                     if (tokenRefreshed) {
-                        handleMethod(); // Retry fetch with new token
+                        // Yeni token ile tekrar işlem yap
+                        handleMethod();
+                        return; // Yeniden çağırdıktan sonra fonksiyonu sonlandırıyoruz
+                    } else {
+                        // Token yenilenemediğinde çıkış yap
+                        navigate("/login");
+                        return;
                     }
                 } else if (response.ok) {
                     const data = await response.json();
@@ -244,12 +265,16 @@ const Payout = () => {
 
             setMethod(allMethods);
         } catch (error) {
+            console.error(error);
             navigate("/login");
         }
     };
-
     useEffect(() => {
-        handleMethod();
+        const accessToken = localStorage.getItem("access");
+
+        if (accessToken) {
+            handleMethod();
+        }
     }, [currentPage, selectStatus]);
 
     useEffect(() => {
