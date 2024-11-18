@@ -17,7 +17,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   let { isDarkMode, toggleDarkMode } = useContext(Context);
-
+  let [errorInfo, setErrorInfo] = useState("")
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
@@ -35,7 +35,9 @@ const Login = () => {
     })
       .then((res) => {
         if (!res.ok) {
-          return;
+          return res.json().then((err) => {
+            setErrorInfo(err.non_field_errors);
+          });
         }
         return res.json();
       })
@@ -53,7 +55,7 @@ const Login = () => {
           navigate("/dash");
         }, 3000);
       })
-      .catch(() => {
+      .catch((error) => {
         setError(true);
         setSuccess(false);
       })
@@ -70,7 +72,7 @@ const Login = () => {
           "Authorization": `Bearer ${localStorage.getItem("access")}`,
         }
       });
-      {console.log(response)}
+      { console.log(response) }
       if (response.status === 401) {
         const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
           method: "POST",
@@ -110,7 +112,6 @@ const Login = () => {
   if (isLoading) {
     return <MainLoading />;
   }
-
   return (
     <div className={`${isDarkMode ? "bg-linear_dark" : "bg-linear"} inter`}>
       {/* Testiq */}
@@ -136,7 +137,7 @@ const Login = () => {
           </div>
           <div className="">
             <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
-            <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
+            <p className='text-[14px] text-[#484951]'>{errorInfo[0] == "Invalid OTP" ? "Неверный OTP" : "Неверный реквизиты для входа"}</p>
           </div>
         </div>
       </div>}
