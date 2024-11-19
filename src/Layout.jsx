@@ -17,7 +17,7 @@ const Layout = () => {
   useEffect(() => {
     const favicon = document.querySelector("link[rel~='icon']");
     if (favicon) {
-      favicon.href = isDarkMode ? '/assets/logo/Logo_dark.svg' : '/assets/favicon/Favicon_Blue.png';
+      favicon.href = isDarkMode ? '/assets/logo/Logo_dark.svg' : '/assets/logo/Logo_light.svg';
     }
   }, [isDarkMode]);
 
