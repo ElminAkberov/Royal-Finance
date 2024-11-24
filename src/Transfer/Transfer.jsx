@@ -8,7 +8,7 @@ import { FaAngleLeft, FaAngleRight, FaArrowDownShortWide, FaArrowDownWideShort }
 import Loading from '../Loading/Loading';
 import { LuArrowDownUp, LuCopy } from 'react-icons/lu';
 
-const Dashboard = () => {
+const Transfer = () => {
     let [arrows, setArrow] = useState("amount")
     const [loading, setLoading] = useState(true);
     let [copy, setCopy] = useState(false)
@@ -213,11 +213,11 @@ const Dashboard = () => {
                         <div className={` ${!open ? "min-w-[263px]" : "min-w-0"}  transition-all duration-300`}>
                             <div className="">
                                 {localStorage.getItem("role") !== "trader" &&
-                                    <NavLink to={"/dash"} className="py-[12px] min-h-[48px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px] bg-[#2D54DD4D]">
-                                        <svg width="24" height="24" className='fill-[#2D54DD]' viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <NavLink to={"/dash"} className="py-[12px] min-h-[48px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px]">
+                                        <svg width="24" height="24" className='fill-[#8D8F9B] ' viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M21.4286 15.4286H19.6543C19.0714 16.0886 18.4029 16.6629 17.6743 17.1429C16.0457 18.2314 14.1 18.8571 12 18.8571C9.9 18.8571 7.95429 18.2314 6.32571 17.1429C5.59714 16.6629 4.92857 16.0886 4.34571 15.4286H2.57143C1.15714 15.4286 0 16.5857 0 18V21.4286C0 22.8429 1.15714 24 2.57143 24H21.4286C22.8429 24 24 22.8429 24 21.4286V18C24 16.5857 22.8429 15.4286 21.4286 15.4286ZM18.8571 21.4286H5.14286C4.67143 21.4286 4.28571 21.0429 4.28571 20.5714C4.28571 20.1 4.67143 19.7143 5.14286 19.7143H18.8571C19.3286 19.7143 19.7143 20.1 19.7143 20.5714C19.7143 21.0429 19.3286 21.4286 18.8571 21.4286ZM12 0C7.27714 0 3.42857 3.84857 3.42857 8.57143C3.42857 11.3743 4.78286 13.8686 6.86571 15.4286C8.29714 16.5086 10.0714 17.1429 12 17.1429C13.9286 17.1429 15.7029 16.5086 17.1343 15.4286C18.2011 14.6318 19.0674 13.597 19.664 12.4066C20.2607 11.2162 20.5714 9.903 20.5714 8.57143C20.5714 3.84857 16.7229 0 12 0ZM11.5714 7.71429H12.3771C12.9455 7.71429 13.4905 7.94005 13.8924 8.34191C14.2942 8.74378 14.52 9.28882 14.52 9.85714C14.52 10.9029 13.8086 11.76 12.8571 11.9829V12.8571C12.8571 13.3286 12.4714 13.7143 12 13.7143C11.5286 13.7143 11.1429 13.3286 11.1429 12.8571V12.0343H10.2857C9.81429 12.0343 9.42857 11.6571 9.42857 11.1771C9.42857 10.7057 9.81429 10.32 10.2857 10.32H12.3771C12.6171 10.32 12.8057 10.1314 12.8057 9.89143C12.8057 9.61714 12.6171 9.42857 12.3771 9.42857H11.5714C11.04 9.42911 10.5274 9.23217 10.133 8.87598C9.73863 8.5198 9.49067 8.02979 9.43727 7.50107C9.38386 6.97235 9.52882 6.44265 9.84399 6.0148C10.1592 5.58694 10.6221 5.29146 11.1429 5.18571V4.28571C11.1429 3.81429 11.5286 3.42857 12 3.42857C12.4714 3.42857 12.8571 3.81429 12.8571 4.28571V5.14286H13.6629C14.1343 5.14286 14.52 5.52857 14.52 6C14.52 6.47143 14.1343 6.85714 13.6629 6.85714H11.5714C11.3314 6.85714 11.1429 7.04571 11.1429 7.28571C11.1429 7.52571 11.3314 7.71429 11.5714 7.71429Z" />
                                         </svg>
-                                        <p className={`${open && "hidden"} text-[#2D54DD] text-[14px]  font-medium ml-[8px]   whitespace-nowrap`}>Управления депозитами</p>
+                                        <p className={`${open && "hidden"} text-[#BFC0C9] text-[14px]  font-medium ml-[8px]   whitespace-nowrap`}>Управления депозитами</p>
                                     </NavLink>
                                 }
                                 <NavLink to={"/deposit"} className="py-[12px] min-h-[48px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px] ">
@@ -234,7 +234,7 @@ const Dashboard = () => {
                                     </svg>
                                     <p className={`${open && "hidden"} text-[#BFC0C9] text-[14px] font-medium ml-[8px] whitespace-nowrap`}>Выплаты</p>
                                 </NavLink>
-                                <div className="py-[12px] cursor-pointer px-[8px] min-h-[48px] flex items-center rounded-[4px] mx-[12px] ">
+                                <div className="py-[12px] min-h-[48px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px] ">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <g clipPath="url(#clip0_289_6049)">
                                             <path d="M19.2656 0.414062V4.68991H23.5411L19.2656 0.414062Z" fill="#8D8F9B" />
@@ -249,11 +249,11 @@ const Dashboard = () => {
                                     </svg>
                                     <p className={`${open && "hidden"} text-[#BFC0C9] text-[14px] font-medium ml-[8px]`}>Саппорт Транзакций</p>
                                 </div>
-                                <NavLink to={"/transfer"} className="py-[12px] min-h-[48px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px]">
-                                    <svg width="24" height="20" viewBox="0 0 24 20" fill="#8D8F9B" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M20.0625 1.53764C19.71 1.18514 19.71 0.615139 20.0625 0.266389C20.415 -0.0823614 20.985 -0.0861114 21.3337 0.266389L23.7337 2.66639C23.9025 2.83514 23.9963 3.06389 23.9963 3.30389C23.9963 3.54389 23.9025 3.77264 23.7337 3.94139L21.3337 6.34139C20.9812 6.69389 20.4112 6.69389 20.0625 6.34139C19.7137 5.98889 19.71 5.41889 20.0625 5.07014L20.925 4.20764L14.4 4.20014C13.9012 4.20014 13.5 3.79889 13.5 3.30014C13.5 2.80139 13.9012 2.40014 14.4 2.40014H20.9287L20.0625 1.53764ZM3.9375 14.1376L3.075 15.0001H9.6C10.0987 15.0001 10.5 15.4014 10.5 15.9001C10.5 16.3989 10.0987 16.8001 9.6 16.8001H3.07125L3.93375 17.6626C4.28625 18.0151 4.28625 18.5851 3.93375 18.9339C3.58125 19.2826 3.01125 19.2864 2.6625 18.9339L0.2625 16.5376C0.09375 16.3689 0 16.1401 0 15.9001C0 15.6601 0.09375 15.4314 0.2625 15.2626L2.6625 12.8626C3.015 12.5101 3.585 12.5101 3.93375 12.8626C4.2825 13.2151 4.28625 13.7851 3.93375 14.1339L3.9375 14.1376ZM3.6 2.40014H12.6712C12.5325 2.67014 12.45 2.97389 12.45 3.30014C12.45 4.37639 13.3237 5.25014 14.4 5.25014H18.8025C18.6525 5.88764 18.825 6.58139 19.32 7.08014C20.0812 7.84139 21.315 7.84139 22.0763 7.08014L22.8 6.35639V14.4001C22.8 15.7239 21.7237 16.8001 20.4 16.8001H11.3287C11.4675 16.5301 11.55 16.2264 11.55 15.9001C11.55 14.8239 10.6762 13.9501 9.6 13.9501H5.1975C5.3475 13.3126 5.175 12.6189 4.68 12.1201C3.91875 11.3589 2.685 11.3589 1.92375 12.1201L1.2 12.8439V4.80014C1.2 3.47639 2.27625 2.40014 3.6 2.40014ZM6 4.80014H3.6V7.20014C4.92375 7.20014 6 6.12389 6 4.80014ZM20.4 12.0001C19.0762 12.0001 18 13.0764 18 14.4001H20.4V12.0001ZM12 13.2001C12.9548 13.2001 13.8705 12.8209 14.5456 12.1457C15.2207 11.4706 15.6 10.5549 15.6 9.60014C15.6 8.64536 15.2207 7.72969 14.5456 7.05455C13.8705 6.37942 12.9548 6.00014 12 6.00014C11.0452 6.00014 10.1295 6.37942 9.45442 7.05455C8.77928 7.72969 8.4 8.64536 8.4 9.60014C8.4 10.5549 8.77928 11.4706 9.45442 12.1457C10.1295 12.8209 11.0452 13.2001 12 13.2001Z" />
+                                <NavLink to={"/transfer"} className="py-[12px] min-h-[48px] min-h-[48px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px] bg-[#2D54DD4D]">
+                                    <svg width="24" height="20" viewBox="0 0 24 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M20.0625 1.53764C19.71 1.18514 19.71 0.615139 20.0625 0.266389C20.415 -0.0823614 20.985 -0.0861114 21.3337 0.266389L23.7337 2.66639C23.9025 2.83514 23.9963 3.06389 23.9963 3.30389C23.9963 3.54389 23.9025 3.77264 23.7337 3.94139L21.3337 6.34139C20.9812 6.69389 20.4112 6.69389 20.0625 6.34139C19.7137 5.98889 19.71 5.41889 20.0625 5.07014L20.925 4.20764L14.4 4.20014C13.9012 4.20014 13.5 3.79889 13.5 3.30014C13.5 2.80139 13.9012 2.40014 14.4 2.40014H20.9287L20.0625 1.53764ZM3.9375 14.1376L3.075 15.0001H9.6C10.0987 15.0001 10.5 15.4014 10.5 15.9001C10.5 16.3989 10.0987 16.8001 9.6 16.8001H3.07125L3.93375 17.6626C4.28625 18.0151 4.28625 18.5851 3.93375 18.9339C3.58125 19.2826 3.01125 19.2864 2.6625 18.9339L0.2625 16.5376C0.09375 16.3689 0 16.1401 0 15.9001C0 15.6601 0.09375 15.4314 0.2625 15.2626L2.6625 12.8626C3.015 12.5101 3.585 12.5101 3.93375 12.8626C4.2825 13.2151 4.28625 13.7851 3.93375 14.1339L3.9375 14.1376ZM3.6 2.40014H12.6712C12.5325 2.67014 12.45 2.97389 12.45 3.30014C12.45 4.37639 13.3237 5.25014 14.4 5.25014H18.8025C18.6525 5.88764 18.825 6.58139 19.32 7.08014C20.0812 7.84139 21.315 7.84139 22.0763 7.08014L22.8 6.35639V14.4001C22.8 15.7239 21.7237 16.8001 20.4 16.8001H11.3287C11.4675 16.5301 11.55 16.2264 11.55 15.9001C11.55 14.8239 10.6762 13.9501 9.6 13.9501H5.1975C5.3475 13.3126 5.175 12.6189 4.68 12.1201C3.91875 11.3589 2.685 11.3589 1.92375 12.1201L1.2 12.8439V4.80014C1.2 3.47639 2.27625 2.40014 3.6 2.40014ZM6 4.80014H3.6V7.20014C4.92375 7.20014 6 6.12389 6 4.80014ZM20.4 12.0001C19.0762 12.0001 18 13.0764 18 14.4001H20.4V12.0001ZM12 13.2001C12.9548 13.2001 13.8705 12.8209 14.5456 12.1457C15.2207 11.4706 15.6 10.5549 15.6 9.60014C15.6 8.64536 15.2207 7.72969 14.5456 7.05455C13.8705 6.37942 12.9548 6.00014 12 6.00014C11.0452 6.00014 10.1295 6.37942 9.45442 7.05455C8.77928 7.72969 8.4 8.64536 8.4 9.60014C8.4 10.5549 8.77928 11.4706 9.45442 12.1457C10.1295 12.8209 11.0452 13.2001 12 13.2001Z" fill="#2D54DD" />
                                     </svg>
-                                    <p className={`${open && "hidden"} text-[#BFC0C9] text-[14px]  font-medium ml-[8px]  whitespace-nowrap`}>Переводы</p>
+                                    <p className={`${open && "hidden"} text-[#2D54DD] text-[14px]  font-medium ml-[8px]   whitespace-nowrap`}>Переводы</p>
                                 </NavLink>
                                 <NavLink to={"/ad"} className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px] min-h-[48px]">
                                     <svg width="22" height="17" viewBox="0 0 22 17" fill="#8D8F9B" xmlns="http://www.w3.org/2000/svg">
@@ -326,28 +326,27 @@ const Dashboard = () => {
                         {/* links mobile */}
                         <div className={` w-full absolute text-[14px] font-normal z-50 p-4 ${isDarkMode ? "bg-[#1F1F1F] text-[#E7E7E7]" : "bg-white shadow-xl"} right-0 top-16 rounded-[12px]  duration-300 ${navBtn ? "opacity-100" : "opacity-0 invisible"}  `}>
                             {localStorage.getItem("role") !== "trader" &&
-                                <NavLink to={"/dash"} className="py-[12px] cursor-pointer min-h-[48px] px-[8px] flex items-center rounded-[4px]  bg-[#2D54DD4D]">
-                                    <svg width="24" height="24" className='fill-[#2D54DD]' viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <NavLink to={"/dash"} className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px] ">
+                                    <svg width="24" height="24" className='fill-[#8D8F9B]' viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M21.4286 15.4286H19.6543C19.0714 16.0886 18.4029 16.6629 17.6743 17.1429C16.0457 18.2314 14.1 18.8571 12 18.8571C9.9 18.8571 7.95429 18.2314 6.32571 17.1429C5.59714 16.6629 4.92857 16.0886 4.34571 15.4286H2.57143C1.15714 15.4286 0 16.5857 0 18V21.4286C0 22.8429 1.15714 24 2.57143 24H21.4286C22.8429 24 24 22.8429 24 21.4286V18C24 16.5857 22.8429 15.4286 21.4286 15.4286ZM18.8571 21.4286H5.14286C4.67143 21.4286 4.28571 21.0429 4.28571 20.5714C4.28571 20.1 4.67143 19.7143 5.14286 19.7143H18.8571C19.3286 19.7143 19.7143 20.1 19.7143 20.5714C19.7143 21.0429 19.3286 21.4286 18.8571 21.4286ZM12 0C7.27714 0 3.42857 3.84857 3.42857 8.57143C3.42857 11.3743 4.78286 13.8686 6.86571 15.4286C8.29714 16.5086 10.0714 17.1429 12 17.1429C13.9286 17.1429 15.7029 16.5086 17.1343 15.4286C18.2011 14.6318 19.0674 13.597 19.664 12.4066C20.2607 11.2162 20.5714 9.903 20.5714 8.57143C20.5714 3.84857 16.7229 0 12 0ZM11.5714 7.71429H12.3771C12.9455 7.71429 13.4905 7.94005 13.8924 8.34191C14.2942 8.74378 14.52 9.28882 14.52 9.85714C14.52 10.9029 13.8086 11.76 12.8571 11.9829V12.8571C12.8571 13.3286 12.4714 13.7143 12 13.7143C11.5286 13.7143 11.1429 13.3286 11.1429 12.8571V12.0343H10.2857C9.81429 12.0343 9.42857 11.6571 9.42857 11.1771C9.42857 10.7057 9.81429 10.32 10.2857 10.32H12.3771C12.6171 10.32 12.8057 10.1314 12.8057 9.89143C12.8057 9.61714 12.6171 9.42857 12.3771 9.42857H11.5714C11.04 9.42911 10.5274 9.23217 10.133 8.87598C9.73863 8.5198 9.49067 8.02979 9.43727 7.50107C9.38386 6.97235 9.52882 6.44265 9.84399 6.0148C10.1592 5.58694 10.6221 5.29146 11.1429 5.18571V4.28571C11.1429 3.81429 11.5286 3.42857 12 3.42857C12.4714 3.42857 12.8571 3.81429 12.8571 4.28571V5.14286H13.6629C14.1343 5.14286 14.52 5.52857 14.52 6C14.52 6.47143 14.1343 6.85714 13.6629 6.85714H11.5714C11.3314 6.85714 11.1429 7.04571 11.1429 7.28571C11.1429 7.52571 11.3314 7.71429 11.5714 7.71429Z" />
                                     </svg>
-                                    <p className={` text-[#2D54DD] text-[14px]  font-medium ml-[8px] `}>Управления депозитами</p>
+                                    <p className={` text-[#BFC0C9] text-[14px] font-medium ml-[8px]`}>Управления депозитами</p>
                                 </NavLink>
                             }
-                            <NavLink to={"/deposit"} className="py-[12px] min-h-[48px] cursor-pointer px-[8px] flex items-center rounded-[4px]  ">
+                            <NavLink to={"/deposit"} className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px]  ">
                                 <svg width="24" height="24" viewBox="0 0 19 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M6.78571 18.2142H12.2143C12.9607 18.2142 13.5714 17.5633 13.5714 16.7678V9.53558H15.7293C16.9371 9.53558 17.5479 7.97343 16.6929 7.06217L10.4636 0.423003C10.338 0.288913 10.1889 0.182531 10.0247 0.109946C9.86053 0.0373615 9.68453 0 9.50679 0C9.32904 0 9.15304 0.0373615 8.98887 0.109946C8.82469 0.182531 8.67555 0.288913 8.55 0.423003L2.32071 7.06217C1.46571 7.97343 2.06286 9.53558 3.27071 9.53558H5.42857V16.7678C5.42857 17.5633 6.03929 18.2142 6.78571 18.2142ZM1.35714 21.1071H17.6429C18.3893 21.1071 19 21.758 19 22.5536C19 23.3491 18.3893 24 17.6429 24H1.35714C0.610714 24 0 23.3491 0 22.5536C0 21.758 0.610714 21.1071 1.35714 21.1071Z" fill="#8D8F9B" />
                                 </svg>
                                 <p className={`text-[#BFC0C9] text-[14px] font-medium ml-[8px]`}>Пополнение депозита</p>
-
                             </NavLink>
-                            <NavLink to={"/payout"} className="py-[12px] min-h-[48px] cursor-pointer px-[8px] flex items-center rounded-[4px]  ">
+                            <NavLink to={"/payout"} className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px]  ">
                                 <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M22.3633 19.6364H18.5452C16.1391 19.6364 14.1816 17.6789 14.1816 15.2728C14.1816 12.8668 16.1391 10.9093 18.5452 10.9093H22.3633C22.4349 10.9093 22.5059 10.8953 22.5721 10.8679C22.6383 10.8405 22.6985 10.8003 22.7491 10.7496C22.7998 10.699 22.8399 10.6388 22.8673 10.5726C22.8947 10.5064 22.9088 10.4355 22.9088 10.3638V8.7275C22.9088 7.5837 22.0216 6.6535 20.9006 6.56329L17.7681 1.09179C17.4778 0.585754 17.009 0.224073 16.4481 0.0738875C15.8899 -0.0752748 15.3061 0.00306481 14.8064 0.293873L4.06783 6.5457H2.1818C0.978529 6.5457 0 7.52418 0 8.7275V21.8182C0 23.0215 0.978478 24 2.1818 24H20.727C21.9302 24 22.9088 23.0215 22.9088 21.8182V20.1819C22.9088 20.1102 22.8947 20.0393 22.8673 19.9731C22.8399 19.9069 22.7998 19.8467 22.7491 19.7961C22.6985 19.7454 22.6383 19.7052 22.5721 19.6778C22.5059 19.6504 22.4349 19.6363 22.3633 19.6364ZM18.4445 4.4698L19.633 6.5457H14.8789L18.4445 4.4698ZM6.23598 6.5457L15.3556 1.23666C15.6022 1.0923 15.8904 1.05395 16.1658 1.12748C16.4444 1.20204 16.6766 1.38209 16.821 1.63403L16.8221 1.63603L8.38935 6.5457H6.23598Z" fill="#8D8F9B" />
                                     <path d="M22.3642 12H18.5461C16.7414 12 15.2734 13.468 15.2734 15.2727C15.2734 17.0773 16.7414 18.5453 18.5461 18.5453H22.3642C23.2666 18.5453 24.0006 17.8113 24.0006 16.909V13.6363C24.0006 12.734 23.2666 12 22.3642 12ZM18.5461 16.3635C17.9448 16.3635 17.4552 15.874 17.4552 15.2727C17.4552 14.6713 17.9448 14.1818 18.5461 14.1818C19.1475 14.1818 19.637 14.6713 19.637 15.2727C19.637 15.874 19.1475 16.3635 18.5461 16.3635Z" fill="#8D8F9B" />
                                 </svg>
                                 <p className={`text-[#BFC0C9] text-[14px] font-medium ml-[8px]`}>Выплаты</p>
                             </NavLink>
-                            <div className="py-[12px] cursor-pointer px-[8px] min-h-[48px] flex items-center rounded-[4px]  ">
+                            <div className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px]  ">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clipPath="url(#clip0_289_6049)">
                                         <path d="M19.2656 0.414062V4.68991H23.5411L19.2656 0.414062Z" fill="#8D8F9B" />
@@ -362,11 +361,11 @@ const Dashboard = () => {
                                 </svg>
                                 <p className={`text-[#BFC0C9] text-[14px] font-medium ml-[8px]`}>Саппорт Транзакций</p>
                             </div>
-                            <NavLink to={"/transfer"} className="py-[12px] min-h-[48px] cursor-pointer px-[8px] flex items-center rounded-[4px]">
-                                <svg width="24" height="20" viewBox="0 0 24 20" fill="#8D8F9B" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M20.0625 1.53764C19.71 1.18514 19.71 0.615139 20.0625 0.266389C20.415 -0.0823614 20.985 -0.0861114 21.3337 0.266389L23.7337 2.66639C23.9025 2.83514 23.9963 3.06389 23.9963 3.30389C23.9963 3.54389 23.9025 3.77264 23.7337 3.94139L21.3337 6.34139C20.9812 6.69389 20.4112 6.69389 20.0625 6.34139C19.7137 5.98889 19.71 5.41889 20.0625 5.07014L20.925 4.20764L14.4 4.20014C13.9012 4.20014 13.5 3.79889 13.5 3.30014C13.5 2.80139 13.9012 2.40014 14.4 2.40014H20.9287L20.0625 1.53764ZM3.9375 14.1376L3.075 15.0001H9.6C10.0987 15.0001 10.5 15.4014 10.5 15.9001C10.5 16.3989 10.0987 16.8001 9.6 16.8001H3.07125L3.93375 17.6626C4.28625 18.0151 4.28625 18.5851 3.93375 18.9339C3.58125 19.2826 3.01125 19.2864 2.6625 18.9339L0.2625 16.5376C0.09375 16.3689 0 16.1401 0 15.9001C0 15.6601 0.09375 15.4314 0.2625 15.2626L2.6625 12.8626C3.015 12.5101 3.585 12.5101 3.93375 12.8626C4.2825 13.2151 4.28625 13.7851 3.93375 14.1339L3.9375 14.1376ZM3.6 2.40014H12.6712C12.5325 2.67014 12.45 2.97389 12.45 3.30014C12.45 4.37639 13.3237 5.25014 14.4 5.25014H18.8025C18.6525 5.88764 18.825 6.58139 19.32 7.08014C20.0812 7.84139 21.315 7.84139 22.0763 7.08014L22.8 6.35639V14.4001C22.8 15.7239 21.7237 16.8001 20.4 16.8001H11.3287C11.4675 16.5301 11.55 16.2264 11.55 15.9001C11.55 14.8239 10.6762 13.9501 9.6 13.9501H5.1975C5.3475 13.3126 5.175 12.6189 4.68 12.1201C3.91875 11.3589 2.685 11.3589 1.92375 12.1201L1.2 12.8439V4.80014C1.2 3.47639 2.27625 2.40014 3.6 2.40014ZM6 4.80014H3.6V7.20014C4.92375 7.20014 6 6.12389 6 4.80014ZM20.4 12.0001C19.0762 12.0001 18 13.0764 18 14.4001H20.4V12.0001ZM12 13.2001C12.9548 13.2001 13.8705 12.8209 14.5456 12.1457C15.2207 11.4706 15.6 10.5549 15.6 9.60014C15.6 8.64536 15.2207 7.72969 14.5456 7.05455C13.8705 6.37942 12.9548 6.00014 12 6.00014C11.0452 6.00014 10.1295 6.37942 9.45442 7.05455C8.77928 7.72969 8.4 8.64536 8.4 9.60014C8.4 10.5549 8.77928 11.4706 9.45442 12.1457C10.1295 12.8209 11.0452 13.2001 12 13.2001Z" />
+                            <NavLink to={"/transfer"} className="py-[12px]  cursor-pointer px-[8px] flex items-center rounded-[4px]  bg-[#2D54DD4D]">
+                                <svg width="24" height="20" viewBox="0 0 24 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20.0625 1.53764C19.71 1.18514 19.71 0.615139 20.0625 0.266389C20.415 -0.0823614 20.985 -0.0861114 21.3337 0.266389L23.7337 2.66639C23.9025 2.83514 23.9963 3.06389 23.9963 3.30389C23.9963 3.54389 23.9025 3.77264 23.7337 3.94139L21.3337 6.34139C20.9812 6.69389 20.4112 6.69389 20.0625 6.34139C19.7137 5.98889 19.71 5.41889 20.0625 5.07014L20.925 4.20764L14.4 4.20014C13.9012 4.20014 13.5 3.79889 13.5 3.30014C13.5 2.80139 13.9012 2.40014 14.4 2.40014H20.9287L20.0625 1.53764ZM3.9375 14.1376L3.075 15.0001H9.6C10.0987 15.0001 10.5 15.4014 10.5 15.9001C10.5 16.3989 10.0987 16.8001 9.6 16.8001H3.07125L3.93375 17.6626C4.28625 18.0151 4.28625 18.5851 3.93375 18.9339C3.58125 19.2826 3.01125 19.2864 2.6625 18.9339L0.2625 16.5376C0.09375 16.3689 0 16.1401 0 15.9001C0 15.6601 0.09375 15.4314 0.2625 15.2626L2.6625 12.8626C3.015 12.5101 3.585 12.5101 3.93375 12.8626C4.2825 13.2151 4.28625 13.7851 3.93375 14.1339L3.9375 14.1376ZM3.6 2.40014H12.6712C12.5325 2.67014 12.45 2.97389 12.45 3.30014C12.45 4.37639 13.3237 5.25014 14.4 5.25014H18.8025C18.6525 5.88764 18.825 6.58139 19.32 7.08014C20.0812 7.84139 21.315 7.84139 22.0763 7.08014L22.8 6.35639V14.4001C22.8 15.7239 21.7237 16.8001 20.4 16.8001H11.3287C11.4675 16.5301 11.55 16.2264 11.55 15.9001C11.55 14.8239 10.6762 13.9501 9.6 13.9501H5.1975C5.3475 13.3126 5.175 12.6189 4.68 12.1201C3.91875 11.3589 2.685 11.3589 1.92375 12.1201L1.2 12.8439V4.80014C1.2 3.47639 2.27625 2.40014 3.6 2.40014ZM6 4.80014H3.6V7.20014C4.92375 7.20014 6 6.12389 6 4.80014ZM20.4 12.0001C19.0762 12.0001 18 13.0764 18 14.4001H20.4V12.0001ZM12 13.2001C12.9548 13.2001 13.8705 12.8209 14.5456 12.1457C15.2207 11.4706 15.6 10.5549 15.6 9.60014C15.6 8.64536 15.2207 7.72969 14.5456 7.05455C13.8705 6.37942 12.9548 6.00014 12 6.00014C11.0452 6.00014 10.1295 6.37942 9.45442 7.05455C8.77928 7.72969 8.4 8.64536 8.4 9.60014C8.4 10.5549 8.77928 11.4706 9.45442 12.1457C10.1295 12.8209 11.0452 13.2001 12 13.2001Z" fill="#2D54DD" />
                                 </svg>
-                                <p className={` text-[#BFC0C9] text-[14px]  font-medium ml-[8px]  whitespace-nowrap`}>Переводы</p>
+                                <p className={`text-[#2D54DD] text-[14px]  font-medium ml-[8px]  whitespace-nowrap`}>Переводы</p>
                             </NavLink>
                             <NavLink to={"/ad"} className="py-[12px] cursor-pointer px-[8px] flex items-center rounded-[4px] ">
                                 <svg width="22" height="17" viewBox="0 0 22 17" fill="#8D8F9B" xmlns="http://www.w3.org/2000/svg">
@@ -382,7 +381,7 @@ const Dashboard = () => {
                     <div className="flex max-lg:flex-col relative gap-x-2 justify-between pr-4 items-center mb-4">
                         <div className="flex max-[270px]:flex-wrap items-center justify-between w-full ">
 
-                            <h3 className={`font-semibold text-[24px] max-lg:mx-auto max-md:mx-0 md:text-center ${isDarkMode ? "text-[#E7E7E7]" : "text-[#3d457c]"}`}>Управления депозитами</h3>
+                            <h3 className={`font-semibold text-[24px] max-lg:mx-auto max-md:mx-0 md:text-center ${isDarkMode ? "text-[#E7E7E7]" : "text-[#3d457c]"}`}>Переводы</h3>
                             {/* poisk */}
                             <div className="flex gap-x-2 md:hidden ">
                                 {/* search */}
@@ -413,19 +412,13 @@ const Dashboard = () => {
                                     </svg>
                                 </div>
                             </div>
-                            <button onClick={handleDownload} className='text-[#2D54DD] text-[14px] max-md:hidden font-normal border-[#2D54DD] border-2 rounded-[8px] py-[8px] min-w-[145px]'>Скачать отчет</button>
+                            <button onClick={handleDownload} className='text-[#2D54DD] max-lg:mb-2 text-[14px] max-md:hidden font-normal border-[#2D54DD] border-2 rounded-[8px] py-[8px] min-w-[145px] '>Скачать отчет</button>
                         </div>
+                        <button onClick={() => { setModal(!modal) }} className='bg-[#2D54DD] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px] max-md:hidden'>Новый перевод</button>
                     </div>
                     {/* filter */}
                     <div className={`${!filterBtn && "max-md:hidden"} flex max-md:grid max-md:grid-cols-2 max-md:justify-items-center max-[450px]:grid-cols-1  max-[1200px]:justify-center flex-wrap py-[24px] pr-4 text-[14px] gap-2 text-[#717380]`}>
-                        <input onChange={(e) => setHash(e.target.value)} placeholder='Хеш' type="text" className={` pl-[12px] w-[149.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
-                        <select onChange={(e) => setSelectMethod(e.target.value)} className={`${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] min-w-[149.5px] h-[40px]`} name="" id="">
-                            <option value="" defaultValue={"Метод"}>Метод</option>
-                            <option>ABCEX</option>
-                            <option>GARANTEX</option>
-                            <option>USDT</option>
-                            <option>CASH</option>
-                        </select>
+                        <input onChange={(e) => setHash(e.target.value)} placeholder='Трейдер' type="text" className={` pl-[12px] w-[149.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
                         <select onChange={(e) => setSelectStatus(e.target.value)} className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] min-w-[149.5px] h-[40px]`} name="" id="">
                             <option defaultValue={"Статус"} value={""} >Статус</option>
                             <option value={"success"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>Успешно</option>
@@ -473,11 +466,19 @@ const Dashboard = () => {
                                 Применить фильтр
                             </button>
                         </div>
+                        <div className="flex justify-center w-full min-[450px]:hidden mb-2 ">
+                            <button onClick={() => { setModal(!modal) }} className='bg-[#2D54DD] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px]'>
+                                Новый перевод
+                            </button>
+                        </div>
                     </div>
-                    <div className={`hidden justify-center w-full  ${filterBtn && "max-md:flex"} max-[450px]:hidden mb-2 `}>
-                        <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px]'>
-                            Применить фильтр
-                        </button>
+                    <div className={`hidden justify-center w-full  ${filterBtn && "max-md:flex max-md:flex-col items-center gap-y-2"} max-[450px]:hidden mb-2 `}>
+                        <div className="">
+                            <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px]'>
+                                Применить фильтр
+                            </button>
+                        </div>
+                        <button onClick={() => { setModal(!modal) }} className='bg-[#2D54DD] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px]'>Новый перевод</button>
                     </div>
                     <div className={`fixed ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2  -translate-x-1/2 z-50 ${copy ? "top-20" : "top-[-200px] "} duration-300 mx-auto left-1/2 `}>
                         <LuCopy size={18} color={`${isDarkMode ? "#E7E7E7" : "#18181B"}`} />
@@ -504,79 +505,49 @@ const Dashboard = () => {
                                 <DataTable scrollable scrollHeight="65vh" value={data?.results} rows={10} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
                                     <Column body={(rowData) => {
                                         return (
-                                            <div onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>
-                                                <img className='mx-auto' src='/assets/img/ion_eye.svg' />
+                                            <div className='cursor-pointer select-text'>
+                                                ID
                                             </div>
                                         );
-                                    }} headerStyle={{ color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Действия" ></Column>
+                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="ID" ></Column>
+                                    <Column body={(rowData) => {
+                                        return (
+                                            <div className='cursor-pointer select-text'>
+                                                Трейдер 1
+                                            </div>
+                                        );
+                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Трейдер" ></Column>
 
                                     <Column body={(rowData) => {
                                         return (
-                                            <div>
-                                                <div className="selectable-text">
-                                                    <h5>{rowData?.created_at && rowData?.created_at?.split("T")[0]}</h5>
-                                                    <p>{rowData?.created_at && rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
-                                                </div>
-
+                                            <div className='select-text'>
+                                                318в615р-7de34-3j3j-dug6-a98d73v8s8s8
                                             </div>
                                         )
-                                    }} headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время"  ></Column>
+                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Внешний ID"  ></Column>
 
-                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header="Метод" body={(rowData) => <div className="selectable-text">{rowData?.method_name}</div>} ></Column>
-                                    {localStorage.getItem("role") == "admin" &&
-                                        <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="merchant" header="Мерчант" body={(rowData) => <div className="selectable-text">{rowData?.merchant["username"]}</div>} ></Column>
-                                    }
-
-                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" header={
-                                        <div onClick={() => { setArrow(arrows === "amount" ? "-amount" : "amount"); }} style={{ display: 'flex', alignItems: 'center' }}>
-                                            {arrows === "amount" ?
-                                                <FaArrowDownShortWide color={isDarkMode ? "#E7E7E7" : "#2B347C"} size={17} />
-                                                :
-                                                <FaArrowDownWideShort color={isDarkMode ? "#E7E7E7" : "#2B347C"} size={17} />
-                                            }
-                                            Сумма
-                                        </div>
-                                    } headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} cursor-pointer`} body={(rowData) => {
-                                        return (
-                                            <div className="selectable-text">
-                                                <div>{rowData.amount_in_usdt} USDT</div>
-                                            </div>
-                                        );
-                                    }}
-                                    ></Column>
-
-                                    <Column body={(rowData) => {
+                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="price_2" header="Сумма" body={(rowData) => {
                                         return (
                                             <div>
                                                 <>
-                                                    <div className="selectable-text">{rowData.course} {rowData.currency}</div>
-                                                </>
-                                            </div>
-                                        )
-
-                                    }} headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="course" header="Курс/Крипта" ></Column>
-
-                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="price_2" header="Сумма" body={(rowData) => {
-                                        return (
-                                            <div>
-                                                <>
-                                                    <div className="selectable-text">{rowData.amount} RUB</div>
+                                                    <div className="selectable-text">{rowData.amount}</div>
                                                 </>
                                             </div>
                                         )
 
                                     }} ></Column>
 
-                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} body={(rowData) => {
+                                    <Column body={(rowData) => {
                                         return (
-                                            <div >
-                                                <div className="selectable-text">{rowData.hash.slice(0, 8)}...</div>
+                                            <div>
+                                                2024-09-11 16:00
                                             </div>
                                         )
+                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время"  ></Column>
 
-                                    }} field="code" header="Xэш" ></Column>
 
-                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
+
+                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
                                         if (rowData.status === "pending") {
                                             return (
                                                 <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
@@ -609,79 +580,47 @@ const Dashboard = () => {
                                 <DataTable value={data?.results} rows={10} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
                                     <Column body={(rowData) => {
                                         return (
-                                            <div onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>
-                                                <img className='mx-auto' src='/assets/img/ion_eye.svg' />
+                                            <div className='cursor-pointer select-text'>
+                                                ID
                                             </div>
                                         );
-                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Действия" ></Column>
+                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="ID" ></Column>
+                                    <Column body={(rowData) => {
+                                        return (
+                                            <div className='cursor-pointer select-text'>
+                                                Трейдер 1
+                                            </div>
+                                        );
+                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Трейдер" ></Column>
 
                                     <Column body={(rowData) => {
                                         return (
-                                            <div>
-                                                <div>
-                                                    <h5 className="selectable-text">{rowData?.created_at && rowData?.created_at?.split("T")[0]}</h5>
-                                                    <p className="selectable-text">{rowData?.created_at && rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
-                                                </div>
-
+                                            <div className='select-text'>
+                                                318в615р-7de34-3j3j-dug6-a98d73v8s8s8
                                             </div>
                                         )
-                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время"  ></Column>
-
-                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header="Метод" body={(rowData) => <div className="selectable-text">{rowData?.method_name}</div>} ></Column>
-                                    {localStorage.getItem("role") == "admin" &&
-                                        <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="merchant" header="Мерчант" body={(rowData) => <div className="selectable-text">{rowData?.merchant["username"]}</div>} ></Column>
-                                    }
-                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" header={
-                                        <div onClick={() => { setArrow(arrows === "amount" ? "-amount" : "amount"); }} style={{ display: 'flex', alignItems: 'center' }}>
-                                            {arrows === "amount" ?
-                                                <FaArrowDownShortWide color={isDarkMode ? "#E7E7E7" : "#2B347C"} size={17} />
-                                                :
-                                                <FaArrowDownWideShort color={isDarkMode ? "#E7E7E7" : "#2B347C"} size={17} />
-                                            }
-                                            Сумма
-                                        </div>
-                                    } headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} cursor-pointer`} body={(rowData) => {
-                                        return (
-                                            <div>
-                                                <div className="selectable-text">{rowData.amount_in_usdt} USDT</div>
-                                            </div>
-                                        );
-                                    }}
-                                    ></Column>
-
-
-                                    <Column body={(rowData) => {
-                                        return (
-                                            <div>
-                                                <>
-                                                    <div className="selectable-text">{rowData.course} {rowData.currency}</div>
-                                                </>
-                                            </div>
-                                        )
-
-                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="course" header="Курс/Крипта" ></Column>
+                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Внешний ID"  ></Column>
 
                                     <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="price_2" header="Сумма" body={(rowData) => {
                                         return (
                                             <div>
                                                 <>
-                                                    <div className="selectable-text">{rowData.amount} RUB</div>
+                                                    <div className="selectable-text">{rowData.amount}</div>
                                                 </>
                                             </div>
                                         )
 
                                     }} ></Column>
 
-                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} body={(rowData) => {
+                                    <Column body={(rowData) => {
                                         return (
-                                            <div >
-                                                <div className='group cursor-pointer'>{rowData.hash.slice(0, 8)}...
-                                                    <div onClick={() => { navigator.clipboard.writeText(rowData.hash); setCopy(true); setTimeout(() => { setCopy(false) }, 2000) }} className="group-hover:opacity-100 group-hover:visible duration-300  flex items-center gap-x-2 absolute right-0 p-1 opacity-0 invisible" style={{ background: isDarkMode ? "#121212" : "#dfdfec", color: isDarkMode ? "#fff" : "#121212" }}>{rowData.hash}  <LuCopy /></div>
-                                                </div>
+                                            <div>
+                                                2024-09-11 16:00
                                             </div>
                                         )
+                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время"  ></Column>
 
-                                    }} field="code" header="Xэш" ></Column>
+
 
                                     <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
                                         if (rowData.status === "pending") {
@@ -748,44 +687,31 @@ const Dashboard = () => {
                         </div>
                     }
 
-                    {/* <p className={`text-right text-[14px] font-normal relative bottom-[45px] mr-4  duration-300 ${isDarkMode ? "text-[#FFFFFF33]" : "text-[#252840]"}`}>{data.results ? (!filteredCustomers ? data.results.length : filteredCustomers.length) : 0} результата</p> */}
                     <div onClick={() => setModal(!modal)} className={`${!modal && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
                     <div className={`${!modal ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px] `}>
                         <div className="p-8">
                             <div className="">
                                 <div className="mb-8">
-                                    <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Детали депозита </h3>
-                                    <h5 className='text-[14px] text-[#60626C]'>Подробная информация</h5>
+                                    <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Новый перевод </h3>
+                                    <svg onClick={() => setModal(!modal)} className='absolute right-8 top-10 cursor-pointer' width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" fill={`${isDarkMode ? "#fff" : "#222222"} `} />
+                                    </svg>
+                                    <h5 className='text-[14px] text-[#60626C]'>Заполните форму</h5>
                                 </div>
-                                {details?.map((data, index) => (
-                                    <div key={index}>
-                                        <div className="modal">
-                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Дата и время пополнения</h5>
-                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.created_at && `${data?.created_at?.split("T")[0]} ${data?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}`}</p>
-                                        </div>
-                                        <div className="modal">
-                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Метод пополнения</h5>
-                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.currency}</p>
-                                        </div>
-                                        <div className="modal">
-                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сумма пополнения </h5>
-                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.amount} RUB</p>
-                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.amount_in_usdt} USDT</p>
-                                        </div>
-                                        <div className="modal">
-                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Курс обмена</h5>
-                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.course} {data?.currency}</p>
-                                        </div>
-                                        <div className="modal">
-                                            <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Статус</h5>
-                                            <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>{data?.status === "pending" ? "В обработке" : data?.status === "success" ? "Успешно" : "Отклонено"}</p>
-                                        </div>
+                                <div className="modal_payout blur-0  ">
+                                    <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} blur-0 mb-2`}>Желаемая сумма</h5>
+                                    <input style={{ caretColor: `${isDarkMode ? "#fff" : "#000"}` }} required placeholder='Сумма' type="text" className={`${isDarkMode ? "text-white" : ""} blur-0 mb-2 bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
+                                    <div className={`text-[#60626C] text-[12px]`}>
+                                        <p>Минимальная сумма перевода — 10 000.</p>
+                                        <p>Сумма должна быть кратной 1000.</p>
                                     </div>
-                                ))}
-                                <div className="flex w-full text-white justify-end">
-                                    <button onClick={() => setModal(false)} className='bg-[#2E70F5] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                        Закрыть
-                                    </button>
+                                    <div className={`flex justify-end mt-2 text-white`}>
+                                        <form>
+                                            <button type='submit' className='bg-[#2E70F5] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                                Перевести
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -799,4 +725,4 @@ const Dashboard = () => {
     )
 }
 
-export default Dashboard
+export default Transfer

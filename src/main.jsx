@@ -13,13 +13,13 @@ import ContextProvider from "./context/ContextProvider";
 import Deposit from "./Deposit/Deposit";
 import Payout from "./Payouts/Payout";
 import Error from "./Error/Error";
+import Transfer from "./Transfer/Transfer";
+import Ad from "./Advertisement/Ad";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,errorElement: <Error />, children: [{ path: "/login", element: <Login /> },{ path: "/", element: <Login /> },{ path: "/dash", element: <Dashboard /> },{ path: "/deposit", element: <Deposit /> },{ path: "/payout/", element: <Payout /> },{ path: "*", element: <Error /> }]
-  },
-  
+    element: <Layout />,errorElement: <Error />, children: [{ path: "/login", element: <Login /> },{ path: "/", element: <Login /> },{ path: "/dash", element: <Dashboard /> },{ path: "/deposit", element: <Deposit /> },{ path: "/payout/", element: <Payout /> },{ path: "/transfer/", element: <Transfer /> },{ path: "/ad/", element: <Ad /> },{ path: "*", element: <Error /> }]},
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
