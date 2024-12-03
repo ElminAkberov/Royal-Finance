@@ -22,6 +22,7 @@ import { Viewer, Worker } from '@react-pdf-viewer/core';
 import { PDFDocument } from 'pdf-lib';
 import * as pdfjsLib from 'pdfjs-dist';
 import 'pdfjs-dist/build/pdf.worker.entry';
+import { CiFilter } from 'react-icons/ci';
 const Payout = () => {
     const [swiperIndex, setSwiperIndex] = useState(0);
     const mainSwiperRef = useRef(null);
@@ -98,10 +99,11 @@ const Payout = () => {
     const [data, setData] = useState([])
     let [id, setId] = useState(1)
     let [reason, setReason] = useState("")
+    const [filterHide, setFilterHide] = useState(false)
 
     const startDateRef = useRef(null);
     const endDateRef = useRef(null);
-    let [open, setOpen] = useState(true)
+    let [query, setQuery] = useState("")
     let [details, setDetails] = useState([])
     // 1ci action
     const [modal, setModal] = useState(false)
@@ -194,7 +196,7 @@ const Payout = () => {
     const handleFilter = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/?status=${selectStatus}&merchant=${merchant}&trader=${trader}&method=${selectMethod}&created_at_after=${time ? startDate + "T" + time : startDate}&created_at_before=${time_2 ? endDate + "T" + time_2 : endDate}&page=${currentPage === "" ? 1 : currentPage}`, {
+            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/payouts/?q=${query}&status=${selectStatus}&merchant=${merchant}&trader=${trader}&method=${selectMethod}&created_at_after=${time ? startDate + "T" + time : startDate}&created_at_before=${time_2 ? endDate + "T" + time_2 : endDate}&page=${currentPage === "" ? 1 : currentPage}`, {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${localStorage.getItem("access")}`,
@@ -204,7 +206,7 @@ const Payout = () => {
             if (response.status === 401) {
                 const tokenRefreshed = await refreshAuth();
                 if (tokenRefreshed) {
-                    handleFilter(); 
+                    handleFilter();
                 }
             } else if (response.status === 404) {
                 setCurrentPage(1);
@@ -240,14 +242,11 @@ const Payout = () => {
                 });
 
                 if (response.status === 401) {
-                    // Token yenilemeyi dene
                     const tokenRefreshed = await refreshAuth();
                     if (tokenRefreshed) {
-                        // Yeni token ile tekrar işlem yap
                         handleMethod();
-                        return; // Yeniden çağırdıktan sonra fonksiyonu sonlandırıyoruz
+                        return;
                     } else {
-                        // Token yenilenemediğinde çıkış yap
                         navigate("/login");
                         return;
                     }
@@ -763,19 +762,8 @@ const Payout = () => {
                 <div className={`max-md:hidden`}>
                     <div className={`${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5] border"}  min-h-[100vh] h-full z-20  relative `}>
                         <h3 className={`py-[15px] flex items-center justify-start ml-[8px] font-medium px-[8px] ${isDarkMode ? "text-white" : "text-black"}`}><img className='max-w-[40px]' src={`/assets/logo/${isDarkMode ? "Logo_dark.svg" : "Logo_light.svg"}`} /></h3>
-                        <div className={` ${!open ? "min-w-[263px]" : "min-w-0"}  transition-all duration-300`}>
-                            <Header open={open} setOpen={setOpen} />
-                        </div>
-                        <div onClick={() => { setOpen(true) }} className={`bg-[#1773F1] cursor-pointer absolute top-2 right-[-19px]  h-[45px] ${open ? "hidden" : "flex justify-center items-center"}  rounded-r-[4px] w-[19px]`}>
-                            <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M7.40625 2.31512L2.82625 7.35924L7.40625 12.4034L5.99625 13.9529L-0.00375366 7.35924L5.99625 0.765625L7.40625 2.31512Z" fill="white" />
-                            </svg>
-                        </div>
-                        {/* open */}
-                        <div onClick={() => { setOpen(false) }} className={`bg-[#1773F1] cursor-pointer absolute top-2 right-[-19px] ${!open ? "hidden" : "flex justify-center items-center"}  h-[45px]  rounded-r-[4px] w-[19px]`}>
-                            <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M3.93492e-06 10.59L4.58 6L3.93492e-06 1.41L1.41 0L7.41 6L1.41 12L3.93492e-06 10.59Z" fill="white" />
-                            </svg>
+                        <div className={`  transition-all duration-300`}>
+                            <Header />
                         </div>
                     </div>
                 </div>
@@ -828,7 +816,7 @@ const Payout = () => {
                         </div>
                         {/* links */}
                         <div className={` w-full absolute text-[14px] font-normal z-50 p-4 ${isDarkMode ? "bg-[#1F1F1F] text-[#E7E7E7]" : "bg-white shadow-xl"} right-0 top-16 rounded-[12px]  duration-300 ${navBtn ? "opacity-100" : "opacity-0 invisible"}  `}>
-                            <Header_md open={open} />
+                            <Header_md />
                         </div>
                     </div>
                 </div>
@@ -860,8 +848,8 @@ const Payout = () => {
                         {/* lazim */}
                         <div className={` flex max-lg:flex-col items-center max-md:w-full  ${!searchBtn && "max-md:hidden"} `}>
                             <div className="relative max-lg:my-3 max-md:pr-4 max-md:w-full">
-                                <input type="text" placeholder='Поиск' style={{ color: isDarkMode ? "#fff" : "#616E90" }} className={`border  ${isDarkMode ? "border-[#D9D9D940]" : "border-[#C5C7CD]"}   bg-transparent   pl-7 placeholder:text-[#616E90] placeholder:font-medium placeholder:text-xs  relative md:max-w-[150px] max-md:w-full py-[9px] lg:mr-[15px] rounded-[8px] outline-none `} />
-                                <div className="flex items-center top-[3px] absolute">
+                                <input type="text" onChange={(e) => setQuery(e.target.value)} value={query} placeholder='Поиск' style={{ color: isDarkMode ? "#fff" : "#616E90" }} className={`border  ${isDarkMode ? "border-[#D9D9D940]" : "border-[#C5C7CD]"}   bg-transparent   pl-7 placeholder:text-[#616E90] placeholder:font-medium placeholder:text-xs  relative md:max-w-[150px] max-md:w-full py-[9px] lg:mr-[15px] rounded-[8px] outline-none `} />
+                                <div onClick={() => { if (query) handleFilter()}} className="flex items-center top-[3px] absolute cursor-pointer">
                                     <svg width="14" height="14" viewBox="0 0 14 14" fill="#616E90" className='m-[10px]' xmlns="http://www.w3.org/2000/svg">
                                         <path d="M13.1419 14L8.02728 8.88525C7.62011 9.22143 7.15187 9.48452 6.62256 9.67453C6.09324 9.86454 5.54567 9.95955 4.97984 9.95955C3.58802 9.95955 2.41008 9.47767 1.44605 8.51392C0.482017 7.55018 0 6.37253 0 4.98099C0 3.58959 0.481881 2.41154 1.44564 1.44684C2.40941 0.482281 3.58707 0 4.97862 0C6.37005 0 7.54811 0.482009 8.51283 1.44603C9.4774 2.41005 9.95969 3.58796 9.95969 4.97977C9.95969 5.56133 9.86211 6.11677 9.66694 6.64608C9.47163 7.17538 9.21111 7.63575 8.88538 8.02716L14 13.1417L13.1419 14ZM4.97984 8.73827C6.02911 8.73827 6.91782 8.37413 7.64597 7.64586C8.37425 6.91772 8.73839 6.02902 8.73839 4.97977C8.73839 3.93052 8.37425 3.04183 7.64597 2.31369C6.91782 1.58541 6.02911 1.22128 4.97984 1.22128C3.93058 1.22128 3.04187 1.58541 2.31372 2.31369C1.58544 3.04183 1.22129 3.93052 1.22129 4.97977C1.22129 6.02902 1.58544 6.91772 2.31372 7.64586C3.04187 8.37413 3.93058 8.73827 4.97984 8.73827Z" fill="#616E90" />
                                     </svg>
@@ -871,75 +859,80 @@ const Payout = () => {
                         </div>
                     </div>
                     {/* filterler */}
-                    <div className={`${!filterBtn && "max-md:hidden"} flex max-md:grid max-md:grid-cols-2 max-md:justify-items-center max-[450px]:grid-cols-1  max-[1200px]:justify-center flex-wrap   py-[24px] pr-4 text-[14px] gap-2 text-[#717380]`}>
-                        {localStorage.getItem("role") !== "trader" &&
-                            <input onChange={(e) => setMerchant(e.target.value)} placeholder='Мерчант' type="text" className={` h-[40px] w-[155px] pl-[12px] rounded-[4px] ${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
-                        }
-                        {localStorage.getItem("role") !== "merchant" &&
-                            <input onChange={(e) => setTrader(e.target.value)} placeholder='Трейдер' type="text" className={` pl-[12px] w-[155px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
-                        }
-                        <select onChange={(e) => setSelectMethod(e.target.value)} className={`${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] max-w-[155px] min-w-[155px] h-[40px]`} name="" id="">
-                            <option value="" defaultValue={"Метод"}>Метод</option>
-                            {[...new Set(method)].map(item => (
-                                <option key={item}>{item}</option>
-                            ))}
-                        </select>
-                        <select onChange={(e) => setSelectStatus(e.target.value)} className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] max-w-[155px] h-[40px]`} name="" id="">
-                            <option defaultValue={"Статус"} value={""} >Статус</option>
-                            <option value={"completed"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>Завершено</option>
-                            <option value={"in_progress"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>В обработке</option>
-                            <option value={"wait_confirm"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}> Ожидает подтверждения</option>
-                            <option value={"pending"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>В ожидании</option>
-                            <option value={"canceled"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>Отклонено</option>
-                        </select>
-                        <div className={`flex items-center pl-[12px] rounded-[4px] min-w-[155px] max-w-[155px] h-[40px] ${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} cursor-pointer`} onClick={() => startDateRef.current && startDateRef.current.showPicker()}>
-                            <svg width="24" height="24" className='' viewBox="0 0 24 24" fill={`${isDarkMode ? "#E7E7E7" : "#252840"}`} xmlns="http://www.w3.org/2000/svg">
-                                <path d="M20 3H19V2C19 1.45 18.55 1 18 1C17.45 1 17 1.45 17 2V3H7V2C7 1.45 6.55 1 6 1C5.45 1 5 1.45 5 2V3H4C2.9 3 2 3.9 2 5V21C2 22.1 2.9 23 4 23H20C21.1 23 22 22.1 22 21V5C22 3.9 21.1 3 20 3ZM19 21H5C4.45 21 4 20.55 4 20V8H20V20C20 20.55 19.55 21 19 21Z" />
-                            </svg>
-                            <input ref={startDateRef} type="date" name="" id="date-picker" min="2023-01-01" className='bg-transparent outline-none relative mt-1 ml-1 w-full cursor-pointer' onChange={(e) => setStartDate(e.target.value)} defaultValue={"2024-10-16"} />
-                        </div>
-
-                        <div className={`flex items-center pl-[12px] rounded-[4px] w-[155px]  relative h-[40px] ${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC]"}`}>
-                            <div className="">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className='absolute top-2' xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.78 7H11.72C11.32 7 11 7.32 11 7.72V12.44C11 12.79 11.18 13.12 11.49 13.3L15.64 15.79C15.98 15.99 16.42 15.89 16.62 15.55C16.83 15.21 16.72 14.76 16.37 14.56L12.5 12.26V7.72C12.5 7.32 12.18 7 11.78 7Z" fill="#717380" />
+                    <button onClick={() => setFilterHide(!filterHide)} className='text-[#2D54DD] mb-2 flex justify-center items-center gap-x-1 text-[14px] max-md:hidden font-normal border-[#2D54DD] border-2 rounded-[8px] py-[8px] min-w-[115px]'>
+                        <CiFilter size={20} />
+                        {!filterHide ? "Открыть" : "Скрыть"}
+                    </button>
+                    <div className={`${!filterHide ? 'md:hidden' : ''}`}>
+                        <div className={`${!filterBtn && "max-md:hidden"} flex max-md:grid max-md:grid-cols-2 max-md:justify-items-center max-[450px]:grid-cols-1  max-[1200px]:justify-center flex-wrap   py-[24px] pr-4 text-[14px] gap-2 text-[#717380]`}>
+                            {localStorage.getItem("role") !== "trader" &&
+                                <input onChange={(e) => setMerchant(e.target.value)} placeholder='Мерчант' type="text" className={` h-[40px] w-[155px] pl-[12px] rounded-[4px] ${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
+                            }
+                            {localStorage.getItem("role") !== "merchant" &&
+                                <input onChange={(e) => setTrader(e.target.value)} placeholder='Трейдер' type="text" className={` pl-[12px] w-[155px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
+                            }
+                            <select onChange={(e) => setSelectMethod(e.target.value)} className={`${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] max-w-[155px] min-w-[155px] h-[40px]`} name="" id="">
+                                <option value="" defaultValue={"Метод"}>Метод</option>
+                                {[...new Set(method)].map(item => (
+                                    <option key={item}>{item}</option>
+                                ))}
+                            </select>
+                            <select onChange={(e) => setSelectStatus(e.target.value)} className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] max-w-[155px] h-[40px]`} name="" id="">
+                                <option defaultValue={"Статус"} value={""} >Статус</option>
+                                <option value={"completed"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>Завершено</option>
+                                <option value={"in_progress"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>В обработке</option>
+                                <option value={"wait_confirm"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}> Ожидает подтверждения</option>
+                                <option value={"pending"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>В ожидании</option>
+                                <option value={"canceled"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>Отклонено</option>
+                            </select>
+                            <div className={`flex items-center pl-[12px] rounded-[4px] min-w-[155px] max-w-[155px] h-[40px] ${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} cursor-pointer`} onClick={() => startDateRef.current && startDateRef.current.showPicker()}>
+                                <svg width="24" height="24" className='' viewBox="0 0 24 24" fill={`${isDarkMode ? "#E7E7E7" : "#252840"}`} xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 3H19V2C19 1.45 18.55 1 18 1C17.45 1 17 1.45 17 2V3H7V2C7 1.45 6.55 1 6 1C5.45 1 5 1.45 5 2V3H4C2.9 3 2 3.9 2 5V21C2 22.1 2.9 23 4 23H20C21.1 23 22 22.1 22 21V5C22 3.9 21.1 3 20 3ZM19 21H5C4.45 21 4 20.55 4 20V8H20V20C20 20.55 19.55 21 19 21Z" />
                                 </svg>
+                                <input ref={startDateRef} type="date" name="" id="date-picker" min="2023-01-01" className='bg-transparent outline-none relative mt-1 ml-1 w-full cursor-pointer' onChange={(e) => setStartDate(e.target.value)} defaultValue={"2024-10-16"} />
                             </div>
-                            <input value={time} onChange={handleStartTimeChange} type="text" className='bg-transparent outline-none pl-7' placeholder='00:00' />
-                        </div>
 
-                        <div className={`flex overflow-hidden items-center  pl-[12px] rounded-[4px] min-w-[155px] max-w-[155px] h-[40px] ${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC] text-black"}`} onClick={() => endDateRef.current && endDateRef.current.showPicker()}>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M20 3H19V2C19 1.45 18.55 1 18 1C17.45 1 17 1.45 17 2V3H7V2C7 1.45 6.55 1 6 1C5.45 1 5 1.45 5 2V3H4C2.9 3 2 3.9 2 5V21C2 22.1 2.9 23 4 23H20C21.1 23 22 22.1 22 21V5C22 3.9 21.1 3 20 3ZM19 21H5C4.45 21 4 20.55 4 20V8H20V20C20 20.55 19.55 21 19 21Z" fill="#717380" />
-                            </svg>
-                            <div className="">
-                                <input ref={endDateRef} type="date" name="" id="" min="2024-01-01" className='bg-transparent outline-none mt-1 ml-1' onChange={(e) => setEndDate(e.target.value)} defaultValue={"2024-12-12"} />
+                            <div className={`flex items-center pl-[12px] rounded-[4px] w-[155px]  relative h-[40px] ${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC]"}`}>
+                                <div className="">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className='absolute top-2' xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.78 7H11.72C11.32 7 11 7.32 11 7.72V12.44C11 12.79 11.18 13.12 11.49 13.3L15.64 15.79C15.98 15.99 16.42 15.89 16.62 15.55C16.83 15.21 16.72 14.76 16.37 14.56L12.5 12.26V7.72C12.5 7.32 12.18 7 11.78 7Z" fill="#717380" />
+                                    </svg>
+                                </div>
+                                <input value={time} onChange={handleStartTimeChange} type="text" className='bg-transparent outline-none pl-7' placeholder='00:00' />
                             </div>
-                        </div>
-                        <div className={`flex overflow-hidden items-center pl-[12px] relative rounded-[4px] w-[155px] h-[40px] ${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC]"}`}>
-                            <div className="">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className='absolute top-2' xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.78 7H11.72C11.32 7 11 7.32 11 7.72V12.44C11 12.79 11.18 13.12 11.49 13.3L15.64 15.79C15.98 15.99 16.42 15.89 16.62 15.55C16.83 15.21 16.72 14.76 16.37 14.56L12.5 12.26V7.72C12.5 7.32 12.18 7 11.78 7Z" fill="#717380" />
+
+                            <div className={`flex overflow-hidden items-center  pl-[12px] rounded-[4px] min-w-[155px] max-w-[155px] h-[40px] ${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC] text-black"}`} onClick={() => endDateRef.current && endDateRef.current.showPicker()}>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 3H19V2C19 1.45 18.55 1 18 1C17.45 1 17 1.45 17 2V3H7V2C7 1.45 6.55 1 6 1C5.45 1 5 1.45 5 2V3H4C2.9 3 2 3.9 2 5V21C2 22.1 2.9 23 4 23H20C21.1 23 22 22.1 22 21V5C22 3.9 21.1 3 20 3ZM19 21H5C4.45 21 4 20.55 4 20V8H20V20C20 20.55 19.55 21 19 21Z" fill="#717380" />
                                 </svg>
+                                <div className="">
+                                    <input ref={endDateRef} type="date" name="" id="" min="2024-01-01" className='bg-transparent outline-none mt-1 ml-1' onChange={(e) => setEndDate(e.target.value)} defaultValue={"2024-12-12"} />
+                                </div>
                             </div>
-                            <input value={time_2} onChange={handleEndTimeChange} type="text" className='bg-transparent outline-none pl-7' placeholder='23:59' />
+                            <div className={`flex overflow-hidden items-center pl-[12px] relative rounded-[4px] w-[155px] h-[40px] ${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC]"}`}>
+                                <div className="">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className='absolute top-2' xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.78 7H11.72C11.32 7 11 7.32 11 7.72V12.44C11 12.79 11.18 13.12 11.49 13.3L15.64 15.79C15.98 15.99 16.42 15.89 16.62 15.55C16.83 15.21 16.72 14.76 16.37 14.56L12.5 12.26V7.72C12.5 7.32 12.18 7 11.78 7Z" fill="#717380" />
+                                    </svg>
+                                </div>
+                                <input value={time_2} onChange={handleEndTimeChange} type="text" className='bg-transparent outline-none pl-7' placeholder='23:59' />
+                            </div>
+                            <div className="flex justify-center mb-2 max-w-[160px] max-md:hidden">
+                                <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff]  py-[9.5px] font-normal min-w-[156px]  text-[14px] rounded-[8px]'>
+                                    Применить фильтр
+                                </button>
+                            </div>
+                            <div className="flex justify-center w-full min-[450px]:hidden mb-2 ">
+                                <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px]'>
+                                    Применить фильтр
+                                </button>
+                            </div>
                         </div>
-                        <div className="flex justify-center mb-2 max-w-[160px] max-md:hidden">
-                            <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff]  py-[9.5px] font-normal min-w-[156px]  text-[14px] rounded-[8px]'>
-                                Применить фильтр
-                            </button>
-                        </div>
-                        <div className="flex justify-center w-full min-[450px]:hidden mb-2 ">
+                        <div className={`hidden justify-center w-full  ${filterBtn && "max-md:flex"} max-[450px]:hidden mb-2 `}>
                             <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px]'>
                                 Применить фильтр
                             </button>
                         </div>
-                    </div>
-
-                    <div className={`hidden justify-center w-full  ${filterBtn && "max-md:flex"} max-[450px]:hidden mb-2 `}>
-                        <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px]'>
-                            Применить фильтр
-                        </button>
                     </div>
                     {localStorage.getItem("role") == "merchant" &&
                         <div className="flex justify-between flex-wrap gap-x-3">

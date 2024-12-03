@@ -83,7 +83,7 @@ td {
 .p-datatable-thead {
     position: sticky;
     top: 0;
-    z-index: 20;
+    z-index: 18;
 }
 
 .p-datatable-tbody tr td {

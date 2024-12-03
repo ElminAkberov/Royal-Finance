@@ -1,7 +1,7 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
-const Header_md = ({ open }) => {
+const Header_md = () => {
     return (
         <div>
             {localStorage.getItem("role") !== "trader" &&
