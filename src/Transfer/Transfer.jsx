@@ -10,7 +10,7 @@ import { LuArrowDownUp, LuCopy } from 'react-icons/lu';
 import { CiFilter } from 'react-icons/ci';
 
 const Transfer = () => {
-    let [arrows, setArrow] = useState("amount")
+    let [arrows, setArrow] = useState("sent")
     const [loading, setLoading] = useState(true);
     let [copy, setCopy] = useState(false)
     let [dropDown, setDropDown] = useState(false)
@@ -21,6 +21,7 @@ const Transfer = () => {
     const endDateRef = useRef(null);
 
     let [open, setOpen] = useState(true)
+    let [query, setQuery] = useState("")
     let [details, setDetails] = useState([])
     const [modal, setModal] = useState(false)
     const [startDate, setStartDate] = useState("");
@@ -81,7 +82,7 @@ const Transfer = () => {
     const handleFilter = async () => {
         setLoading(true)
         try {
-            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/refills/?method=${selectMethod && selectMethod}&o=${arrows}_in_usdt&status=${selectStatus && selectStatus}&created_at_before=${time_2 ? endDate + "T" + time_2 : endDate}&created_at_after=${time ? startDate + "T" + time : startDate}&hash=${hash && hash}&page=${currentPage === "" ? 1 : currentPage}`, {
+            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/retransfer/?q=${query}&o=${arrows}_amount&status=${selectStatus && selectStatus}&created_at_before=${time_2 ? endDate + "T" + time_2 : endDate}&created_at_after=${time ? startDate + "T" + time : startDate}&page=${currentPage === "" ? 1 : currentPage}`, {
                 method: "GET",
                 headers: {
                     "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
@@ -396,8 +397,8 @@ const Transfer = () => {
                         </div>
                         <div className={` flex  max-lg:flex-col items-center max-md:w-full ${!searchBtn && "max-md:hidden"} `}>
                             <div className="relative max-lg:my-3  max-md:w-full">
-                                <input type="text" placeholder='Поиск' style={{ color: isDarkMode ? "#fff" : "#616E90" }} className={`border  ${isDarkMode ? "border-[#D9D9D940]" : "border-[#C5C7CD]"}   bg-transparent   pl-7 placeholder:text-[#616E90] placeholder:font-medium placeholder:text-xs  relative md:max-w-[150px]  max-md:w-full py-[9px] lg:mr-[15px] rounded-[8px] outline-none `} />
-                                <div className="flex items-center top-[3px] absolute">
+                                <input onChange={(e) => { setQuery(e.target.value) }} value={query} type="text" placeholder='Поиск' style={{ color: isDarkMode ? "#fff" : "#616E90" }} className={`border  ${isDarkMode ? "border-[#D9D9D940]" : "border-[#C5C7CD]"}   bg-transparent   pl-7 placeholder:text-[#616E90] placeholder:font-medium placeholder:text-xs  relative md:max-w-[150px]  max-md:w-full py-[9px] lg:mr-[15px] rounded-[8px] outline-none `} />
+                                <div onClick={() => { if (query) handleFilter() }} className="flex items-center top-[3px] absolute cursor-pointer">
                                     <svg width="14" height="14" viewBox="0 0 14 14" fill="#616E90" className='m-[10px]' xmlns="http://www.w3.org/2000/svg">
                                         <path d="M13.1419 14L8.02728 8.88525C7.62011 9.22143 7.15187 9.48452 6.62256 9.67453C6.09324 9.86454 5.54567 9.95955 4.97984 9.95955C3.58802 9.95955 2.41008 9.47767 1.44605 8.51392C0.482017 7.55018 0 6.37253 0 4.98099C0 3.58959 0.481881 2.41154 1.44564 1.44684C2.40941 0.482281 3.58707 0 4.97862 0C6.37005 0 7.54811 0.482009 8.51283 1.44603C9.4774 2.41005 9.95969 3.58796 9.95969 4.97977C9.95969 5.56133 9.86211 6.11677 9.66694 6.64608C9.47163 7.17538 9.21111 7.63575 8.88538 8.02716L14 13.1417L13.1419 14ZM4.97984 8.73827C6.02911 8.73827 6.91782 8.37413 7.64597 7.64586C8.37425 6.91772 8.73839 6.02902 8.73839 4.97977C8.73839 3.93052 8.37425 3.04183 7.64597 2.31369C6.91782 1.58541 6.02911 1.22128 4.97984 1.22128C3.93058 1.22128 3.04187 1.58541 2.31372 2.31369C1.58544 3.04183 1.22129 3.93052 1.22129 4.97977C1.22129 6.02902 1.58544 6.91772 2.31372 7.64586C3.04187 8.37413 3.93058 8.73827 4.97984 8.73827Z" fill="#616E90" />
                                     </svg>
@@ -503,14 +504,14 @@ const Transfer = () => {
                                     <Column body={(rowData) => {
                                         return (
                                             <div className='cursor-pointer select-text'>
-                                                ID
+                                                {rowData.creator.id}
                                             </div>
                                         );
                                     }} headerStyle={{ backgroundColor: '#D9D9D90A', color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="ID" ></Column>
                                     <Column body={(rowData) => {
                                         return (
                                             <div className='cursor-pointer select-text'>
-                                                Трейдер 1
+                                                {rowData.creator.username}
                                             </div>
                                         );
                                     }} headerStyle={{ backgroundColor: '#D9D9D90A', color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Трейдер" ></Column>
@@ -518,7 +519,7 @@ const Transfer = () => {
                                     <Column body={(rowData) => {
                                         return (
                                             <div className='select-text'>
-                                                318в615р-7de34-3j3j-dug6-a98d73v8s8s8
+                                                {rowData.transaction_id}
                                             </div>
                                         )
                                     }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Внешний ID"  ></Column>
@@ -527,7 +528,7 @@ const Transfer = () => {
                                         return (
                                             <div>
                                                 <>
-                                                    <div className="selectable-text">{rowData.amount}</div>
+                                                    <div className="selectable-text">{rowData.sent_amount}</div>
                                                 </>
                                             </div>
                                         )
@@ -537,7 +538,8 @@ const Transfer = () => {
                                     <Column body={(rowData) => {
                                         return (
                                             <div>
-                                                2024-09-11 16:00
+                                                <p>{rowData?.created_at?.split("T")[0]} {rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
+                                                <p>{rowData?.updated_at?.split("T")[0]} {rowData?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
                                             </div>
                                         )
                                     }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время"  ></Column>
@@ -578,14 +580,14 @@ const Transfer = () => {
                                     <Column body={(rowData) => {
                                         return (
                                             <div className='cursor-pointer select-text'>
-                                                ID
+                                                {rowData.creator.id}
                                             </div>
                                         );
                                     }} headerStyle={{ backgroundColor: '#D9D9D90A', color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="ID" ></Column>
                                     <Column body={(rowData) => {
                                         return (
                                             <div className='cursor-pointer select-text'>
-                                                Трейдер 1
+                                                {rowData.creator.username}
                                             </div>
                                         );
                                     }} headerStyle={{ backgroundColor: '#D9D9D90A', color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Трейдер" ></Column>
@@ -593,7 +595,7 @@ const Transfer = () => {
                                     <Column body={(rowData) => {
                                         return (
                                             <div className='select-text'>
-                                                318в615р-7de34-3j3j-dug6-a98d73v8s8s8
+                                                {rowData.transaction_id}
                                             </div>
                                         )
                                     }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Внешний ID"  ></Column>
@@ -602,7 +604,7 @@ const Transfer = () => {
                                         return (
                                             <div>
                                                 <>
-                                                    <div className="selectable-text">{rowData.amount}</div>
+                                                    <div className="selectable-text">{rowData.sent_amount}</div>
                                                 </>
                                             </div>
                                         )
@@ -612,7 +614,8 @@ const Transfer = () => {
                                     <Column body={(rowData) => {
                                         return (
                                             <div>
-                                                2024-09-11 16:00
+                                                <p>{rowData?.created_at?.split("T")[0]} {rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
+                                                <p>{rowData?.updated_at?.split("T")[0]} {rowData?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
                                             </div>
                                         )
                                     }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время"  ></Column>

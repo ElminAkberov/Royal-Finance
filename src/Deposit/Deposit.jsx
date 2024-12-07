@@ -1,10 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Context } from '../context/ContextProvider'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import Dark from '../Dark'
 import { LuCopy } from 'react-icons/lu'
 
 const Deposit = () => {
+  let navigate = useNavigate()
   let [status, setStatus] = useState(null)
 
   const [modalUsdt, setModalUsdt] = useState(false)
@@ -14,8 +15,8 @@ const Deposit = () => {
   const [hash, setHash] = useState("")
   let [copy, setCopy] = useState(false)
   let [dropDown, setDropDown] = useState(false)
-  let { isDarkMode, toggleDarkMode } = useContext(Context)
-  
+  let { isDarkMode } = useContext(Context)
+
 
   const [navBtn, setNavBtn] = useState(false)
   const handleCopy = (e) => {
@@ -27,7 +28,8 @@ const Deposit = () => {
           setCopy(false)
         }, 1500);
       })
-      .catch(err => {
+      .catch(error => {
+        console.warn(error)
         setCopy(false);
       });
   }
@@ -46,7 +48,6 @@ const Deposit = () => {
           amount: amount
         })
       });
-      const data = await res.json();
       if (res.status === 401) {
         const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
           method: "POST",
@@ -71,6 +72,7 @@ const Deposit = () => {
         setStatus("success");
       }
     } catch (error) {
+      console.warn(error)
       setStatus("error");
     }
   };
@@ -97,6 +99,7 @@ const Deposit = () => {
         return true;
       }
     } catch (error) {
+      console.warn(error)
     }
   };
   useEffect(() => {
@@ -193,7 +196,7 @@ const Deposit = () => {
               </NavLink>
             </div>
           </div>
-          
+
         </div>
       </div>
       <div className={`flex w-full md:justify-end max-md:px-4 ${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5]"} absolute right-0 pr-[16px] py-2 items-center `}>
