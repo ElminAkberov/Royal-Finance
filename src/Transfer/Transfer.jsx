@@ -27,7 +27,8 @@ const Transfer = () => {
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     let [selectMethod, setSelectMethod] = useState("")
-    let [hash, setHash] = useState("")
+    let [trader, setTrader] = useState("")
+    let [externalId, setExternalId] = useState("")
     let [selectStatus, setSelectStatus] = useState("")
 
     const [time, setTime] = useState('');
@@ -82,7 +83,7 @@ const Transfer = () => {
     const handleFilter = async () => {
         setLoading(true)
         try {
-            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/retransfer/?q=${query}&o=${arrows}_amount&status=${selectStatus && selectStatus}&created_at_before=${time_2 ? endDate + "T" + time_2 : endDate}&created_at_after=${time ? startDate + "T" + time : startDate}&page=${currentPage === "" ? 1 : currentPage}`, {
+            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/retransfer/?q=${query}&transaction_id=${externalId}&o=${arrows}_amount&status=${selectStatus && selectStatus}&created_at_before=${time_2 ? endDate + "T" + time_2 : endDate}&created_at_after=${time ? startDate + "T" + time : startDate}&page=${currentPage === "" ? 1 : currentPage}`, {
                 method: "GET",
                 headers: {
                     "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
@@ -415,7 +416,8 @@ const Transfer = () => {
                     </button>
                     <div className={`${!filterHide ? 'md:hidden' : ''}`}>
                         <div className={`${!filterBtn && "max-md:hidden"} flex max-md:grid max-md:grid-cols-2 max-md:justify-items-center max-[450px]:grid-cols-1  max-[1200px]:justify-center flex-wrap py-[24px] pr-4 text-[14px] gap-2 text-[#717380]`}>
-                            <input onChange={(e) => setHash(e.target.value)} placeholder='Трейдер' type="text" className={` pl-[12px] w-[149.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
+                            <input onChange={(e) => setTrader(e.target.value)} placeholder='Трейдер' type="text" className={` pl-[12px] w-[149.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
+                            <input onChange={(e) => setExternalId(e.target.value)} placeholder='Внешний ID' type="text" className={` pl-[12px] w-[149.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
                             <select onChange={(e) => setSelectStatus(e.target.value)} className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] min-w-[149.5px] h-[40px]`} name="" id="">
                                 <option defaultValue={"Статус"} value={""} >Статус</option>
                                 <option value={"success"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>Успешно</option>

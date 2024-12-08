@@ -29,6 +29,8 @@ const Ad = () => {
     const [modal, setModal] = useState(false)
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
+    const [amount, setAmount] = useState({ min: "", max: "" })
+    const [active, setActive] = useState("")
     let [selectMethod, setSelectMethod] = useState("")
     let [hash, setHash] = useState("")
     let [selectStatus, setSelectStatus] = useState("")
@@ -85,7 +87,7 @@ const Ad = () => {
     const handleFilter = async () => {
         setLoading(true)
         try {
-            const response = await fetch(`https://dev.royal-pay.org/api/v1/applications/?q=${query}&method=${selectMethod && selectMethod}&status=${selectStatus && selectStatus}&page=${currentPage === "" ? 1 : currentPage}`, {
+            const response = await fetch(`https://dev.royal-pay.org/api/v1/applications/?q=${query}&min_payouts_amount=${amount["min"]}&max_payouts_amount=${amount["max"]}&is_active=${active}&method=${selectMethod && selectMethod}&status=${selectStatus && selectStatus}&page=${currentPage === "" ? 1 : currentPage}`, {
                 method: "GET",
                 headers: {
                     "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
@@ -182,6 +184,7 @@ const Ad = () => {
     useEffect(() => {
         handleFilter();
     }, [arrows]);
+
     return (
         <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border `}>
             <div className='flex'>
@@ -388,10 +391,10 @@ const Ad = () => {
                     <div className={`${!filterHide ? 'md:hidden' : ''}`}>
                         <div className={`${!filterBtn && "max-md:hidden"} flex max-md:grid max-md:grid-cols-2 max-md:justify-items-center max-[450px]:grid-cols-1  max-[1200px]:justify-center flex-wrap py-[24px] pr-4 text-[14px] gap-2 text-[#717380]`}>
                             <input onChange={(e) => setHash(e.target.value)} placeholder='Трейдер' type="text" className={` pl-[12px] w-[149.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
-                            <input onChange={(e) => setHash(e.target.value)} placeholder='Сумма' type="text" className={` pl-[12px] w-[149.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
+                            <input onChange={(e) => setAmount((prevAmount) => ({ ...prevAmount, min: e.target.value }))} placeholder='Мин cумма' type="number" className={` pl-[12px] w-[149.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
+                            <input onChange={(e) => setAmount((prevAmount) => ({ ...prevAmount, max: e.target.value }))} placeholder='Макс cумма' type="number" className={` pl-[12px] w-[149.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
                             <select onChange={(e) => setSelectStatus(e.target.value)} className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] min-w-[149.5px] h-[40px]`} name="" id="">
                                 <option defaultValue={"Направление"} value={""} >Направление</option>
-
                             </select>
                             <select onChange={(e) => setSelectStatus(e.target.value)} className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] min-w-[149.5px] h-[40px]`} name="" id="">
                                 <option defaultValue={"Банки"} value={""} >Банки</option>
@@ -402,6 +405,11 @@ const Ad = () => {
                                 <option value={"success"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>Успешно</option>
                                 <option value={"pending"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>В обработке</option>
                                 <option value={"failed"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>Отклонено</option>
+                            </select>
+                            <select onChange={(e) => setActive(e.target.value)} className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] min-w-[149.5px] h-[40px]`} name="" id="">
+                                <option defaultValue={"Активность"} value={""}>Активность</option>
+                                <option value={true} className={`${isDarkMode ? "bg-[#121212]" : "bg-[#DFDFEC] text-black"}`}>Активен</option>
+                                <option value={false} className={`${isDarkMode ? "bg-[#121212]" : "bg-[#DFDFEC] text-black"}`}>Неактивен</option>
                             </select>
                             <div className={`flex items-center pl-[12px] rounded-[4px] min-w-[149.5px] h-[40px] ${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} cursor-pointer`} onClick={() => startDateRef.current && startDateRef.current.showPicker()}>
                                 <svg width="24" height="24" className='' viewBox="0 0 24 24" fill={`${isDarkMode ? "#E7E7E7" : "#252840"}`} xmlns="http://www.w3.org/2000/svg">
