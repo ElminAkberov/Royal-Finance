@@ -26,7 +26,7 @@ const Layout = () => {
   }
  
   return (
-    <div className='inter'>
+    <div className='inter overflow-hidden'>
       <Outlet />
     </div>
   );

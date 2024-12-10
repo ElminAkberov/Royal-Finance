@@ -209,7 +209,7 @@ const Dashboard = () => {
         handleFilter();
     }, [arrows]);
     return (
-        <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border `}>
+        <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; }} className={`${isDarkMode ? "bg-[#000]  border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border `}>
             <div className='flex'>
                 <div className="max-md:hidden">
                     <div className={`${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5] border"}  min-h-[100vh] h-full z-20  relative `}>
@@ -236,21 +236,6 @@ const Dashboard = () => {
                                         <path d="M22.3642 12H18.5461C16.7414 12 15.2734 13.468 15.2734 15.2727C15.2734 17.0773 16.7414 18.5453 18.5461 18.5453H22.3642C23.2666 18.5453 24.0006 17.8113 24.0006 16.909V13.6363C24.0006 12.734 23.2666 12 22.3642 12ZM18.5461 16.3635C17.9448 16.3635 17.4552 15.874 17.4552 15.2727C17.4552 14.6713 17.9448 14.1818 18.5461 14.1818C19.1475 14.1818 19.637 14.6713 19.637 15.2727C19.637 15.874 19.1475 16.3635 18.5461 16.3635Z" fill="#8D8F9B" />
                                     </svg>
                                     <p className={`w-max group-hover:opacity-100 opacity-0 group-hover:visible invisible duration-300 absolute left-10 p-2 shadow-xl rounded-md bg-[#fff] text-[#BFC0C9] text-[14px] font-medium ml-[8px] `}>Выплаты</p>
-                                </NavLink>
-                                <NavLink className="py-[12px] z-50 group cursor-pointer px-[8px] min-h-[48px] flex items-center rounded-[4px] mx-[12px] ">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <g clipPath="url(#clip0_289_6049)">
-                                            <path d="M19.2656 0.414062V4.68991H23.5411L19.2656 0.414062Z" fill="#8D8F9B" />
-                                            <path d="M18.5625 6.09375C18.1742 6.09375 17.8594 5.77894 17.8594 5.39062V0H7.78125C6.61814 0 5.67188 0.946266 5.67188 2.10938V9.9698C5.90353 9.9488 6.13795 9.9375 6.375 9.9375C8.77163 9.9375 10.917 11.0332 12.3368 12.75H19.9688C20.3571 12.75 20.6719 13.0648 20.6719 13.4531C20.6719 13.8414 20.3571 14.1562 19.9688 14.1562H13.2632C13.7124 15.0328 13.9888 15.9877 14.0771 16.9688H19.9688C20.3571 16.9688 20.6719 17.2836 20.6719 17.6719C20.6719 18.0602 20.3571 18.375 19.9688 18.375H14.0771C13.8668 20.6971 12.6261 22.7262 10.8168 24H21.8438C23.0069 24 23.9531 23.0537 23.9531 21.8906V6.09375H18.5625ZM19.9688 9.9375H9.65625C9.26794 9.9375 8.95312 9.62269 8.95312 9.23438C8.95312 8.84606 9.26794 8.53125 9.65625 8.53125H19.9688C20.3571 8.53125 20.6719 8.84606 20.6719 9.23438C20.6719 9.62269 20.3571 9.9375 19.9688 9.9375Z" fill="#8D8F9B" />
-                                            <path d="M6.375 11.3438C2.88567 11.3438 0.046875 14.1825 0.046875 17.6719C0.046875 21.1612 2.88567 24 6.375 24C9.86433 24 12.7031 21.1612 12.7031 17.6719C12.7031 14.1825 9.86433 11.3438 6.375 11.3438ZM8.25 18.375H6.375C5.98669 18.375 5.67188 18.0602 5.67188 17.6719V14.8594C5.67188 14.4711 5.98669 14.1562 6.375 14.1562C6.76331 14.1562 7.07812 14.4711 7.07812 14.8594V16.9688H8.25C8.63831 16.9688 8.95312 17.2836 8.95312 17.6719C8.95312 18.0602 8.63831 18.375 8.25 18.375Z" fill="#8D8F9B" />
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_289_6049">
-                                                <rect width="24" height="24" fill="white" />
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
-                                    <p className={` w-max group-hover:opacity-100 opacity-0 group-hover:visible invisible duration-300 absolute left-10 p-2 shadow-xl rounded-md bg-[#fff] text-[#BFC0C9] text-[14px] font-medium ml-[8px]`}>Саппорт Транзакций</p>
                                 </NavLink>
                                 <NavLink to={"/transfer"} className="py-[12px] group min-h-[48px] cursor-pointer px-[8px] flex items-center rounded-[4px] mx-[12px]">
                                     <svg width="24" height="20" viewBox="0 0 24 20" fill="#8D8F9B" xmlns="http://www.w3.org/2000/svg">
@@ -339,21 +324,6 @@ const Dashboard = () => {
                                 </svg>
                                 <p className={`text-[#BFC0C9] text-[14px] font-medium ml-[8px]`}>Выплаты</p>
                             </NavLink>
-                            <div className="py-[12px] cursor-pointer px-[8px] min-h-[48px] flex items-center rounded-[4px]  ">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <g clipPath="url(#clip0_289_6049)">
-                                        <path d="M19.2656 0.414062V4.68991H23.5411L19.2656 0.414062Z" fill="#8D8F9B" />
-                                        <path d="M18.5625 6.09375C18.1742 6.09375 17.8594 5.77894 17.8594 5.39062V0H7.78125C6.61814 0 5.67188 0.946266 5.67188 2.10938V9.9698C5.90353 9.9488 6.13795 9.9375 6.375 9.9375C8.77163 9.9375 10.917 11.0332 12.3368 12.75H19.9688C20.3571 12.75 20.6719 13.0648 20.6719 13.4531C20.6719 13.8414 20.3571 14.1562 19.9688 14.1562H13.2632C13.7124 15.0328 13.9888 15.9877 14.0771 16.9688H19.9688C20.3571 16.9688 20.6719 17.2836 20.6719 17.6719C20.6719 18.0602 20.3571 18.375 19.9688 18.375H14.0771C13.8668 20.6971 12.6261 22.7262 10.8168 24H21.8438C23.0069 24 23.9531 23.0537 23.9531 21.8906V6.09375H18.5625ZM19.9688 9.9375H9.65625C9.26794 9.9375 8.95312 9.62269 8.95312 9.23438C8.95312 8.84606 9.26794 8.53125 9.65625 8.53125H19.9688C20.3571 8.53125 20.6719 8.84606 20.6719 9.23438C20.6719 9.62269 20.3571 9.9375 19.9688 9.9375Z" fill="#8D8F9B" />
-                                        <path d="M6.375 11.3438C2.88567 11.3438 0.046875 14.1825 0.046875 17.6719C0.046875 21.1612 2.88567 24 6.375 24C9.86433 24 12.7031 21.1612 12.7031 17.6719C12.7031 14.1825 9.86433 11.3438 6.375 11.3438ZM8.25 18.375H6.375C5.98669 18.375 5.67188 18.0602 5.67188 17.6719V14.8594C5.67188 14.4711 5.98669 14.1562 6.375 14.1562C6.76331 14.1562 7.07812 14.4711 7.07812 14.8594V16.9688H8.25C8.63831 16.9688 8.95312 17.2836 8.95312 17.6719C8.95312 18.0602 8.63831 18.375 8.25 18.375Z" fill="#8D8F9B" />
-                                    </g>
-                                    <defs>
-                                        <clipPath id="clip0_289_6049">
-                                            <rect width="24" height="24" fill="white" />
-                                        </clipPath>
-                                    </defs>
-                                </svg>
-                                <p className={`text-[#BFC0C9] text-[14px] font-medium ml-[8px]`}>Саппорт Транзакций</p>
-                            </div>
                             <NavLink to={"/transfer"} className="py-[12px] min-h-[48px] cursor-pointer px-[8px] flex items-center rounded-[4px]">
                                 <svg width="24" height="20" viewBox="0 0 24 20" fill="#8D8F9B" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M20.0625 1.53764C19.71 1.18514 19.71 0.615139 20.0625 0.266389C20.415 -0.0823614 20.985 -0.0861114 21.3337 0.266389L23.7337 2.66639C23.9025 2.83514 23.9963 3.06389 23.9963 3.30389C23.9963 3.54389 23.9025 3.77264 23.7337 3.94139L21.3337 6.34139C20.9812 6.69389 20.4112 6.69389 20.0625 6.34139C19.7137 5.98889 19.71 5.41889 20.0625 5.07014L20.925 4.20764L14.4 4.20014C13.9012 4.20014 13.5 3.79889 13.5 3.30014C13.5 2.80139 13.9012 2.40014 14.4 2.40014H20.9287L20.0625 1.53764ZM3.9375 14.1376L3.075 15.0001H9.6C10.0987 15.0001 10.5 15.4014 10.5 15.9001C10.5 16.3989 10.0987 16.8001 9.6 16.8001H3.07125L3.93375 17.6626C4.28625 18.0151 4.28625 18.5851 3.93375 18.9339C3.58125 19.2826 3.01125 19.2864 2.6625 18.9339L0.2625 16.5376C0.09375 16.3689 0 16.1401 0 15.9001C0 15.6601 0.09375 15.4314 0.2625 15.2626L2.6625 12.8626C3.015 12.5101 3.585 12.5101 3.93375 12.8626C4.2825 13.2151 4.28625 13.7851 3.93375 14.1339L3.9375 14.1376ZM3.6 2.40014H12.6712C12.5325 2.67014 12.45 2.97389 12.45 3.30014C12.45 4.37639 13.3237 5.25014 14.4 5.25014H18.8025C18.6525 5.88764 18.825 6.58139 19.32 7.08014C20.0812 7.84139 21.315 7.84139 22.0763 7.08014L22.8 6.35639V14.4001C22.8 15.7239 21.7237 16.8001 20.4 16.8001H11.3287C11.4675 16.5301 11.55 16.2264 11.55 15.9001C11.55 14.8239 10.6762 13.9501 9.6 13.9501H5.1975C5.3475 13.3126 5.175 12.6189 4.68 12.1201C3.91875 11.3589 2.685 11.3589 1.92375 12.1201L1.2 12.8439V4.80014C1.2 3.47639 2.27625 2.40014 3.6 2.40014ZM6 4.80014H3.6V7.20014C4.92375 7.20014 6 6.12389 6 4.80014ZM20.4 12.0001C19.0762 12.0001 18 13.0764 18 14.4001H20.4V12.0001ZM12 13.2001C12.9548 13.2001 13.8705 12.8209 14.5456 12.1457C15.2207 11.4706 15.6 10.5549 15.6 9.60014C15.6 8.64536 15.2207 7.72969 14.5456 7.05455C13.8705 6.37942 12.9548 6.00014 12 6.00014C11.0452 6.00014 10.1295 6.37942 9.45442 7.05455C8.77928 7.72969 8.4 8.64536 8.4 9.60014C8.4 10.5549 8.77928 11.4706 9.45442 12.1457C10.1295 12.8209 11.0452 13.2001 12 13.2001Z" />
@@ -399,7 +369,7 @@ const Dashboard = () => {
                         <div className={` flex  max-lg:flex-col items-center max-md:w-full ${!searchBtn && "max-md:hidden"} `}>
                             <div className="relative max-lg:my-3 max-md:w-full">
                                 <input onChange={(e) => setQuery(e.target.value)} value={query} type="text" placeholder='Поиск' style={{ color: isDarkMode ? "#fff" : "#616E90" }} className={`border  ${isDarkMode ? "border-[#D9D9D940]" : "border-[#C5C7CD]"}   bg-transparent   pl-7 placeholder:text-[#616E90] placeholder:font-medium placeholder:text-xs  relative md:max-w-[150px]  max-md:w-full py-[9px] lg:mr-[15px] rounded-[8px] outline-none `} />
-                                <div onClick={() => { if (query) handleFilter() }} className="flex items-center top-[3px] absolute cursor-pointer">
+                                <div onClick={() => { handleFilter() }} className="flex items-center top-[3px] absolute cursor-pointer">
                                     <svg width="14" height="14" viewBox="0 0 14 14" fill="#616E90" className='m-[10px]' xmlns="http://www.w3.org/2000/svg">
                                         <path d="M13.1419 14L8.02728 8.88525C7.62011 9.22143 7.15187 9.48452 6.62256 9.67453C6.09324 9.86454 5.54567 9.95955 4.97984 9.95955C3.58802 9.95955 2.41008 9.47767 1.44605 8.51392C0.482017 7.55018 0 6.37253 0 4.98099C0 3.58959 0.481881 2.41154 1.44564 1.44684C2.40941 0.482281 3.58707 0 4.97862 0C6.37005 0 7.54811 0.482009 8.51283 1.44603C9.4774 2.41005 9.95969 3.58796 9.95969 4.97977C9.95969 5.56133 9.86211 6.11677 9.66694 6.64608C9.47163 7.17538 9.21111 7.63575 8.88538 8.02716L14 13.1417L13.1419 14ZM4.97984 8.73827C6.02911 8.73827 6.91782 8.37413 7.64597 7.64586C8.37425 6.91772 8.73839 6.02902 8.73839 4.97977C8.73839 3.93052 8.37425 3.04183 7.64597 2.31369C6.91782 1.58541 6.02911 1.22128 4.97984 1.22128C3.93058 1.22128 3.04187 1.58541 2.31372 2.31369C1.58544 3.04183 1.22129 3.93052 1.22129 4.97977C1.22129 6.02902 1.58544 6.91772 2.31372 7.64586C3.04187 8.37413 3.93058 8.73827 4.97984 8.73827Z" fill="#616E90" />
                                     </svg>
@@ -482,8 +452,8 @@ const Dashboard = () => {
                         <LuCopy size={18} color={`${isDarkMode ? "#E7E7E7" : "#18181B"}`} />
                         <h4 className={`text-sm ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`} >Ссылка скопирована</h4>
                     </div>
-                    <div className={`${!loading ? (isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]") : ""}`}>
-                        <div className="hidden max-md:block">
+                    <div className={`overflow-hidden ${!loading ? (isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]") : ""}`}>
+                        <div className="hidden max-md:block ">
                             <style >
                                 {`
 .p-datatable-thead {
@@ -500,104 +470,82 @@ const Dashboard = () => {
                             {loading ? (
                                 <Loading />
                             ) :
-                                <DataTable scrollable scrollHeight="65vh" value={data?.results} rows={10} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
-                                    <Column body={(rowData) => {
-                                        return (
-                                            <div onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>
-                                                <img className='mx-auto' src='/assets/img/ion_eye.svg' />
-                                            </div>
-                                        );
-                                    }} headerStyle={{ color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Действия" ></Column>
+                                <div className={`max-h-[65vh] overflow-y-scroll overflow-hidden ${isDarkMode ? "text-white" : ""}`}>
+                                    {
+                                        data?.results.map((dashData, index) => (
+                                            <div className=''>
+                                                <div className={`p-2 border ${isDarkMode ? "border-black" : ""} `}>
+                                                    <div className="flex justify-between items-center">
+                                                        <div className="selectable-text font-bold text-[16px]">{dashData?.merchant["username"]} <span className="selectable-text">{dashData.method_name && `- ${dashData?.method_name}`} </span></div>
+                                                        <div onClick={() => { handleShow(dashData); setModal(true) }} className='cursor-pointer'>
+                                                            <img className='mx-auto' src='/assets/img/ion_eye.svg' />
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-[15px]">
+                                                        <div className="selectable-text">{dashData.amount_in_usdt} USDT</div>
+                                                        <div className='text-xs mb-[2px]'><span className='text-[#616E90] '>Курс/Крипта </span><span className="selectable-text">{dashData.course} {dashData.currency}</span></div>
+                                                        <div className="text-xs mb-[2px]">
+                                                            <span className='text-[#616E90]'>Xэш </span>
+                                                            <span className='group cursor-pointer'>
+                                                                {dashData.hash.slice(0, 10)}...
+                                                                <div
+                                                                    onClick={() => {
+                                                                        navigator.clipboard.writeText(dashData.hash);
+                                                                        setCopy(true);
+                                                                        setTimeout(() => {
+                                                                            setCopy(false);
+                                                                        }, 2000);
+                                                                    }}
+                                                                    className="group-hover:opacity-100 group-hover:visible duration-300 flex flex-col items-center gap-y-1 absolute left-0 p-1 opacity-0 invisible"
+                                                                    style={{
+                                                                        background: isDarkMode ? "#121212" : "#dfdfec",
+                                                                        color: isDarkMode ? "#fff" : "#121212",
+                                                                    }}
+                                                                >
+                                                                    {dashData.hash.length > 15 ?
+                                                                        <>
+                                                                            <div>{dashData.hash.slice(0, dashData.hash.length / 2)}</div> {/* İlk yarısı */}
+                                                                            <div>{dashData.hash.slice(dashData.hash.length / 2)}</div>    {/* İkinci yarısı */}
+                                                                        </>
+                                                                        : <>{dashData.hash}</>
+                                                                    }
+                                                                    <LuCopy />
+                                                                </div>
 
-                                    <Column body={(rowData) => {
-                                        return (
-                                            <div>
-                                                <div className="selectable-text">
-                                                    <h5>{rowData?.created_at && rowData?.created_at?.split("T")[0]}</h5>
-                                                    <p>{rowData?.created_at && rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
+                                                            </span>
+                                                        </div>
+                                                        <div className="text-xs">
+                                                            <span className='text-[#616E90]'>
+                                                                Дата и время
+                                                            </span>
+                                                            <span className="">
+                                                                <span className="selectable-text"> {dashData?.created_at && dashData?.created_at?.split("T")[0]} </span>
+                                                                <span className="selectable-text"> {dashData?.created_at && dashData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</span>
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex justify-end">
+                                                            {dashData.status === "pending" ? (
+                                                                <div className="bg-[#FFC107] flex justify-center text-[12px] w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]">
+                                                                    В обработке
+                                                                </div>
+                                                            ) : dashData.status === "success" ? (
+                                                                <div className="bg-[#37B67E] flex justify-center text-[12px] w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]">
+                                                                    Успешно
+                                                                </div>
+                                                            ) : (
+                                                                <div className="bg-[#CE2E2E] flex justify-center text-[12px] w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]">
+                                                                    Отклонено
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                    </div>
                                                 </div>
-
                                             </div>
-                                        )
-                                    }} headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время"  ></Column>
-
-                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header="Метод" body={(rowData) => <div className="selectable-text">{rowData?.method_name}</div>} ></Column>
-                                    {localStorage.getItem("role") == "admin" &&
-                                        <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="merchant" header="Мерчант" body={(rowData) => <div className="selectable-text">{rowData?.merchant["username"]}</div>} ></Column>
+                                        ))
                                     }
+                                </div>
 
-                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" header={
-                                        <div onClick={() => { setArrow(arrows === "amount" ? "-amount" : "amount"); }} style={{ display: 'flex', alignItems: 'center' }}>
-                                            {arrows === "amount" ?
-                                                <FaArrowDownShortWide color={isDarkMode ? "#E7E7E7" : "#2B347C"} size={17} />
-                                                :
-                                                <FaArrowDownWideShort color={isDarkMode ? "#E7E7E7" : "#2B347C"} size={17} />
-                                            }
-                                            Сумма
-                                        </div>
-                                    } headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} cursor-pointer`} body={(rowData) => {
-                                        return (
-                                            <div className="selectable-text">
-                                                <div>{rowData.amount_in_usdt} USDT</div>
-                                            </div>
-                                        );
-                                    }}
-                                    ></Column>
-
-                                    <Column body={(rowData) => {
-                                        return (
-                                            <div>
-                                                <>
-                                                    <div className="selectable-text">{rowData.course} {rowData.currency}</div>
-                                                </>
-                                            </div>
-                                        )
-
-                                    }} headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="course" header="Курс/Крипта" ></Column>
-
-                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="price_2" header="Сумма" body={(rowData) => {
-                                        return (
-                                            <div>
-                                                <>
-                                                    <div className="selectable-text">{rowData.amount} RUB</div>
-                                                </>
-                                            </div>
-                                        )
-
-                                    }} ></Column>
-
-                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} body={(rowData) => {
-                                        return (
-                                            <div >
-                                                <div className="selectable-text">{rowData.hash.slice(0, 8)}...</div>
-                                            </div>
-                                        )
-
-                                    }} field="code" header="Xэш" ></Column>
-
-                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
-                                        if (rowData.status === "pending") {
-                                            return (
-                                                <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                    В обработке
-                                                </div>
-                                            );
-                                        } else if (rowData.status == "success") {
-                                            return (
-                                                <div className='bg-[#37B67E]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                    Успешно
-                                                </div>
-                                            )
-                                        } else {
-                                            return (
-                                                <div className='bg-[#CE2E2E] flex  justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                    Отклонено
-                                                </div>
-                                            )
-                                        }
-                                    }}></Column>
-
-                                </DataTable>
                             }
                         </div>
 
