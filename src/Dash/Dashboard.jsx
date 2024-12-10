@@ -470,7 +470,7 @@ const Dashboard = () => {
                             {loading ? (
                                 <Loading />
                             ) :
-                                <div className={`max-h-[65vh] overflow-y-scroll overflow-hidden ${isDarkMode ? "text-white" : ""}`}>
+                                <div className={`max-h-[70dvh] overflow-y-scroll overflow-hidden ${isDarkMode ? "text-white" : ""}`}>
                                     {
                                         data?.results.map((dashData, index) => (
                                             <div className=''>
@@ -657,7 +657,7 @@ const Dashboard = () => {
                         {/* izz */}
                     </div>
                     {loading ? "" :
-                        <div className="flex items-center justify-between">
+                        <div className=" flex items-center justify-between ">
                             {data?.count >= 10 &&
                                 <div className="pagination-buttons bg-transparent flex items-center my-4">
 
