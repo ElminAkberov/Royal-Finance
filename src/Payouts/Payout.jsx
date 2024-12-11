@@ -1176,158 +1176,98 @@ const Payout = () => {
                             {loading ? (
                                 <Loading />
                             ) :
-                                <DataTable value={data?.results} scrollable
-                                    scrollHeight="65vh" rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
-                                    <Column body={(rowData) => {
-                                        return (
-                                            <>
-                                                <div className='flex gap-x-[10px]'>
-                                                    {(rowData.status == "completed" || rowData.status == "canceled") ?
-                                                        <>
-                                                            <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
-                                                                <img className='mx-auto min-w-[20px]' src='/assets/img/ion_eye.svg' />
-                                                            </div>
-                                                            {rowData.receipts.length > 0 &&
-                                                                <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
-                                                                    <img className='mx-auto min-w-[18px]' src='/assets/img/Group.svg' />
-                                                                </div>
-                                                            }
-                                                        </>
-                                                        :
-                                                        <>
-                                                            <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
-                                                                <img className='mx-auto min-w-[20px]' src='/assets/img/ion_eye.svg' />
-                                                            </div>
-                                                            {rowData.status == "in_progress" &&
-                                                                <div onClick={() => { handleShow(rowData); setCancelCheck(!cancelCheck); setId(rowData.id) }} className="cursor-pointer">
-                                                                    <img className='mx-auto min-w-[24px]' src='/assets/img/Connect.svg' />
-                                                                </div>
-                                                            }
-                                                            {rowData.receipts.length > 0 &&
-                                                                <div onClick={() => { handleShow(rowData); setZoom(!zoom) }} className="cursor-pointer">
-                                                                    <img className='mx-auto min-w-[18px]' src='/assets/img/Group.svg' />
-                                                                </div>
-                                                            }
+                                <div className={`max-h-[70dvh] overflow-y-scroll overflow-hidden ${isDarkMode ? "text-white" : ""}`}>
+                                    {
+                                        data?.results.map((dashData, index) => (
+                                            <div className=''>
+                                                <div className={`p-2 border ${isDarkMode ? "border-black" : ""} `}>
+                                                    <div className='text-xs mb-[2px]'><span className='text-[#616E90] '>ID </span><span className="selectable-text">{dashData.id}</span></div>
+                                                    <div className="flex justify-between items-center">
+                                                        <div className="selectable-text font-bold text-[16px]">{dashData.selected_traders.length > 0 ? dashData.selected_traders.map((person, index) => <span key={index}>{person.username}{index !== dashData.selected_traders.length - 1 && ','}</span>) : "-"} {dashData.method["name"] && `- ${dashData?.method["name"]}`} </div>
 
-                                                        </>
-                                                    }
-                                                </div>
-                                            </>
-                                        );
-                                    }} headerStyle={{ color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Действия" ></Column>
+                                                        <div className='flex justify-center gap-x-[10px]'>
+                                                            {(dashData.status == "completed" || dashData.status == "canceled") ?
+                                                                <>
+                                                                    <div onClick={() => { handleShow(dashData); setModal(true); setId(dashData.id) }} className='cursor-pointer'>
+                                                                        <img className='mx-auto min-w-[24px]' src='/assets/img/ion_eye.svg' />
+                                                                    </div>
 
-                                    <Column headerStyle={{ padding: "16px 8px", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="method" header=" ID " body={(rowData) => <div className='selectable-text'>{rowData.id}</div>} ></Column>
+                                                                    {dashData.receipts.length > 0 &&
+                                                                        <div onClick={() => { handleShow(dashData); setZoom(!zoom); setId(dashData.id); }} className="cursor-pointer">
+                                                                            <img className='mx-auto min-w-[20px]' src='/assets/img/Group.svg' />
+                                                                        </div>
+                                                                    }
+                                                                </>
+                                                                :
+                                                                <>
+                                                                    <div onClick={() => { handleShow(dashData); setModal(true); setId(dashData.id) }} className='cursor-pointer'>
+                                                                        <img className='mx-auto min-w-[24px]' src='/assets/img/ion_eye.svg' />
+                                                                    </div>
+                                                                    {dashData.status == "in_progress" &&
+                                                                        <div onClick={() => { handleShow(dashData); setCancelCheck(!cancelCheck); setId(dashData.id) }} className="cursor-pointer">
+                                                                            <img className='mx-auto min-w-[24px]' src='/assets/img/Connect.svg' />
+                                                                        </div>
+                                                                    }
+                                                                    {dashData.receipts.length > 0 &&
+                                                                        <div onClick={() => { handleShow(dashData); setZoom(!zoom); setId(dashData.id); }} className="cursor-pointer">
+                                                                            <img className='mx-auto min-w-[20px]' src='/assets/img/Group.svg' />
+                                                                        </div>
+                                                                    }
 
-                                    <Column body={(rowData) => {
-                                        return (
-                                            <div>
-                                                <div>
-                                                    <h5 className='selectable-text'>{rowData?.created_at && rowData?.created_at?.split("T")[0]} {rowData?.created_at && rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
-                                                    <h5 className='selectable-text'>{rowData?.created_at && rowData?.updated_at?.split("T")[0]} {rowData?.created_at && rowData?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
+                                                                </>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-[15px]">
+                                                        <div className="selectable-text">{dashData.bank} Банк </div>
+                                                        <div className='text-xs mb-[2px]'><span className='text-[#616E90] '>Мерчант </span><span className="selectable-text">{dashData?.merchant["username"]}</span></div>
+                                                        <div className='text-xs mb-[2px]'><span className='text-[#616E90] '>Трейдер </span><span className="selectable-text">{dashData.trader ? dashData.trader["username"] : "-"}</span></div>
+                                                        <div className='text-xs mb-[2px]'><span className='text-[#616E90] '>Сум </span><span className="selectable-text">{dashData.amount}</span></div>
+                                                        <div className='text-xs mb-[2px]'><span className='text-[#616E90] '>Ставка мерчанта  </span><span className="selectable-text">{dashData.merchant_rate}</span></div>
+                                                        <div className='text-xs mb-[2px]'><span className='text-[#616E90] '>Ставка трейдера  </span><span className="selectable-text">{dashData.trader_rate}</span></div>
+
+                                                        <div className="text-xs">
+                                                            <span className='text-[#616E90]'>
+                                                                Дата и время
+                                                            </span>
+                                                            <span className="">
+                                                                <span className='selectable-text'> {dashData?.created_at && dashData?.created_at?.split("T")[0]} {dashData?.created_at && dashData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</span>
+                                                                <span className='selectable-text'> - {dashData?.created_at && dashData?.updated_at?.split("T")[0]} {dashData?.created_at && dashData?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}(обновлено)</span>
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex justify-end mt-2">
+
+                                                            {dashData.status == "in_progress" ? (
+                                                                <div className='bg-[#FFC107] flex justify-center  text-[12px]  w-[116px]  font-medium text-white py-[4px]  rounded-[100px] '>
+                                                                    В обработке
+                                                                </div>
+                                                            ) : dashData.status == "wait_confirm" ? (
+                                                                <div className='bg-[#37B67E] flex justify-center  text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                                    Ожидает <br /> подтверждения
+                                                                </div>
+                                                            )
+                                                                : dashData.status == "pending" ? (
+                                                                    <div className=' bg-[#FFC107]  flex justify-center  text-[12px]  w-[116px] font-medium text-white py-[4px]  rounded-[100px] '>
+                                                                        В ожидании
+                                                                    </div>
+                                                                )
+                                                                    : dashData.status == "completed" ? (
+                                                                        <div className='bg-[#37B67E]  flex justify-center  text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                                            Завершено
+                                                                        </div>
+                                                                    ) :
+                                                                        <div className='bg-[#CE2E2E] flex  justify-center  text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                                            Отклонено
+                                                                        </div>
+                                                            }
+                                                        </div>
+
+                                                    </div>
                                                 </div>
                                             </div>
-                                        )
-                                    }} headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время создания / обновления"  ></Column>
-
-                                    {localStorage.getItem("role") !== "trader" &&
-                                        <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="amount_in_usdt" header={"Мерчант"} headerClassName={`${isDarkMode ? "sortable-column_dark" : "sortable-column"} `} body={(rowData) => {
-                                            return (
-                                                <div>
-                                                    <>
-                                                        <div className='selectable-text'>{rowData.merchant["username"]}</div>
-                                                    </>
-                                                </div>
-                                            )
-
-                                        }} ></Column>
+                                        ))
                                     }
-
-                                    {localStorage.getItem("role") !== "merchant" &&
-                                        <Column body={(rowData) => {
-                                            return (
-                                                <div>
-                                                    <>
-                                                        <div className='selectable-text'>{rowData.trader ? rowData.trader["username"] : "-"}</div>
-                                                    </>
-                                                </div>
-                                            )
-
-                                        }} headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="course" header="Трейдер" ></Column>
-                                    }
-
-                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="price_2" header="Назначенный трейдер" body={(rowData) => {
-                                        return (
-                                            <div>
-                                                <>
-                                                    <div className='selectable-text'>{rowData.selected_traders.length > 0 ? rowData.selected_traders.map((person, index) => <p key={index}>{person.username}{index !== rowData.selected_traders.length - 1 && ','}</p>) : "-"}</div>
-                                                </>
-                                            </div>
-                                        )
-
-                                    }} ></Column>
-
-                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} body={(rowData) => {
-                                        return (
-                                            <div>
-                                                <div className='selectable-text'>{rowData.bank} Банк</div>
-                                            </div>
-                                        )
-
-                                    }} field="code" header="Банк" ></Column>
-
-                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Метод" body={(rowData) => {
-                                        return <div className='selectable-text'>{rowData.method["name"]}</div>
-                                    }}></Column>
-                                    {localStorage.getItem("role") !== "trader" &&
-                                        <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка мерчанта " body={(rowData) => {
-                                            return (<div className='selectable-text'>{rowData.merchant_rate}</div>)
-                                        }}></Column>
-                                    }
-                                    {localStorage.getItem("role") !== "merchant" &&
-                                        <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Ставка трейдера" body={(rowData) => {
-                                            return (<div className='selectable-text'>{rowData.trader_rate}</div>)
-                                        }}></Column>
-                                    }
-
-                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Сумма" body={(rowData) => {
-                                        return (<div className='selectable-text'>{rowData.amount}</div>)
-
-                                    }}></Column>
-
-                                    <Column headerStyle={{ padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] max-md:py-[10px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
-                                        if (rowData.status == "in_progress") {
-                                            return (
-                                                <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px]  rounded-[100px] '>
-                                                    В обработке
-                                                </div>
-                                            );
-                                        } else if (rowData.status == "wait_confirm") {
-                                            return (
-                                                <div className='bg-[#37B67E] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                    Ожидает <br /> подтверждения
-                                                </div>
-                                            );
-                                        } else if (rowData.status == "pending") {
-                                            return (
-                                                <div className=' bg-[#FFC107]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px]  rounded-[100px] '>
-                                                    В ожидании
-                                                </div>
-                                            )
-                                        } else if (rowData.status == "completed") {
-                                            return (
-                                                <div className='bg-[#37B67E]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                    Завершено
-                                                </div>
-                                            )
-                                        } else {
-                                            return (
-                                                <div className='bg-[#CE2E2E] flex  justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                    Отклонено
-                                                </div>
-                                            )
-                                        }
-                                    }}></Column>
-                                </DataTable>
+                                </div>
                             }
                         </div>
                     </div>

@@ -460,77 +460,90 @@ const Ad = () => {
                             {loading ? (
                                 <Loading />
                             ) :
-                                <DataTable scrollable scrollHeight="65vh" value={data?.results} rows={10} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
-                                    <Column body={(rowData) => {
-                                        return (
-                                            <div className='flex justify-center gap-x-[15px]'>
-                                                <div className='' onClick={() => setDetailModal(!detailModal)}>
-                                                    <img className='cursor-pointer max-w mx-auto min-w-[18px]' src='/assets/img/pencil.svg' />
-                                                </div>
-                                                <div className="" onClick={() => setConverterModal(!detailModal)}>
-                                                    <img className='cursor-pointer max-w mx-auto min-w-[18px]' src='/assets/img/trash.svg' />
-                                                </div>
-                                            </div>
-                                        );
-                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Действия" ></Column>
-                                    <Column body={(rowData) => {
-                                        return (
-                                            <div className='cursor-pointer select-text'>
-                                                {rowData.creator.username}
-                                            </div>
-                                        );
-                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Трейдер" ></Column>
+                                <div className={`max-h-[70dvh] overflow-y-scroll overflow-hidden ${isDarkMode ? "text-white" : ""}`}>
+                                    {
+                                        data?.results.map((dashData, index) => (
+                                            <div className=''>
+                                                <div className={`p-2 border ${isDarkMode ? "border-black" : ""} `}>
+                                                    <div className='text-xs mb-[2px]'><span className='text-[#616E90] '>ID </span><span className="selectable-text">{dashData.id}</span></div>
+                                                    <div className="flex justify-between items-center">
+                                                        <div className="selectable-text font-bold text-[16px]">{dashData.creator.username} </div>
 
-                                    <Column body={(rowData) => {
-                                        return (
-                                            <div className='select-text'>
-                                                {rowData.min_payouts_amount} / {rowData.max_payouts_amount}
-                                            </div>
-                                        )
-                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Мин / Макс сумма на выплату"  ></Column>
-
-                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="price_2" header="Доступные методы выплат" body={(rowData) => {
-                                        return (
-                                            <div className={`flex flex-wrap justify-center text-xs ${isDarkMode ? "" : "text-white"}  items-center text-center gap-1`}>
-                                                {rowData.allowed_transfer_methods.map(transfer => (
-                                                    <>
-                                                        <div className="selectable-text rounded-full bg-[#536DFE] p-1 px-2">
-                                                            {transfer.name}
+                                                        <div className='flex justify-center gap-x-[15px]'>
+                                                            <div className='' onClick={() => setDetailModal(!detailModal)}>
+                                                                <img className='cursor-pointer max-w mx-auto min-w-[18px]' src='/assets/img/pencil.svg' />
+                                                            </div>
+                                                            <div className="" onClick={() => setConverterModal(!detailModal)}>
+                                                                <img className='cursor-pointer max-w mx-auto min-w-[18px]' src='/assets/img/trash.svg' />
+                                                            </div>
                                                         </div>
-                                                    </>
-                                                ))}
+                                                    </div>
+                                                    <div className="text-[15px]">
+                                                        <div className='text-xs mb-[2px]'><span className='text-[#616E90] '>Мин сумма на выплату </span><span className="selectable-text">{dashData.min_payouts_amount}</span></div>
+                                                        <div className='text-xs mb-[2px]'><span className='text-[#616E90] '>Макс сумма на выплату  </span><span className="selectable-text">{dashData.max_payouts_amount}</span></div>
+                                                        <div className='text-xs mb-[2px]'><span className='text-[#616E90] '>Доступные методы выплат  </span>
+                                                            {dashData.allowed_transfer_methods.map(transfer => (
+                                                                <>
+                                                                    <span className="selectable-text rounded-full">
+                                                                        {transfer.name};
+                                                                    </span>
+                                                                </>
+                                                            ))}
+                                                        </div>
+                                                        <div className='text-xs mb-[2px]'><span className='text-[#616E90] '>Aктивный  </span>
+                                                            <ConfigProvider
+                                                                theme={{
+                                                                    token: {
+                                                                        colorPrimary: '#37B67E',
+                                                                        colorBgContainer: '#F0F0F0',
+                                                                    },
+                                                                }}
+                                                            >
+                                                                <Switch defaultChecked={dashData.is_active} className='custom-switch' />
+                                                            </ConfigProvider>
+                                                        </div>
+                                                        {/* <div className="text-xs">
+                                                            <span className='text-[#616E90]'>
+                                                                Дата и время
+                                                            </span>
+                                                            <span className="">
+                                                                <span className='selectable-text'> {dashData?.created_at && dashData?.created_at?.split("T")[0]} {dashData?.created_at && dashData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</span>
+                                                                <span className='selectable-text'> - {dashData?.created_at && dashData?.updated_at?.split("T")[0]} {dashData?.created_at && dashData?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}(обновлено)</span>
+                                                            </span>
+                                                        </div> */}
+                                                        <div className="flex justify-end mt-2">
+
+                                                            {dashData.status == "in_progress" ? (
+                                                                <div className='bg-[#FFC107] flex justify-center  text-[12px]  w-[116px]  font-medium text-white py-[4px]  rounded-[100px] '>
+                                                                    В обработке
+                                                                </div>
+                                                            ) : dashData.status == "wait_confirm" ? (
+                                                                <div className='bg-[#37B67E] flex justify-center  text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                                    Ожидает <br /> подтверждения
+                                                                </div>
+                                                            )
+                                                                : dashData.status == "pending" ? (
+                                                                    <div className=' bg-[#FFC107]  flex justify-center  text-[12px]  w-[116px] font-medium text-white py-[4px]  rounded-[100px] '>
+                                                                        В ожидании
+                                                                    </div>
+                                                                )
+                                                                    : dashData.status == "completed" ? (
+                                                                        <div className='bg-[#37B67E]  flex justify-center  text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                                            Завершено
+                                                                        </div>
+                                                                    ) :
+                                                                        <div className='bg-[#CE2E2E] flex  justify-center  text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
+                                                                            Отклонено
+                                                                        </div>
+                                                            }
+                                                        </div>
+
+                                                    </div>
+                                                </div>
                                             </div>
-                                        )
-
-                                    }} ></Column>
-
-                                    <Column body={(rowData) => {
-                                        return (
-                                            <div>
-                                                {rowData?.created_at?.split("T")[0]} {rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}
-                                                {rowData?.updated_at?.split("T")[0]} {rowData?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}
-                                            </div>
-                                        )
-                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата создания"  ></Column>
-
-                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Активность" body={(rowData, index) => {
-                                        return (
-                                            <>
-                                                <ConfigProvider
-                                                    theme={{
-                                                        token: {
-                                                            colorPrimary: '#37B67E',
-                                                            colorBgContainer: '#F0F0F0',
-                                                        },
-                                                    }}
-                                                >
-                                                    <Switch defaultChecked={rowData.is_active} className='custom-switch' />
-                                                </ConfigProvider>
-                                            </>
-                                        )
-                                    }}></Column>
-
-                                </DataTable>
+                                        ))
+                                    }
+                                </div>
                             }
                         </div>
 
@@ -607,7 +620,8 @@ const Ad = () => {
                                             </>
                                         )
                                     }}></Column>
-                                </DataTable>}
+                                </DataTable>
+                            }
                         </div>
                         {/* izz */}
                     </div>

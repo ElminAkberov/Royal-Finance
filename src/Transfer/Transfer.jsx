@@ -705,12 +705,11 @@ const Transfer = () => {
 
                     <div onClick={() => { setModal(!modal); setSendAmount(""); setStatus(null) }} className={`${!modal && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
                     <div className={`${!modal ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px] `}>
-                        <div className="p-8">
-                            <form onSubmit={handleReTransfer} className="">
-
+                        <div className="p-8 ">
+                            <form onSubmit={handleReTransfer} className="blur-0">
                                 <div className="mb-8">
                                     <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Новый перевод </h3>
-                                    <svg onClick={() => setModal(!modal)} className='absolute right-8 top-10 cursor-pointer' width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <svg onClick={() => setModal(!modal)} className='absolute right-2 top-2 cursor-pointer' width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" fill={`${isDarkMode ? "#fff" : "#222222"} `} />
                                     </svg>
                                     <h5 className='text-[14px] text-[#60626C]'>Заполните форму</h5>
@@ -750,8 +749,8 @@ const Transfer = () => {
                                         <p>Минимальная сумма перевода — 10 000.</p>
                                         <p>Сумма должна быть кратной 1000.</p>
                                     </div>
-                                    <div className={`flex justify-end mt-2 text-white`}>
-                                        <button type='submit' className='bg-[#2E70F5] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                    <div className={`flex justify-end mt-2 text-white blur-0`}>
+                                        <button type='submit' className='bg-[#2E70F5] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px] blur-0'>
                                             Перевести
                                         </button>
                                     </div>
