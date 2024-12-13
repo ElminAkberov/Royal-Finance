@@ -733,7 +733,7 @@ const Transfer = () => {
                                         <div className="flex items-center max-w-[720px] mx-auto mb-5 border bg-white border-[#37B67E] rounded-md">
                                             <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#37b67e]"></div>
                                             <div className="relative mr-[8px] ml-[18px]">
-                                                <img src="/assets/img/check.svg" className='bg-[#37B67E] min-w-[26.67px] min-h-[26.67px] p-[6px] rounded-full' alt="" />
+                                                <img src="/assets/img/check.svg" className='bg-[#37B67E] min-w-[26.67px] max-w-[26.67px] min-h-[26.67px] p-[6px] rounded-full' alt="" />
                                             </div>
                                             <div className="">
                                                 <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Успешно!</h4>
@@ -758,8 +758,6 @@ const Transfer = () => {
                             </form>
                         </div>
                     </div>
-
-
                 </div>
 
             </div>
