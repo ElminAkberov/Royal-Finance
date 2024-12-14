@@ -472,7 +472,7 @@ const Dashboard = () => {
                             ) :
                                 <div className={`max-h-[70dvh] overflow-y-scroll overflow-hidden ${isDarkMode ? "text-white" : ""}`}>
                                     {
-                                        data?.results.map((dashData, index) => (
+                                        data?.results?.map((dashData, index) => (
                                             <div className=''>
                                                 <div className={`p-2 border ${isDarkMode ? "border-black" : ""} `}>
                                                     <div className="flex justify-between items-center">

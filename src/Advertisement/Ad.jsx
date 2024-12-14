@@ -7,8 +7,11 @@ import { Context } from '../context/ContextProvider';
 import { FaAngleLeft, FaAngleRight, FaArrowDownShortWide, FaArrowDownWideShort } from "react-icons/fa6";
 import Loading from '../Loading/Loading';
 import { LuArrowDownUp, LuCopy } from 'react-icons/lu';
-import { ConfigProvider, Switch } from 'antd';
+import { Button, ConfigProvider, Switch } from 'antd';
 import { CiFilter } from 'react-icons/ci';
+import ApplicationModal from './Modals/ApplicationModal';
+import DetailsModal from './Modals/DetailsModal';
+import ConverterModal from './Modals/ConverterModal';
 
 const Ad = () => {
     let [arrows, setArrow] = useState("amount")
@@ -33,6 +36,8 @@ const Ad = () => {
     const [endDate, setEndDate] = useState("");
     const [amount, setAmount] = useState({ min: "", max: "" })
     const [active, setActive] = useState("")
+    const [is_active, setIs_Active] = useState({})
+    const [id, setId] = useState("")
     let [selectMethod, setSelectMethod] = useState("")
     let [hash, setHash] = useState("")
     let [selectStatus, setSelectStatus] = useState("")
@@ -52,6 +57,11 @@ const Ad = () => {
         setCurrentPage(1);
         handleFilter();
     };
+    useEffect(() => {
+        data?.results?.map(dashData => {
+            setIs_Active((prev) => ({ ...prev, [dashData.id]: dashData.is_active }));
+        })
+    }, [data]);
     const refreshAuth = async () => {
         try {
             const refreshToken = localStorage.getItem("refresh");
@@ -224,6 +234,42 @@ const Ad = () => {
         } catch (error) {
             console.warn(error)
             setStatus("error");
+        }
+    };
+    const handleActiveStatus = async (e) => {
+        e.preventDefault();
+        try {
+            const res = await fetch(`https://dev.royal-pay.org/api/v1/applications/${id}/`, {
+                method: "PATCH",
+                headers: {
+                    "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    is_active: is_active[id]
+                })
+            });
+            if (res.status === 401) {
+                const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        refresh: localStorage.getItem("refresh"),
+                    }),
+                });
+
+                if (refreshResponse.ok) {
+                    const refreshData = await refreshResponse.json();
+                    localStorage.setItem("access", refreshData.access);
+                    return handleActiveStatus(e);
+                } else {
+                    navigate("/login");
+                }
+            }
+        } catch (error) {
+            console.warn(error)
         }
     };
     useEffect(() => {
@@ -507,7 +553,7 @@ const Ad = () => {
                             ) :
                                 <div className={`max-h-[70dvh] overflow-y-scroll overflow-hidden ${isDarkMode ? "text-white" : ""}`}>
                                     {
-                                        data?.results.map((dashData, index) => (
+                                        data?.results?.map((dashData, index) => (
                                             <div className=''>
                                                 <div className={`p-2 border ${isDarkMode ? "border-black" : ""} `}>
                                                     <div className='text-xs mb-[2px]'><span className='text-[#616E90] '>ID </span><span className="selectable-text">{dashData.id}</span></div>
@@ -651,7 +697,7 @@ const Ad = () => {
 
                                     <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Активность" body={(rowData, index) => {
                                         return (
-                                            <>
+                                            <form onSubmit={handleActiveStatus}>
                                                 <ConfigProvider
                                                     theme={{
                                                         token: {
@@ -660,9 +706,20 @@ const Ad = () => {
                                                         },
                                                     }}
                                                 >
-                                                    <Switch defaultChecked={rowData.is_active} className='custom-switch' />
+                                                    <button
+                                                        onClick={() => {
+                                                            setId(rowData.id)
+                                                            setIs_Active((prevAct) => ({ ...prevAct, [rowData.id]: !prevAct[rowData.id] }));
+                                                        }}
+                                                        type='submit'
+                                                    >
+                                                        <Switch
+                                                            checked={!!is_active[rowData.id]}
+                                                            className='custom-switch'
+                                                        />
+                                                    </button>
                                                 </ConfigProvider>
-                                            </>
+                                            </form>
                                         )
                                     }}></Column>
                                 </DataTable>
@@ -712,166 +769,13 @@ const Ad = () => {
                     <div onClick={() => setDetailModal(!detailModal)} className={`${!detailModal && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
                     <div onClick={() => setConverterModal(!converterModal)} className={`${!converterModal && "hidden"} fixed inset-0 bg-[#2222224D] z-20`}></div>
                     <div className={`${!modal ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px] `}>
-                        <div className="p-8">
-                            <form onSubmit={handleApplication}>
-                                <div className="mb-8">
-                                    <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Создать объявление</h3>
-                                    <svg onClick={() => setModal(!modal)} className='absolute right-8 top-8 cursor-pointer' width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" fill={`${isDarkMode ? "#fff" : "#222222"} `} />
-                                    </svg>
-                                    <h5 className='text-[14px] text-[#60626C]'>Заполните форму</h5>
-                                </div>
-                                {status == "error" &&
-                                    <div className={`pt-1 w-full  duration-300 max-md:mx-3 ${status == "error" ? "top-20" : "top-[-300px]"}`}>
-                                        <div className="flex items-center mb-5 max-w-[720px] mx-auto border bg-white border-[#CE2E2E] rounded-md">
-                                            <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#CE2E2E] rounded-"></div>
-                                            <div className="relative mr-[8px] ml-[18px]">
-                                                <img src="/assets/img/error.svg" className=' rounded-full' alt="" />
-                                            </div>
-                                            <div className="">
-                                                <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Возникла ошибка.</h4>
-                                                <p className='text-[14px] text-[#484951]'>Что-то пошло не так. Повторите попытку позже.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                                {status == "success" &&
-                                    <div className={`w-full pt-1 max-md:px-3 right-0 ${status == "success" ? "top-20" : "top-[-300px]"} duration-300`}>
-                                        <div className="flex items-center max-w-[720px] mx-auto mb-5 border bg-white border-[#37B67E] rounded-md">
-                                            <div className="w-[14px] rounded-l-[5px] h-[88px] bg-[#37b67e]"></div>
-                                            <div className="relative  mr-[8px] ml-[18px]">
-                                                <img src="/assets/img/check.svg" className='bg-[#37B67E] min-w-[26.67px] min-h-[26.67px] max-w-[26.67px] p-[6px] rounded-full' alt="" />
-                                            </div>
-                                            <div className="">
-                                                <h4 style={{ letterSpacing: "-2%" }} className='text-[14px] font-semibold text-[#18181B]'>Успешно!</h4>
-                                                <p className='text-[14px] text-[#484951]'>Ваши изменения успешно сохранены.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                                <div className="modal_payout blur-0  ">
-                                    <div className="modal_payout ">
-                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} blur-0 mb-2`}>Доступные методы выплат</h5>
-                                        <select onChange={(e) => { setApplication((prevApp) => ({ ...prevApp, "allowedMethod": e.target.value })) }} value={application["allowedMethod"] || ""} style={{ caretColor: `${isDarkMode ? "#fff" : "#000"}` }} required placeholder='0' type="text" className={`${isDarkMode ? "text-white" : ""} blur-0 mb-2 bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-2 outline-none rounded-[4px]`} >
-                                            <option defaultValue={"Выбрать"} value="">Выбрать</option>
-                                            <option defaultValue={"Выбрать"}>SBER</option>
-                                        </select>
-                                    </div>
-                                    <div className="modal_payout ">
-                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} blur-0 mb-2`}>Мин сумма на выплату</h5>
-                                        <input onChange={(e) => { setApplication((prevApp) => ({ ...prevApp, "minAmount": e.target.value })) }} value={application["minAmount"] || ""} style={{ caretColor: `${isDarkMode ? "#fff" : "#000"}` }} required placeholder='0' type="text" className={`${isDarkMode ? "text-white" : ""} blur-0 mb-2 bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
-                                    </div>
-                                    <div className="modal_payout ">
-                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} blur-0 mb-2`}>Макс сумма на выплату</h5>
-                                        <input onChange={(e) => { setApplication((prevApp) => ({ ...prevApp, "maxAmount": e.target.value })) }} value={application["maxAmount"] || ""} style={{ caretColor: `${isDarkMode ? "#fff" : "#000"}` }} required placeholder='0' type="text" className={`${isDarkMode ? "text-white" : ""} blur-0 mb-2 bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
-                                    </div>
-                                    <div className={`flex justify-end mt-2 text-white`}>
-                                        <button type='submit' className='bg-[#2E70F5] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                            Создать
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
+                        <ApplicationModal setModal={setModal} modal={modal} />
                     </div>
                     <div className={`${!detailModal ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} overflow-hidden rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px] `}>
-                        <div className="p-8 max-h-[85vh] overflow-y-scroll">
-                            <div className="">
-                                <div className="mb-8">
-                                    <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Детали объявления </h3>
-                                    <h5 className='text-[14px] text-[#60626C]'>Подробная информация</h5>
-                                </div>
-                                {/* {details?.map((data, index) => ( */}
-                                <div>
-                                    <div className="modal">
-                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Дата создания</h5>
-                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>21-04-2024 21:00</p>
-                                    </div>
-                                    <div className="modal">
-                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Трейдер</h5>
-                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>Трейдер</p>
-                                    </div>
-                                    <div className="modal">
-                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Доступные методы выплат </h5>
-                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>
-                                            <div className={`flex mt-1 text-xs ${isDarkMode ? "" : "text-white"}  items-center text-center gap-1`}>
-                                                <div className="selectable-text rounded-full bg-[#536DFE] p-1 px-2">
-                                                    Sber
-                                                </div>
-                                                <div className="selectable-text rounded-full bg-[#536DFE] p-1 px-2">
-                                                    Sber
-                                                </div>
-                                            </div>
-                                        </p>
-                                    </div>
-                                    <div className="modal">
-                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Мин сумма на выплату</h5>
-                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>1</p>
-                                    </div>
-                                    <div className="modal">
-                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Макс сумма на выплату</h5>
-                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>100</p>
-                                    </div>
-                                    <div className="modal">
-                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Направления</h5>
-                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>-</p>
-                                    </div>
-                                </div>
-                                {/* ))} */}
-                                <div className="flex w-full text-white justify-end">
-                                    <button onClick={() => setDetailModal(false)} className='bg-[#2E70F5] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                        Закрыть
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        <DetailsModal detailModal={detailModal} setDetailModal={setDetailModal} />
                     </div>
                     <div className={`${!converterModal ? "hidden" : ""} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} overflow-hidden rounded-[24px] z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[784px] `}>
-                        <div className="p-8 max-h-[85vh] overflow-y-scroll">
-                            <div className="">
-                                <div className="mb-8">
-                                    <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Конвертировать </h3>
-                                    <svg onClick={() => setConverterModal(!converterModal)} className='absolute right-8 top-8 cursor-pointer' width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" fill={`${isDarkMode ? "#fff" : "#222222"} `} />
-                                    </svg>
-                                    <h5 className='text-[14px] text-[#60626C]'>Заполните необходимые поля</h5>
-                                </div>
-                                {/* {details?.map((data, index) => ( */}
-                                <div>
-                                    <div className="modal">
-                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Баланс</h5>
-                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>-10</p>
-                                    </div>
-                                    <div className="modal">
-                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Минимальный баланс</h5>
-                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>1000</p>
-                                    </div>
-                                    <div className="modal_payout ">
-                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} blur-0 mb-2`}>Метод</h5>
-                                        <input style={{ caretColor: `${isDarkMode ? "#fff" : "#000"}` }} required placeholder='0' type="text" className={`${isDarkMode ? "text-white" : ""} blur-0 mb-2 bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
-                                    </div>
-                                    <div className="modal_payout ">
-                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} blur-0 mb-2`}>Сумма вывода</h5>
-                                        <input style={{ caretColor: `${isDarkMode ? "#fff" : "#000"}` }} required placeholder='0' type="text" className={`${isDarkMode ? "text-white" : ""} blur-0 mb-2 bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
-                                    </div>
-                                    <div className="modal_payout ">
-                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} blur-0 mb-2`}>OТП Код</h5>
-                                        <input style={{ caretColor: `${isDarkMode ? "#fff" : "#000"}` }} required placeholder='0' type="text" className={`${isDarkMode ? "text-white" : ""} blur-0 mb-2 bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
-                                    </div>
-
-                                    <div className="modal">
-                                        <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Фиксированная ставка</h5>
-                                        <p className={`${isDarkMode ? "text-[#B7B7B7]" : "text-[#313237]"}`}>200</p>
-                                    </div>
-                                </div>
-                                {/* ))} */}
-                                <div className="flex w-full text-white justify-end">
-                                    <button onClick={() => setDetailModal(false)} className='bg-[#2E70F5] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
-                                        Конвертировать
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        <ConverterModal setConverterModal={setConverterModal} converterModal={converterModal} />
                     </div>
                 </div>
 
