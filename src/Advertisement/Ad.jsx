@@ -36,6 +36,7 @@ const Ad = () => {
     const [endDate, setEndDate] = useState("");
     const [amount, setAmount] = useState({ min: "", max: "" })
     const [active, setActive] = useState("")
+    const [allowed,setAllowed] = useState("")
     const [is_active, setIs_Active] = useState({})
     const [id, setId] = useState("")
     let [selectMethod, setSelectMethod] = useState("")
@@ -99,7 +100,7 @@ const Ad = () => {
     const handleFilter = async () => {
         setLoading(true)
         try {
-            const response = await fetch(`https://dev.royal-pay.org/api/v1/applications/?q=${query}&min_payouts_amount=${amount["min"]}&max_payouts_amount=${amount["max"]}&is_active=${active}&method=${selectMethod && selectMethod}&status=${selectStatus && selectStatus}&page=${currentPage === "" ? 1 : currentPage}`, {
+            const response = await fetch(`https://dev.royal-pay.org/api/v1/applications/?q=${query}&allowed_transfer_methods=${allowed}&min_payouts_amount=${amount["min"]}&max_payouts_amount=${amount["max"]}&is_active=${active}&method=${selectMethod && selectMethod}&status=${selectStatus && selectStatus}&page=${currentPage === "" ? 1 : currentPage}`, {
                 method: "GET",
                 headers: {
                     "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
@@ -454,12 +455,13 @@ const Ad = () => {
                             <input onChange={(e) => setHash(e.target.value)} placeholder='Трейдер' type="text" className={` pl-[12px] w-[149.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
                             <input onChange={(e) => setAmount((prevAmount) => ({ ...prevAmount, min: e.target.value }))} placeholder='Мин cумма' type="number" className={` pl-[12px] w-[149.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
                             <input onChange={(e) => setAmount((prevAmount) => ({ ...prevAmount, max: e.target.value }))} placeholder='Макс cумма' type="number" className={` pl-[12px] w-[149.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
-                            <select onChange={(e) => setSelectStatus(e.target.value)} className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] min-w-[149.5px] h-[40px]`} name="" id="">
+                            <select onChange={(e) => setAllowed(e.target.value)} className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] min-w-[149.5px] max-w-[149.5px] h-[40px]`} name="" id="">
                                 <option defaultValue={"Направление"} value={""} >Направление</option>
-                            </select>
-                            <select onChange={(e) => setSelectStatus(e.target.value)} className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] min-w-[149.5px] h-[40px]`} name="" id="">
-                                <option defaultValue={"Банки"} value={""} >Банки</option>
-
+                                <option defaultValue={"Межбанк-INTERBANK"} value={"INTERBANK"}>Межбанк-INTERBANK</option>
+                                <option defaultValue={"СБП-SBP"} value={"SBP"}>СБП-SBP</option>
+                                <option defaultValue={"Сбер-SBER"} value={"SBER"}>Сбер-SBER</option>
+                                <option defaultValue={"Тинькофф-TINKOFF"} value={"TINKOFF"}>Тинькофф-TINKOFF</option>
+                                <option defaultValue={"Номер счёта-ACCOUNT_NUMBER"} value={"ACCOUNT_NUMBER"}>Номер счёта-ACCOUNT_NUMBER</option>
                             </select>
                             <select onChange={(e) => setSelectStatus(e.target.value)} className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] min-w-[149.5px] h-[40px]`} name="" id="">
                                 <option defaultValue={"Статус"} value={""} >Статус</option>
@@ -582,16 +584,29 @@ const Ad = () => {
                                                             ))}
                                                         </div>
                                                         <div className='text-xs mb-[2px]'><span className='text-[#616E90] '>Aктивный  </span>
-                                                            <ConfigProvider
-                                                                theme={{
-                                                                    token: {
-                                                                        colorPrimary: '#37B67E',
-                                                                        colorBgContainer: '#F0F0F0',
-                                                                    },
-                                                                }}
-                                                            >
-                                                                <Switch defaultChecked={dashData.is_active} className='custom-switch' />
-                                                            </ConfigProvider>
+                                                            <form onSubmit={handleActiveStatus}>
+                                                                <ConfigProvider
+                                                                    theme={{
+                                                                        token: {
+                                                                            colorPrimary: '#37B67E',
+                                                                            colorBgContainer: '#F0F0F0',
+                                                                        },
+                                                                    }}
+                                                                >
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            setId(dashData.id)
+                                                                            setIs_Active((prevAct) => ({ ...prevAct, [dashData.id]: !prevAct[dashData.id] }));
+                                                                        }}
+                                                                        type='submit'
+                                                                    >
+                                                                        <Switch
+                                                                            checked={!!is_active[dashData.id]}
+                                                                            className='custom-switch'
+                                                                        />
+                                                                    </button>
+                                                                </ConfigProvider>
+                                                            </form>
                                                         </div>
                                                         {/* <div className="text-xs">
                                                             <span className='text-[#616E90]'>

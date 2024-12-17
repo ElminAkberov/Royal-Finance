@@ -182,8 +182,8 @@ const Transfer = () => {
         setDetails([info])
     }
     const handleDownload = () => {
-        fetch("https://dev.royal-pay.org/api/v1/internal/refills/download/", {
-            method: "GET",
+        fetch("https://dev.royal-pay.org/api/v1/internal/retransfer/download", {
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${localStorage.getItem("access")}`
@@ -518,75 +518,48 @@ const Transfer = () => {
                             {loading ? (
                                 <Loading />
                             ) :
-                                <DataTable scrollable scrollHeight="65vh" value={data?.results} rows={10} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
-                                    <Column body={(rowData) => {
-                                        return (
-                                            <div className='cursor-pointer select-text'>
-                                                {rowData.creator.id}
-                                            </div>
-                                        );
-                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="ID" ></Column>
-                                    <Column body={(rowData) => {
-                                        return (
-                                            <div className='cursor-pointer select-text'>
-                                                {rowData.creator.username}
-                                            </div>
-                                        );
-                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Трейдер" ></Column>
+                                <div className={`max-h-[70dvh] overflow-y-scroll overflow-hidden ${isDarkMode ? "text-white" : ""}`}>
+                                    {
+                                        data?.results?.map((dashData, index) => (
+                                            <div className=''>
+                                                <div className={`p-2 border ${isDarkMode ? "border-black" : ""} `}>
+                                                    <div className="text-xs "><span className='text-[#616E90]'>ID</span> {dashData.creator.id}</div>
+                                                    <div className="text-[15px]">
+                                                        <div className="selectable-text font-bold text-[16px]">{dashData.creator.username}</div>
+                                                        <div className='text-xs mb-[2px]'><span className='text-[#616E90] '>Внешний ID </span><span className="selectable-text">{dashData.transaction_id}</span></div>
+                                                        <div className='text-xs mb-[2px]'><span className='text-[#616E90] '>Сумма </span><span className="selectable-text">{dashData.sent_amount}</span></div>
 
-                                    <Column body={(rowData) => {
-                                        return (
-                                            <div className='select-text'>
-                                                {rowData.transaction_id}
-                                            </div>
-                                        )
-                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Внешний ID"  ></Column>
+                                                        <div className="text-xs">
+                                                            <span className='text-[#616E90]'>
+                                                                Дата и время 
+                                                            </span>
+                                                            <span className="">
+                                                                <span> {dashData?.created_at?.split("T")[0]} {dashData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</span>
+                                                                <span>-{dashData?.updated_at?.split("T")[0]} {dashData?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}(обновлено)</span>
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex justify-end mt-2">
+                                                            {dashData.status === "pending" ? (
+                                                                <div className="bg-[#FFC107] flex justify-center text-[12px] w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]">
+                                                                    В обработке
+                                                                </div>
+                                                            ) : dashData.status === "success" ? (
+                                                                <div className="bg-[#37B67E] flex justify-center text-[12px] w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]">
+                                                                    Успешно
+                                                                </div>
+                                                            ) : (
+                                                                <div className="bg-[#CE2E2E] flex justify-center text-[12px] w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]">
+                                                                    Отклонено
+                                                                </div>
+                                                            )}
+                                                        </div>
 
-                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="price_2" header="Сумма" body={(rowData) => {
-                                        return (
-                                            <div>
-                                                <>
-                                                    <div className="selectable-text">{rowData.sent_amount}</div>
-                                                </>
-                                            </div>
-                                        )
-
-                                    }} ></Column>
-
-                                    <Column body={(rowData) => {
-                                        return (
-                                            <div>
-                                                <p>{rowData?.created_at?.split("T")[0]} {rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
-                                                <p>{rowData?.updated_at?.split("T")[0]} {rowData?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
-                                            </div>
-                                        )
-                                    }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата и время"  ></Column>
-
-
-
-                                    <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="status" header="Статус" body={(rowData) => {
-                                        if (rowData.status === "pending") {
-                                            return (
-                                                <div className='bg-[#FFC107] flex justify-center mx-auto text-[12px]  w-[116px]  font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                    В обработке
+                                                    </div>
                                                 </div>
-                                            );
-                                        } else if (rowData.status == "success") {
-                                            return (
-                                                <div className='bg-[#37B67E]  flex justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                    Успешно
-                                                </div>
-                                            )
-                                        } else {
-                                            return (
-                                                <div className='bg-[#CE2E2E] flex  justify-center mx-auto text-[12px]  w-[116px] font-medium text-white py-[4px] pl-[23px] rounded-[100px] pr-[21px]'>
-                                                    Отклонено
-                                                </div>
-                                            )
-                                        }
-                                    }}></Column>
-
-                                </DataTable>
+                                            </div>
+                                        ))
+                                    }
+                                </div>
                             }
                         </div>
 
@@ -662,7 +635,9 @@ const Transfer = () => {
                                         }
                                     }}></Column>
 
-                                </DataTable>}
+                                </DataTable>
+
+                            }
                         </div>
                         {/* izz */}
                     </div>

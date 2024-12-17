@@ -5,7 +5,7 @@ import "slick-carousel/slick/slick-theme.css";
 import 'keen-slider/keen-slider.min.css'
 import { Context } from './context/ContextProvider';
 const Layout = () => {
-  // console.log = function () { };
+  console.log = function () { };
   console.error = function () { };
   console.warn = function () { };
   console.info = function () { };

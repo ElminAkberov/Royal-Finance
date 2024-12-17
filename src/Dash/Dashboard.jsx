@@ -553,10 +553,10 @@ const Dashboard = () => {
                             {loading ? (
                                 <Loading />
                             ) :
-                                <DataTable value={data?.results} rows={10} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
+                                <DataTable value={data?.results} rows={10} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"}`} style={{ userSelect: 'text', pointerEvents: 'none' }}>
                                     <Column body={(rowData) => {
                                         return (
-                                            <div onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer'>
+                                            <div onClick={() => { handleShow(rowData); setModal(true) }} className='cursor-pointer pointer-events-auto'>
                                                 <img className='mx-auto' src='/assets/img/ion_eye.svg' />
                                             </div>
                                         );
@@ -564,10 +564,10 @@ const Dashboard = () => {
 
                                     <Column body={(rowData) => {
                                         return (
-                                            <div>
-                                                <div>
-                                                    <h5 className="selectable-text">{rowData?.created_at && rowData?.created_at?.split("T")[0]}</h5>
-                                                    <p className="selectable-text">{rowData?.created_at && rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
+                                            <div >
+                                                <div className="selectable-text">
+                                                    <h5 >{rowData?.created_at && rowData?.created_at?.split("T")[0]}</h5>
+                                                    <p>{rowData?.created_at && rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</p>
                                                 </div>
 
                                             </div>
@@ -622,7 +622,7 @@ const Dashboard = () => {
                                     <Column headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} body={(rowData) => {
                                         return (
                                             <div >
-                                                <div className='group cursor-pointer'>{rowData.hash.slice(0, 8)}...
+                                                <div className='group cursor-pointer pointer-events-auto'>{rowData.hash.slice(0, 8)}...
                                                     <div onClick={() => { navigator.clipboard.writeText(rowData.hash); setCopy(true); setTimeout(() => { setCopy(false) }, 2000) }} className="group-hover:opacity-100 group-hover:visible duration-300  flex items-center gap-x-2 absolute right-0 p-1 opacity-0 invisible" style={{ background: isDarkMode ? "#121212" : "#dfdfec", color: isDarkMode ? "#fff" : "#121212" }}>{rowData.hash}  <LuCopy /></div>
                                                 </div>
                                             </div>
@@ -737,8 +737,6 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-
-
                 </div>
 
             </div>
