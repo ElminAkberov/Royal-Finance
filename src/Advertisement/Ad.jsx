@@ -36,7 +36,7 @@ const Ad = () => {
     const [endDate, setEndDate] = useState("");
     const [amount, setAmount] = useState({ min: "", max: "" })
     const [active, setActive] = useState("")
-    const [allowed,setAllowed] = useState("")
+    const [allowed, setAllowed] = useState("")
     const [is_active, setIs_Active] = useState({})
     const [id, setId] = useState("")
     let [selectMethod, setSelectMethod] = useState("")
@@ -442,19 +442,19 @@ const Ad = () => {
                                     </svg>
                                 </div>
                             </div>
-                            <button onClick={() => setModal(!modal)} className='bg-[#2D54DD] text-[#fff] max-lg:mb-2 text-[14px] max-md:hidden font-normal  rounded-[8px] py-[8px] min-w-[156px] '>Новое объявление</button>
+                            <button onClick={() => setModal(!modal)} className='bg-[#536DFE] text-[#fff] max-lg:mb-2 text-[14px] max-md:hidden font-normal  rounded-[8px] py-[8px] min-w-[156px]'>Новое объявление</button>
                         </div>
                     </div>
                     {/* filter */}
-                    <button onClick={() => setFilterHide(!filterHide)} className='text-[#2D54DD] mb-2 flex justify-center items-center gap-x-1 text-[14px] max-md:hidden font-normal border-[#2D54DD] border-2 rounded-[8px] py-[8px] min-w-[115px]'>
+                    <button onClick={() => setFilterHide(!filterHide)} className='text-[#2D54DD] mb-2 flex justify-center items-center gap-x-1 text-[14px] max-md:hidden font-normal border-[#536DFE] border-2 rounded-[8px] py-[8px] min-w-[115px]'>
                         <CiFilter size={20} />
                         {!filterHide ? "Открыть" : "Скрыть"}
                     </button>
                     <div className={`${!filterHide ? 'md:hidden' : ''}`}>
                         <div className={`${!filterBtn && "max-md:hidden"} flex max-md:grid max-md:grid-cols-2 max-md:justify-items-center max-[450px]:grid-cols-1  max-[1200px]:justify-center flex-wrap py-[24px] pr-4 text-[14px] gap-2 text-[#717380]`}>
-                            <input onChange={(e) => setHash(e.target.value)} placeholder='Трейдер' type="text" className={` pl-[12px] w-[149.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
-                            <input onChange={(e) => setAmount((prevAmount) => ({ ...prevAmount, min: e.target.value }))} placeholder='Мин cумма' type="number" className={` pl-[12px] w-[149.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
-                            <input onChange={(e) => setAmount((prevAmount) => ({ ...prevAmount, max: e.target.value }))} placeholder='Макс cумма' type="number" className={` pl-[12px] w-[149.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
+                            <input onChange={(e) => setHash(e.target.value)} placeholder='Трейдер' type="text" className={`focus:outline-[#536cfe] pl-[12px] w-[149.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
+                            <input onChange={(e) => setAmount((prevAmount) => ({ ...prevAmount, min: e.target.value }))} placeholder='Мин cумма' type="number" className={`focus:outline-[#536cfe] pl-[12px] w-[149.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
+                            <input onChange={(e) => setAmount((prevAmount) => ({ ...prevAmount, max: e.target.value }))} placeholder='Макс cумма' type="number" className={`focus:outline-[#536cfe] pl-[12px] w-[149.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
                             <select onChange={(e) => setAllowed(e.target.value)} className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] min-w-[149.5px] max-w-[149.5px] h-[40px]`} name="" id="">
                                 <option defaultValue={"Направление"} value={""} >Направление</option>
                                 <option defaultValue={"Межбанк-INTERBANK"} value={"INTERBANK"}>Межбанк-INTERBANK</option>
@@ -506,17 +506,17 @@ const Ad = () => {
                             <input value={time_2} onChange={handleEndTimeChange} type="text" className='bg-transparent outline-none pl-7' placeholder='23:59' />
                         </div> */}
                             <div className="flex justify-center mb-2 max-w-[160px] max-md:hidden">
-                                <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff]  py-[9.5px] font-normal min-w-[156px] text-[14px] rounded-[8px]'>
+                                <button onClick={handleFilterApply} className='bg-[#536DFE] text-[#fff]  py-[9.5px] font-normal min-w-[156px] text-[14px] rounded-[8px]'>
                                     Применить фильтр
                                 </button>
                             </div>
                             <div className="flex justify-center w-full min-[450px]:hidden mb-2 ">
-                                <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px]'>
+                                <button onClick={handleFilterApply} className='bg-[#536DFE] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px]'>
                                     Применить фильтр
                                 </button>
                             </div>
                             <div className="flex justify-center w-full min-[450px]:hidden mb-2 ">
-                                <button onClick={() => { setModal(!modal) }} className='bg-[#2D54DD] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px]'>
+                                <button onClick={() => { setModal(!modal) }} className='bg-[#536DFE] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px]'>
                                     Новое объявление
                                 </button>
                             </div>
@@ -527,7 +527,7 @@ const Ad = () => {
                                     Применить фильтр
                                 </button>
                             </div>
-                            <button onClick={() => { setModal(!modal) }} className='bg-[#2D54DD] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px]'>Новое объявление</button>
+                            <button onClick={() => { setModal(!modal) }} className='bg-[#536DFE] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px]'>Новое объявление</button>
                         </div>
                     </div>
 
@@ -564,10 +564,14 @@ const Ad = () => {
 
                                                         <div className='flex justify-center gap-x-[15px]'>
                                                             <div className='' onClick={() => setDetailModal(!detailModal)}>
-                                                                <img className='cursor-pointer max-w mx-auto min-w-[18px]' src='/assets/img/pencil.svg' />
+                                                                <svg width="18" height="18" className='cursor-pointer max-w mx-auto min-w-[18px] hover:fill-[#536DFE] duration-300 fill-[#7A8EA4]' viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M0 14.4595V17.4995C0 17.7795 0.22 17.9995 0.5 17.9995H3.54C3.67 17.9995 3.8 17.9495 3.89 17.8495L14.81 6.93951L11.06 3.18951L0.15 14.0995C0.0500001 14.1995 0 14.3195 0 14.4595ZM17.71 4.03951C17.8027 3.947 17.8762 3.83711 17.9264 3.71614C17.9766 3.59517 18.0024 3.46548 18.0024 3.33451C18.0024 3.20355 17.9766 3.07386 17.9264 2.95289C17.8762 2.83192 17.8027 2.72203 17.71 2.62951L15.37 0.289514C15.2775 0.196811 15.1676 0.123263 15.0466 0.0730817C14.9257 0.0229003 14.796 -0.00292969 14.665 -0.00292969C14.534 -0.00292969 14.4043 0.0229003 14.2834 0.0730817C14.1624 0.123263 14.0525 0.196811 13.96 0.289514L12.13 2.11951L15.88 5.86951L17.71 4.03951Z" />
+                                                                </svg>
                                                             </div>
                                                             <div className="" onClick={() => setConverterModal(!detailModal)}>
-                                                                <img className='cursor-pointer max-w mx-auto min-w-[18px]' src='/assets/img/trash.svg' />
+                                                                <svg width="16" height="18" viewBox="0 0 16 18" className='cursor-pointer max-w mx-auto min-w-[18px] hover:fill-[#CE2E2E] duration-300 fill-[#7A8EA4]' xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M3 18C2.45 18 1.97933 17.8043 1.588 17.413C1.19667 17.0217 1.00067 16.5507 1 16V3H0V1H5V0H11V1H16V3H15V16C15 16.55 14.8043 17.021 14.413 17.413C14.0217 17.805 13.5507 18.0007 13 18H3ZM5 14H7V5H5V14ZM9 14H11V5H9V14Z" />
+                                                                </svg>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -657,22 +661,26 @@ const Ad = () => {
                             {loading ? (
                                 <Loading />
                             ) :
-                                <DataTable value={data?.results} rows={10} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
+                                <DataTable value={data?.results} rows={10} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `} rowClassName={() => "dataTableRow"}>
                                     <Column body={(rowData) => {
                                         return (
                                             <div className='flex justify-center gap-x-[15px]'>
                                                 <div className='' onClick={() => setDetailModal(!detailModal)}>
-                                                    <img className='cursor-pointer max-w mx-auto min-w-[18px]' src='/assets/img/pencil.svg' />
+                                                    <svg width="18" height="18" className='cursor-pointer max-w mx-auto min-w-[18px] hover:fill-[#536DFE] duration-300 fill-[#7A8EA4]' viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M0 14.4595V17.4995C0 17.7795 0.22 17.9995 0.5 17.9995H3.54C3.67 17.9995 3.8 17.9495 3.89 17.8495L14.81 6.93951L11.06 3.18951L0.15 14.0995C0.0500001 14.1995 0 14.3195 0 14.4595ZM17.71 4.03951C17.8027 3.947 17.8762 3.83711 17.9264 3.71614C17.9766 3.59517 18.0024 3.46548 18.0024 3.33451C18.0024 3.20355 17.9766 3.07386 17.9264 2.95289C17.8762 2.83192 17.8027 2.72203 17.71 2.62951L15.37 0.289514C15.2775 0.196811 15.1676 0.123263 15.0466 0.0730817C14.9257 0.0229003 14.796 -0.00292969 14.665 -0.00292969C14.534 -0.00292969 14.4043 0.0229003 14.2834 0.0730817C14.1624 0.123263 14.0525 0.196811 13.96 0.289514L12.13 2.11951L15.88 5.86951L17.71 4.03951Z" />
+                                                    </svg>
                                                 </div>
                                                 <div className="" onClick={() => setConverterModal(!detailModal)}>
-                                                    <img className='cursor-pointer max-w mx-auto min-w-[18px]' src='/assets/img/trash.svg' />
+                                                    <svg width="16" height="18" viewBox="0 0 16 18" className='cursor-pointer max-w mx-auto min-w-[18px] hover:fill-[#CE2E2E] duration-300 fill-[#7A8EA4]' xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M3 18C2.45 18 1.97933 17.8043 1.588 17.413C1.19667 17.0217 1.00067 16.5507 1 16V3H0V1H5V0H11V1H16V3H15V16C15 16.55 14.8043 17.021 14.413 17.413C14.0217 17.805 13.5507 18.0007 13 18H3ZM5 14H7V5H5V14ZM9 14H11V5H9V14Z" />
+                                                    </svg>
                                                 </div>
                                             </div>
                                         );
                                     }} headerStyle={{ backgroundColor: '#D9D9D90A', color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px] ' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="name" header="Действия" ></Column>
                                     <Column body={(rowData) => {
                                         return (
-                                            <div className='cursor-pointer select-text'>
+                                            <div className='cursor-pointer selectable-text'>
                                                 {rowData.creator.username}
                                             </div>
                                         );
@@ -680,7 +688,7 @@ const Ad = () => {
 
                                     <Column body={(rowData) => {
                                         return (
-                                            <div className='select-text'>
+                                            <div className='selectable-text'>
                                                 {rowData.min_payouts_amount} / {rowData.max_payouts_amount}
                                             </div>
                                         )
@@ -704,8 +712,8 @@ const Ad = () => {
                                     <Column body={(rowData) => {
                                         return (
                                             <div>
-                                                {rowData?.created_at?.split("T")[0]} {rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}
-                                                {rowData?.updated_at?.split("T")[0]} {rowData?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}
+                                                <h5 className='selectable-text'>{rowData?.created_at?.split("T")[0]} {rowData?.created_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
+                                                <h5 className='selectable-text'>{rowData?.updated_at?.split("T")[0]} {rowData?.updated_at?.split("T")[1].split("+")[0].slice(0, 5)}</h5>
                                             </div>
                                         )
                                     }} headerStyle={{ backgroundColor: '#D9D9D90A', padding: "16px 0", color: isDarkMode ? "#E7E7E7" : "#2B347C", fontSize: "12px", borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} ` }} className='text-[14px] py-[27px]' bodyStyle={{ borderBottom: `1px solid ${isDarkMode ? "#717380" : "#D9D9D9"} `, color: isDarkMode ? "#E7E7E7" : "#2B347C" }} field="time" header="Дата создания"  ></Column>

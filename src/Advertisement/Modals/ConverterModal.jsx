@@ -42,7 +42,7 @@ const ConverterModal = ({ setConverterModal, converterModal }) => {
                         </div>
                     </div>
                     <div className="flex w-full text-white justify-end">
-                        <button onClick={() => setConverterModal(false)} className='bg-[#2E70F5] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                        <button onClick={() => setConverterModal(false)} className='bg-[#536DFE] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                             Конвертировать
                         </button>
                     </div>

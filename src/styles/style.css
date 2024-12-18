@@ -29,8 +29,12 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .selectable-text {
-  user-select: text !important;
+  -webkit-user-select: all;
+  -moz-user-select: all;
+  -ms-user-select: all;
+  user-select: all !important;
 }
+
 .bg-linear {
   min-height: 100vh;
   overflow: auto;
@@ -90,7 +94,33 @@ td {
   z-index: 10;
   position: relative;
 }
+.dataTableRow {
+  transition: all 0.3s ease;
+}
 
+.dataTableRow:hover {
+  background-color: #f0f0f0; 
+  transition: background-color 0.3s ease;
+}
+input,select {
+  color: #4e4f56;
+}
+
+.dark_mode .dataTableRow:hover {
+  background-color: #333; 
+}
+button:active {
+  transform: scale(0.99); 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+}
+.light_mode .dataTableRow:hover {
+  background-color: #ffffff;
+}
+
+td,
+th {
+  user-select: text !important;
+}
 .light_mode .p-paginator-page,
 .dark_mode .p-paginator-page {
   margin: 0 4px;

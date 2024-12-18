@@ -166,7 +166,7 @@ const Login = () => {
             <label htmlFor="otp">
               <input type="number" onChange={(e => setOtp(e.target.value))} placeholder='ОТП' className={`w-full mb-11 border-[#6C6E86] border bg-transparent ${isDarkMode ? "text-[#C5C7CD]" : "text-[#000]"}  rounded-[4px] outline-[#2D54DD] pl-4 py-[10px] placeholder:text-[#C5C7CD] text-[14px] font-normal`} required minLength={6} maxLength={6} />
             </label>
-            <button type='submit' className='py-[10px] text-[14px] text-white font-medium rounded-[4px] bg-[#2D54DD] w-full text-center'>{loading ? <PulseLoader color="#fff" speedMultiplier={0.6} size={12} /> : "Войти"}</button>
+            <button type='submit' className='py-[10px] text-[14px] text-white font-medium rounded-[4px] bg-[#536DFE] w-full text-center'>{loading ? <PulseLoader color="#fff" speedMultiplier={0.6} size={12} /> : "Войти"}</button>
           </form>
         </div>
       </div>

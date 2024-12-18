@@ -86,7 +86,7 @@ const ApplicationModal = ({ setModal, modal }) => {
                             <input onChange={(e) => { setApplication((prevApp) => ({ ...prevApp, "maxAmount": e.target.value })) }} value={application["maxAmount"] || ""} style={{ caretColor: `${isDarkMode ? "#fff" : "#000"}` }} required placeholder='0' type="text" className={`${isDarkMode ? "text-white" : ""} blur-0 mb-2 bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
                         </div>
                         <div className={`flex justify-end mt-2 text-white`}>
-                            <button type='submit' className='bg-[#2E70F5] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                            <button type='submit' className='bg-[#536DFE] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                 Создать
                             </button>
                         </div>

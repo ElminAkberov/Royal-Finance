@@ -894,10 +894,10 @@ const Payout = () => {
                     <div className={`${!filterHide ? 'md:hidden' : ''}`}>
                         <div className={`${!filterBtn && "max-md:hidden"} flex max-md:grid max-md:grid-cols-2 max-md:justify-items-center max-[450px]:grid-cols-1  max-[1200px]:justify-center flex-wrap   py-[24px] pr-4 text-[14px] gap-2 text-[#717380]`}>
                             {localStorage.getItem("role") !== "trader" &&
-                                <input onChange={(e) => setMerchant(e.target.value)} placeholder='Мерчант' type="text" className={` h-[40px] w-[155px] pl-[12px] rounded-[4px] ${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
+                                <input onChange={(e) => setMerchant(e.target.value)} placeholder='Мерчант' type="text" className={` h-[40px] w-[155px] focus:outline-[#536cfe] pl-[12px] rounded-[4px] ${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
                             }
                             {localStorage.getItem("role") !== "merchant" &&
-                                <input onChange={(e) => setTrader(e.target.value)} placeholder='Трейдер' type="text" className={` pl-[12px] w-[155px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
+                                <input onChange={(e) => setTrader(e.target.value)} placeholder='Трейдер' type="text" className={` pl-[12px] w-[155px] focus:outline-[#536cfe] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
                             }
                             <select onChange={(e) => setSelectMethod(e.target.value)} className={`${isDarkMode ? "bg-[#121212]  text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] max-w-[155px] min-w-[155px] h-[40px]`} name="" id="">
                                 <option value="" defaultValue={"Метод"}>Метод</option>
@@ -914,7 +914,7 @@ const Payout = () => {
                                 <option value={"canceled"} className={`${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC] text-black"}`}>Отклонено</option>
                             </select>
                             <div className={`flex items-center pl-[12px] rounded-[4px] min-w-[155px] max-w-[155px] h-[40px] ${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} cursor-pointer`} onClick={() => startDateRef.current && startDateRef.current.showPicker()}>
-                                <svg width="24" height="24" className='' viewBox="0 0 24 24" fill={`${isDarkMode ? "#E7E7E7" : "#252840"}`} xmlns="http://www.w3.org/2000/svg">
+                                <svg width="24" height="24" className='' viewBox="0 0 24 24" fill={`#536cfe`} xmlns="http://www.w3.org/2000/svg">
                                     <path d="M20 3H19V2C19 1.45 18.55 1 18 1C17.45 1 17 1.45 17 2V3H7V2C7 1.45 6.55 1 6 1C5.45 1 5 1.45 5 2V3H4C2.9 3 2 3.9 2 5V21C2 22.1 2.9 23 4 23H20C21.1 23 22 22.1 22 21V5C22 3.9 21.1 3 20 3ZM19 21H5C4.45 21 4 20.55 4 20V8H20V20C20 20.55 19.55 21 19 21Z" />
                                 </svg>
                                 <input ref={startDateRef} type="date" name="" id="date-picker" min="2023-01-01" className='bg-transparent outline-none relative mt-1 ml-1 w-full cursor-pointer' onChange={(e) => setStartDate(e.target.value)} defaultValue={"2024-10-16"} />
@@ -922,42 +922,42 @@ const Payout = () => {
 
                             <div className={`flex items-center pl-[12px] rounded-[4px] w-[155px]  relative h-[40px] ${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC]"}`}>
                                 <div className="">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className='absolute top-2' xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.78 7H11.72C11.32 7 11 7.32 11 7.72V12.44C11 12.79 11.18 13.12 11.49 13.3L15.64 15.79C15.98 15.99 16.42 15.89 16.62 15.55C16.83 15.21 16.72 14.76 16.37 14.56L12.5 12.26V7.72C12.5 7.32 12.18 7 11.78 7Z" fill="#717380" />
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="#536cfe" className='absolute top-2' xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.78 7H11.72C11.32 7 11 7.32 11 7.72V12.44C11 12.79 11.18 13.12 11.49 13.3L15.64 15.79C15.98 15.99 16.42 15.89 16.62 15.55C16.83 15.21 16.72 14.76 16.37 14.56L12.5 12.26V7.72C12.5 7.32 12.18 7 11.78 7Z"  />
                                     </svg>
                                 </div>
-                                <input value={time} onChange={handleStartTimeChange} type="text" className='bg-transparent outline-none pl-7' placeholder='00:00' />
+                                <input value={time} onChange={handleStartTimeChange} type="text" className='bg-transparent outline-none pl-7 max-w-[75px]' placeholder='00:00' />
                             </div>
 
-                            <div className={`flex overflow-hidden items-center  pl-[12px] rounded-[4px] min-w-[155px] max-w-[155px] h-[40px] ${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC] text-black"}`} onClick={() => endDateRef.current && endDateRef.current.showPicker()}>
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M20 3H19V2C19 1.45 18.55 1 18 1C17.45 1 17 1.45 17 2V3H7V2C7 1.45 6.55 1 6 1C5.45 1 5 1.45 5 2V3H4C2.9 3 2 3.9 2 5V21C2 22.1 2.9 23 4 23H20C21.1 23 22 22.1 22 21V5C22 3.9 21.1 3 20 3ZM19 21H5C4.45 21 4 20.55 4 20V8H20V20C20 20.55 19.55 21 19 21Z" fill="#717380" />
+                            <div className={`flex overflow-hidden items-center cursor-pointer  pl-[12px] rounded-[4px] min-w-[155px] max-w-[155px] h-[40px] ${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC] text-black"}`} onClick={() => endDateRef.current && endDateRef.current.showPicker()}>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#536cfe" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 3H19V2C19 1.45 18.55 1 18 1C17.45 1 17 1.45 17 2V3H7V2C7 1.45 6.55 1 6 1C5.45 1 5 1.45 5 2V3H4C2.9 3 2 3.9 2 5V21C2 22.1 2.9 23 4 23H20C21.1 23 22 22.1 22 21V5C22 3.9 21.1 3 20 3ZM19 21H5C4.45 21 4 20.55 4 20V8H20V20C20 20.55 19.55 21 19 21Z" />
                                 </svg>
                                 <div className="">
-                                    <input ref={endDateRef} type="date" name="" id="" min="2024-01-01" className='bg-transparent outline-none mt-1 ml-1' onChange={(e) => setEndDate(e.target.value)} defaultValue={"2024-12-12"} />
+                                    <input ref={endDateRef} type="date" name="" id="" min="2024-01-01" className='bg-transparent cursor-pointer outline-none mt-1 ml-1' onChange={(e) => setEndDate(e.target.value)} defaultValue={"2024-12-12"} />
                                 </div>
                             </div>
                             <div className={`flex overflow-hidden items-center pl-[12px] relative rounded-[4px] w-[155px] h-[40px] ${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC]"}`}>
                                 <div className="">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className='absolute top-2' xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.78 7H11.72C11.32 7 11 7.32 11 7.72V12.44C11 12.79 11.18 13.12 11.49 13.3L15.64 15.79C15.98 15.99 16.42 15.89 16.62 15.55C16.83 15.21 16.72 14.76 16.37 14.56L12.5 12.26V7.72C12.5 7.32 12.18 7 11.78 7Z" fill="#717380" />
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="#536cfe" className='absolute top-2' xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.78 7H11.72C11.32 7 11 7.32 11 7.72V12.44C11 12.79 11.18 13.12 11.49 13.3L15.64 15.79C15.98 15.99 16.42 15.89 16.62 15.55C16.83 15.21 16.72 14.76 16.37 14.56L12.5 12.26V7.72C12.5 7.32 12.18 7 11.78 7Z"  />
                                     </svg>
                                 </div>
                                 <input value={time_2} onChange={handleEndTimeChange} type="text" className='bg-transparent outline-none pl-7' placeholder='23:59' />
                             </div>
                             <div className="flex justify-center mb-2 max-w-[160px] max-md:hidden">
-                                <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff]  py-[9.5px] font-normal min-w-[156px]  text-[14px] rounded-[8px]'>
+                                <button onClick={handleFilterApply} className='bg-[#536DFE] text-[#fff]  py-[9.5px] font-normal min-w-[156px]  text-[14px] rounded-[8px]'>
                                     Применить фильтр
                                 </button>
                             </div>
                             <div className="flex justify-center w-full min-[450px]:hidden mb-2 ">
-                                <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px]'>
+                                <button onClick={handleFilterApply} className='bg-[#536DFE] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px]'>
                                     Применить фильтр
                                 </button>
                             </div>
                         </div>
                         <div className={`hidden justify-center w-full  ${filterBtn && "max-md:flex"} max-[450px]:hidden mb-2 `}>
-                            <button onClick={handleFilterApply} className='bg-[#2E70F5] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px]'>
+                            <button onClick={handleFilterApply} className='bg-[#536DFE]  text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px]'>
                                 Применить фильтр
                             </button>
                         </div>
@@ -966,13 +966,13 @@ const Payout = () => {
                         <div className="flex justify-between flex-wrap gap-x-3">
 
                             <form onSubmit={handleDepositGet}>
-                                <button type='submit' className='bg-[#2E70F5] mb-3 text-[#fff]  px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                <button type='submit' className='bg-[#536DFE] mb-3 text-[#fff]  px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                     Пополнить депозит
                                 </button>
                             </form>
 
                             <div className=' justify-end' >
-                                <button onClick={() => setDepositModal(!depositModal)} className='bg-[#2E70F5] mb-3 text-[#fff]  px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px] max-md:mr-4'>
+                                <button onClick={() => setDepositModal(!depositModal)} className='bg-[#536DFE] mb-3 text-[#fff]  px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px] max-md:mr-4'>
                                     Пополнить депозит
                                 </button>
                             </div>
@@ -995,7 +995,7 @@ const Payout = () => {
                                     <input value={depositAmount} onChange={(e) => setDepositAmount(e.target.value)} type="text" className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
                                 </div>
                                 <div className="flex w-full text-white justify-end">
-                                    <button type='submit' className='bg-[#2E70F5] mt-4 px-[37.5px] py-[10px]   font-normal text-[14px] rounded-[8px]'>
+                                    <button type='submit' className='bg-[#536DFE] mt-4 px-[37.5px] py-[10px]   font-normal text-[14px] rounded-[8px]'>
                                         Пополнить депозит
                                     </button>
                                 </div>
@@ -1009,7 +1009,7 @@ const Payout = () => {
                             {loading ? (
                                 <Loading />
                             ) :
-                                <DataTable value={data?.results} rows={8} tableStyle={{ minWidth: '50rem' }} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
+                                <DataTable value={data?.results} rows={8} tableStyle={{ minWidth: '50rem' }} rowClassName={() => "dataTableRow"} className={`${isDarkMode ? "dark_mode" : "light_mode"} `}>
                                     <Column headerClassName="custom-column-header" body={(rowData) => {
                                         return (
                                             <>
@@ -1017,28 +1017,40 @@ const Payout = () => {
                                                     {(rowData.status == "completed" || rowData.status == "canceled") ?
                                                         <>
                                                             <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
-                                                                <img className='mx-auto min-w-[24px]' src='/assets/img/ion_eye.svg' />
+                                                                <svg width="24" height="24" className='mx-auto min-w-[24px] cursor-pointer hover:fill-[#536DFE] duration-300 fill-[#7A8EA4]' viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" />
+                                                                    <path d="M23.0091 11.1844C21.7687 9.26625 20.1595 7.63688 18.3558 6.47203C16.3603 5.18203 14.1572 4.5 11.985 4.5C9.99187 4.5 8.03203 5.06953 6.15984 6.19266C4.25062 7.33781 2.52093 9.01078 1.01859 11.1647C0.84899 11.4081 0.755584 11.6965 0.750243 11.9931C0.744901 12.2897 0.827865 12.5813 0.988591 12.8306C2.22656 14.768 3.81984 16.3997 5.59547 17.5486C7.59468 18.8438 9.74625 19.5 11.985 19.5C14.1745 19.5 16.3823 18.8236 18.3694 17.5444C20.1722 16.3833 21.7781 14.7478 23.0137 12.8137C23.1689 12.5702 23.251 12.2872 23.2502 11.9984C23.2493 11.7096 23.1656 11.4271 23.0091 11.1844ZM12.0009 16.5C11.1109 16.5 10.2409 16.2361 9.50087 15.7416C8.76085 15.2471 8.18407 14.5443 7.84348 13.7221C7.50288 12.8998 7.41377 11.995 7.5874 11.1221C7.76103 10.2492 8.18962 9.44736 8.81895 8.81802C9.44829 8.18868 10.2501 7.7601 11.123 7.58647C11.9959 7.41283 12.9007 7.50195 13.723 7.84254C14.5453 8.18314 15.2481 8.75991 15.7425 9.49993C16.237 10.24 16.5009 11.11 16.5009 12C16.4996 13.1931 16.025 14.3369 15.1814 15.1805C14.3378 16.0241 13.194 16.4986 12.0009 16.5Z" />
+                                                                </svg>
                                                             </div>
 
                                                             {rowData.receipts.length > 0 &&
                                                                 <div onClick={() => { handleShow(rowData); setZoom(!zoom); setId(rowData.id); }} className="cursor-pointer">
-                                                                    <img className='mx-auto min-w-[20px]' src='/assets/img/Group.svg' />
+                                                                    <svg width="18" height="20" className='hover:fill-[#536DFE] duration-300 fill-[#7A8EA4] cursor-pointer min-w-[20px] mx-auto' viewBox="0 0 18 20" xmlns="http://www.w3.org/2000/svg">
+                                                                        <path d="M15 -0.000244141H3C2.20436 -0.000244141 1.44129 0.315826 0.878684 0.878436C0.316075 1.44104 4.71977e-06 2.20411 4.71977e-06 2.99976V17.7998C-0.000729577 18.1378 0.0842283 18.4705 0.246942 18.7668C0.409657 19.0631 0.644818 19.3133 0.930458 19.4941C1.2161 19.6749 1.5429 19.7803 1.88033 19.8005C2.21776 19.8207 2.55482 19.7551 2.86 19.6098C3.1 19.4898 3.31 19.3598 3.53 19.2298C3.95312 18.9121 4.47107 18.7465 5 18.7598C5.53201 18.7466 6.05309 18.912 6.48 19.2298C7.21843 19.7444 8.10003 20.0138 9 19.9998C9.90008 20.0145 10.7819 19.745 11.52 19.2298C11.9466 18.9113 12.4679 18.7458 13 18.7598C13.5292 18.7449 14.0476 18.9106 14.47 19.2298C14.6866 19.3649 14.9103 19.4884 15.14 19.5998C15.4444 19.7447 15.7806 19.8104 16.1172 19.7907C16.4538 19.7709 16.7799 19.6664 17.0653 19.4868C17.3507 19.3072 17.586 19.0583 17.7494 18.7634C17.9129 18.4684 17.9991 18.1369 18 17.7998V2.99976C18 2.20411 17.6839 1.44104 17.1213 0.878436C16.5587 0.315826 15.7957 -0.000244141 15 -0.000244141ZM9 13.9998H5C4.73479 13.9998 4.48043 13.8944 4.2929 13.7069C4.10536 13.5193 4 13.265 4 12.9998C4 12.7345 4.10536 12.4802 4.2929 12.2926C4.48043 12.1051 4.73479 11.9998 5 11.9998H9C9.26522 11.9998 9.51958 12.1051 9.70711 12.2926C9.89465 12.4802 10 12.7345 10 12.9998C10 13.265 9.89465 13.5193 9.70711 13.7069C9.51958 13.8944 9.26522 13.9998 9 13.9998ZM13 9.99976H5C4.73479 9.99976 4.48043 9.8944 4.2929 9.70686C4.10536 9.51933 4 9.26497 4 8.99976C4 8.73454 4.10536 8.48019 4.2929 8.29265C4.48043 8.10511 4.73479 7.99976 5 7.99976H13C13.2652 7.99976 13.5196 8.10511 13.7071 8.29265C13.8946 8.48019 14 8.73454 14 8.99976C14 9.26497 13.8946 9.51933 13.7071 9.70686C13.5196 9.8944 13.2652 9.99976 13 9.99976ZM13 5.99976H5C4.73479 5.99976 4.48043 5.8944 4.2929 5.70686C4.10536 5.51933 4 5.26497 4 4.99976C4 4.73454 4.10536 4.48019 4.2929 4.29265C4.48043 4.10511 4.73479 3.99976 5 3.99976H13C13.2652 3.99976 13.5196 4.10511 13.7071 4.29265C13.8946 4.48019 14 4.73454 14 4.99976C14 5.26497 13.8946 5.51933 13.7071 5.70686C13.5196 5.8944 13.2652 5.99976 13 5.99976Z" />
+                                                                    </svg>
                                                                 </div>
                                                             }
                                                         </>
                                                         :
                                                         <>
                                                             <div onClick={() => { handleShow(rowData); setModal(true); setId(rowData.id) }} className='cursor-pointer'>
-                                                                <img className='mx-auto min-w-[24px]' src='/assets/img/ion_eye.svg' />
+                                                                <svg width="24" height="24" className='mx-auto min-w-[24px] cursor-pointer hover:fill-[#536DFE] duration-300 fill-[#7A8EA4]' viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" />
+                                                                    <path d="M23.0091 11.1844C21.7687 9.26625 20.1595 7.63688 18.3558 6.47203C16.3603 5.18203 14.1572 4.5 11.985 4.5C9.99187 4.5 8.03203 5.06953 6.15984 6.19266C4.25062 7.33781 2.52093 9.01078 1.01859 11.1647C0.84899 11.4081 0.755584 11.6965 0.750243 11.9931C0.744901 12.2897 0.827865 12.5813 0.988591 12.8306C2.22656 14.768 3.81984 16.3997 5.59547 17.5486C7.59468 18.8438 9.74625 19.5 11.985 19.5C14.1745 19.5 16.3823 18.8236 18.3694 17.5444C20.1722 16.3833 21.7781 14.7478 23.0137 12.8137C23.1689 12.5702 23.251 12.2872 23.2502 11.9984C23.2493 11.7096 23.1656 11.4271 23.0091 11.1844ZM12.0009 16.5C11.1109 16.5 10.2409 16.2361 9.50087 15.7416C8.76085 15.2471 8.18407 14.5443 7.84348 13.7221C7.50288 12.8998 7.41377 11.995 7.5874 11.1221C7.76103 10.2492 8.18962 9.44736 8.81895 8.81802C9.44829 8.18868 10.2501 7.7601 11.123 7.58647C11.9959 7.41283 12.9007 7.50195 13.723 7.84254C14.5453 8.18314 15.2481 8.75991 15.7425 9.49993C16.237 10.24 16.5009 11.11 16.5009 12C16.4996 13.1931 16.025 14.3369 15.1814 15.1805C14.3378 16.0241 13.194 16.4986 12.0009 16.5Z" />
+                                                                </svg>
                                                             </div>
                                                             {rowData.status == "in_progress" &&
                                                                 <div onClick={() => { handleShow(rowData); setCancelCheck(!cancelCheck); setId(rowData.id) }} className="cursor-pointer">
-                                                                    <img className='mx-auto min-w-[24px]' src='/assets/img/Connect.svg' />
+                                                                    <svg width="24" height="24" viewBox="0 0 24 24" className='min-w-[24px] cursor-pointer mx-auto hover:fill-[#536DFE] duration-300 fill-[#7A8EA4]' xmlns="http://www.w3.org/2000/svg">
+                                                                        <path d="M20.4844 15.8716L19.6412 17.1284L20.766 18.0714H18.2283C17.9139 16.7195 16.8226 15.7143 15.5156 15.7143H8.48438C7.17736 15.7143 6.08606 16.7195 5.77167 18.0714H4.21875C2.66766 18.0714 1.40625 16.6619 1.40625 14.9286C1.40625 13.1953 2.66766 11.7857 4.21875 11.7857H5.77167C6.08606 13.1376 7.17736 14.1429 8.48438 14.1429H15.5156C16.8226 14.1429 17.9139 13.1376 18.2283 11.7857H19.7812C22.1076 11.7857 24 9.67104 24 7.07143C24 4.47181 22.1076 2.35714 19.7812 2.35714H18.2283C17.9139 1.00524 16.8226 0 15.5156 0H8.48438C7.17736 0 6.08606 1.00524 5.77167 2.35714H5.15625L2.53087 0.157352L1.68788 1.41408L2.81269 2.35714H0V3.92857H2.81269L1.68788 4.87164L2.53087 6.12836L5.15625 3.92857H5.77167C6.08606 5.28047 7.17736 6.28571 8.48438 6.28571H15.5156C16.8226 6.28571 17.9139 5.28047 18.2283 3.92857H19.7812C21.3323 3.92857 22.5938 5.33814 22.5938 7.07143C22.5938 8.80471 21.3323 10.2143 19.7812 10.2143H18.2283C17.9139 8.86239 16.8226 7.85714 15.5156 7.85714H8.48438C7.17736 7.85714 6.08606 8.86239 5.77167 10.2143H4.21875C1.89239 10.2143 0 12.329 0 14.9286C0 17.5282 1.89239 19.6429 4.21875 19.6429H5.77167C6.08606 20.9948 7.17736 22 8.48438 22H15.5156C16.8226 22 17.9139 20.9948 18.2283 19.6429H20.766L19.6412 20.5859L20.4844 21.8426L24 18.8571L20.4844 15.8716Z" />
+                                                                    </svg>
                                                                 </div>
                                                             }
                                                             {rowData.receipts.length > 0 &&
                                                                 <div onClick={() => { handleShow(rowData); setZoom(!zoom); setId(rowData.id); }} className="cursor-pointer">
-                                                                    <img className='mx-auto min-w-[20px]' src='/assets/img/Group.svg' />
+                                                                    <svg width="18" height="20" className='hover:fill-[#536DFE] duration-300 fill-[#7A8EA4] cursor-pointer min-w-[20px] mx-auto' viewBox="0 0 18 20" xmlns="http://www.w3.org/2000/svg">
+                                                                        <path d="M15 -0.000244141H3C2.20436 -0.000244141 1.44129 0.315826 0.878684 0.878436C0.316075 1.44104 4.71977e-06 2.20411 4.71977e-06 2.99976V17.7998C-0.000729577 18.1378 0.0842283 18.4705 0.246942 18.7668C0.409657 19.0631 0.644818 19.3133 0.930458 19.4941C1.2161 19.6749 1.5429 19.7803 1.88033 19.8005C2.21776 19.8207 2.55482 19.7551 2.86 19.6098C3.1 19.4898 3.31 19.3598 3.53 19.2298C3.95312 18.9121 4.47107 18.7465 5 18.7598C5.53201 18.7466 6.05309 18.912 6.48 19.2298C7.21843 19.7444 8.10003 20.0138 9 19.9998C9.90008 20.0145 10.7819 19.745 11.52 19.2298C11.9466 18.9113 12.4679 18.7458 13 18.7598C13.5292 18.7449 14.0476 18.9106 14.47 19.2298C14.6866 19.3649 14.9103 19.4884 15.14 19.5998C15.4444 19.7447 15.7806 19.8104 16.1172 19.7907C16.4538 19.7709 16.7799 19.6664 17.0653 19.4868C17.3507 19.3072 17.586 19.0583 17.7494 18.7634C17.9129 18.4684 17.9991 18.1369 18 17.7998V2.99976C18 2.20411 17.6839 1.44104 17.1213 0.878436C16.5587 0.315826 15.7957 -0.000244141 15 -0.000244141ZM9 13.9998H5C4.73479 13.9998 4.48043 13.8944 4.2929 13.7069C4.10536 13.5193 4 13.265 4 12.9998C4 12.7345 4.10536 12.4802 4.2929 12.2926C4.48043 12.1051 4.73479 11.9998 5 11.9998H9C9.26522 11.9998 9.51958 12.1051 9.70711 12.2926C9.89465 12.4802 10 12.7345 10 12.9998C10 13.265 9.89465 13.5193 9.70711 13.7069C9.51958 13.8944 9.26522 13.9998 9 13.9998ZM13 9.99976H5C4.73479 9.99976 4.48043 9.8944 4.2929 9.70686C4.10536 9.51933 4 9.26497 4 8.99976C4 8.73454 4.10536 8.48019 4.2929 8.29265C4.48043 8.10511 4.73479 7.99976 5 7.99976H13C13.2652 7.99976 13.5196 8.10511 13.7071 8.29265C13.8946 8.48019 14 8.73454 14 8.99976C14 9.26497 13.8946 9.51933 13.7071 9.70686C13.5196 9.8944 13.2652 9.99976 13 9.99976ZM13 5.99976H5C4.73479 5.99976 4.48043 5.8944 4.2929 5.70686C4.10536 5.51933 4 5.26497 4 4.99976C4 4.73454 4.10536 4.48019 4.2929 4.29265C4.48043 4.10511 4.73479 3.99976 5 3.99976H13C13.2652 3.99976 13.5196 4.10511 13.7071 4.29265C13.8946 4.48019 14 4.73454 14 4.99976C14 5.26497 13.8946 5.51933 13.7071 5.70686C13.5196 5.8944 13.2652 5.99976 13 5.99976Z" />
+                                                                    </svg>
                                                                 </div>
                                                             }
 
@@ -1091,7 +1103,7 @@ const Payout = () => {
                                         return (
                                             <div>
                                                 <>
-                                                    <div className='selectable-text'>{rowData.selected_traders.length > 0 ? rowData.selected_traders.map((person, index) => <p key={index}>{person.username}{index !== rowData.selected_traders.length - 1 && ','}</p>) : "-"}</div>
+                                                    <div >{rowData.selected_traders.length > 0 ? rowData.selected_traders.map((person, index) => <p className='selectable-text' key={index}>{person.username}{index !== rowData.selected_traders.length - 1 && ','}</p>) : "-"}</div>
                                                 </>
                                             </div>
                                         )
@@ -1189,28 +1201,40 @@ const Payout = () => {
                                                             {(dashData.status == "completed" || dashData.status == "canceled") ?
                                                                 <>
                                                                     <div onClick={() => { handleShow(dashData); setModal(true); setId(dashData.id) }} className='cursor-pointer'>
-                                                                        <img className='mx-auto min-w-[24px]' src='/assets/img/ion_eye.svg' />
+                                                                        <svg width="24" height="24" className='mx-auto min-w-[24px] cursor-pointer hover:fill-[#536DFE] duration-300 fill-[#7A8EA4]' viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                                            <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" />
+                                                                            <path d="M23.0091 11.1844C21.7687 9.26625 20.1595 7.63688 18.3558 6.47203C16.3603 5.18203 14.1572 4.5 11.985 4.5C9.99187 4.5 8.03203 5.06953 6.15984 6.19266C4.25062 7.33781 2.52093 9.01078 1.01859 11.1647C0.84899 11.4081 0.755584 11.6965 0.750243 11.9931C0.744901 12.2897 0.827865 12.5813 0.988591 12.8306C2.22656 14.768 3.81984 16.3997 5.59547 17.5486C7.59468 18.8438 9.74625 19.5 11.985 19.5C14.1745 19.5 16.3823 18.8236 18.3694 17.5444C20.1722 16.3833 21.7781 14.7478 23.0137 12.8137C23.1689 12.5702 23.251 12.2872 23.2502 11.9984C23.2493 11.7096 23.1656 11.4271 23.0091 11.1844ZM12.0009 16.5C11.1109 16.5 10.2409 16.2361 9.50087 15.7416C8.76085 15.2471 8.18407 14.5443 7.84348 13.7221C7.50288 12.8998 7.41377 11.995 7.5874 11.1221C7.76103 10.2492 8.18962 9.44736 8.81895 8.81802C9.44829 8.18868 10.2501 7.7601 11.123 7.58647C11.9959 7.41283 12.9007 7.50195 13.723 7.84254C14.5453 8.18314 15.2481 8.75991 15.7425 9.49993C16.237 10.24 16.5009 11.11 16.5009 12C16.4996 13.1931 16.025 14.3369 15.1814 15.1805C14.3378 16.0241 13.194 16.4986 12.0009 16.5Z" />
+                                                                        </svg>
                                                                     </div>
 
                                                                     {dashData.receipts.length > 0 &&
                                                                         <div onClick={() => { handleShow(dashData); setZoom(!zoom); setId(dashData.id); }} className="cursor-pointer">
-                                                                            <img className='mx-auto min-w-[20px]' src='/assets/img/Group.svg' />
+                                                                            <svg width="18" height="20" className='hover:fill-[#536DFE] duration-300 fill-[#7A8EA4] cursor-pointer min-w-[20px] mx-auto' viewBox="0 0 18 20" xmlns="http://www.w3.org/2000/svg">
+                                                                                <path d="M15 -0.000244141H3C2.20436 -0.000244141 1.44129 0.315826 0.878684 0.878436C0.316075 1.44104 4.71977e-06 2.20411 4.71977e-06 2.99976V17.7998C-0.000729577 18.1378 0.0842283 18.4705 0.246942 18.7668C0.409657 19.0631 0.644818 19.3133 0.930458 19.4941C1.2161 19.6749 1.5429 19.7803 1.88033 19.8005C2.21776 19.8207 2.55482 19.7551 2.86 19.6098C3.1 19.4898 3.31 19.3598 3.53 19.2298C3.95312 18.9121 4.47107 18.7465 5 18.7598C5.53201 18.7466 6.05309 18.912 6.48 19.2298C7.21843 19.7444 8.10003 20.0138 9 19.9998C9.90008 20.0145 10.7819 19.745 11.52 19.2298C11.9466 18.9113 12.4679 18.7458 13 18.7598C13.5292 18.7449 14.0476 18.9106 14.47 19.2298C14.6866 19.3649 14.9103 19.4884 15.14 19.5998C15.4444 19.7447 15.7806 19.8104 16.1172 19.7907C16.4538 19.7709 16.7799 19.6664 17.0653 19.4868C17.3507 19.3072 17.586 19.0583 17.7494 18.7634C17.9129 18.4684 17.9991 18.1369 18 17.7998V2.99976C18 2.20411 17.6839 1.44104 17.1213 0.878436C16.5587 0.315826 15.7957 -0.000244141 15 -0.000244141ZM9 13.9998H5C4.73479 13.9998 4.48043 13.8944 4.2929 13.7069C4.10536 13.5193 4 13.265 4 12.9998C4 12.7345 4.10536 12.4802 4.2929 12.2926C4.48043 12.1051 4.73479 11.9998 5 11.9998H9C9.26522 11.9998 9.51958 12.1051 9.70711 12.2926C9.89465 12.4802 10 12.7345 10 12.9998C10 13.265 9.89465 13.5193 9.70711 13.7069C9.51958 13.8944 9.26522 13.9998 9 13.9998ZM13 9.99976H5C4.73479 9.99976 4.48043 9.8944 4.2929 9.70686C4.10536 9.51933 4 9.26497 4 8.99976C4 8.73454 4.10536 8.48019 4.2929 8.29265C4.48043 8.10511 4.73479 7.99976 5 7.99976H13C13.2652 7.99976 13.5196 8.10511 13.7071 8.29265C13.8946 8.48019 14 8.73454 14 8.99976C14 9.26497 13.8946 9.51933 13.7071 9.70686C13.5196 9.8944 13.2652 9.99976 13 9.99976ZM13 5.99976H5C4.73479 5.99976 4.48043 5.8944 4.2929 5.70686C4.10536 5.51933 4 5.26497 4 4.99976C4 4.73454 4.10536 4.48019 4.2929 4.29265C4.48043 4.10511 4.73479 3.99976 5 3.99976H13C13.2652 3.99976 13.5196 4.10511 13.7071 4.29265C13.8946 4.48019 14 4.73454 14 4.99976C14 5.26497 13.8946 5.51933 13.7071 5.70686C13.5196 5.8944 13.2652 5.99976 13 5.99976Z" />
+                                                                            </svg>
                                                                         </div>
                                                                     }
                                                                 </>
                                                                 :
                                                                 <>
                                                                     <div onClick={() => { handleShow(dashData); setModal(true); setId(dashData.id) }} className='cursor-pointer'>
-                                                                        <img className='mx-auto min-w-[24px]' src='/assets/img/ion_eye.svg' />
+                                                                        <svg width="24" height="24" className='mx-auto min-w-[24px] cursor-pointer hover:fill-[#536DFE] duration-300 fill-[#7A8EA4]' viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                                            <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" />
+                                                                            <path d="M23.0091 11.1844C21.7687 9.26625 20.1595 7.63688 18.3558 6.47203C16.3603 5.18203 14.1572 4.5 11.985 4.5C9.99187 4.5 8.03203 5.06953 6.15984 6.19266C4.25062 7.33781 2.52093 9.01078 1.01859 11.1647C0.84899 11.4081 0.755584 11.6965 0.750243 11.9931C0.744901 12.2897 0.827865 12.5813 0.988591 12.8306C2.22656 14.768 3.81984 16.3997 5.59547 17.5486C7.59468 18.8438 9.74625 19.5 11.985 19.5C14.1745 19.5 16.3823 18.8236 18.3694 17.5444C20.1722 16.3833 21.7781 14.7478 23.0137 12.8137C23.1689 12.5702 23.251 12.2872 23.2502 11.9984C23.2493 11.7096 23.1656 11.4271 23.0091 11.1844ZM12.0009 16.5C11.1109 16.5 10.2409 16.2361 9.50087 15.7416C8.76085 15.2471 8.18407 14.5443 7.84348 13.7221C7.50288 12.8998 7.41377 11.995 7.5874 11.1221C7.76103 10.2492 8.18962 9.44736 8.81895 8.81802C9.44829 8.18868 10.2501 7.7601 11.123 7.58647C11.9959 7.41283 12.9007 7.50195 13.723 7.84254C14.5453 8.18314 15.2481 8.75991 15.7425 9.49993C16.237 10.24 16.5009 11.11 16.5009 12C16.4996 13.1931 16.025 14.3369 15.1814 15.1805C14.3378 16.0241 13.194 16.4986 12.0009 16.5Z" />
+                                                                        </svg>
                                                                     </div>
                                                                     {dashData.status == "in_progress" &&
                                                                         <div onClick={() => { handleShow(dashData); setCancelCheck(!cancelCheck); setId(dashData.id) }} className="cursor-pointer">
-                                                                            <img className='mx-auto min-w-[24px]' src='/assets/img/Connect.svg' />
+                                                                            <svg width="24" height="24" viewBox="0 0 24 24" className='min-w-[24px] cursor-pointer mx-auto hover:fill-[#536DFE] duration-300 fill-[#7A8EA4]' xmlns="http://www.w3.org/2000/svg">
+                                                                                <path d="M20.4844 15.8716L19.6412 17.1284L20.766 18.0714H18.2283C17.9139 16.7195 16.8226 15.7143 15.5156 15.7143H8.48438C7.17736 15.7143 6.08606 16.7195 5.77167 18.0714H4.21875C2.66766 18.0714 1.40625 16.6619 1.40625 14.9286C1.40625 13.1953 2.66766 11.7857 4.21875 11.7857H5.77167C6.08606 13.1376 7.17736 14.1429 8.48438 14.1429H15.5156C16.8226 14.1429 17.9139 13.1376 18.2283 11.7857H19.7812C22.1076 11.7857 24 9.67104 24 7.07143C24 4.47181 22.1076 2.35714 19.7812 2.35714H18.2283C17.9139 1.00524 16.8226 0 15.5156 0H8.48438C7.17736 0 6.08606 1.00524 5.77167 2.35714H5.15625L2.53087 0.157352L1.68788 1.41408L2.81269 2.35714H0V3.92857H2.81269L1.68788 4.87164L2.53087 6.12836L5.15625 3.92857H5.77167C6.08606 5.28047 7.17736 6.28571 8.48438 6.28571H15.5156C16.8226 6.28571 17.9139 5.28047 18.2283 3.92857H19.7812C21.3323 3.92857 22.5938 5.33814 22.5938 7.07143C22.5938 8.80471 21.3323 10.2143 19.7812 10.2143H18.2283C17.9139 8.86239 16.8226 7.85714 15.5156 7.85714H8.48438C7.17736 7.85714 6.08606 8.86239 5.77167 10.2143H4.21875C1.89239 10.2143 0 12.329 0 14.9286C0 17.5282 1.89239 19.6429 4.21875 19.6429H5.77167C6.08606 20.9948 7.17736 22 8.48438 22H15.5156C16.8226 22 17.9139 20.9948 18.2283 19.6429H20.766L19.6412 20.5859L20.4844 21.8426L24 18.8571L20.4844 15.8716Z" />
+                                                                            </svg>
                                                                         </div>
                                                                     }
                                                                     {dashData.receipts.length > 0 &&
                                                                         <div onClick={() => { handleShow(dashData); setZoom(!zoom); setId(dashData.id); }} className="cursor-pointer">
-                                                                            <img className='mx-auto min-w-[20px]' src='/assets/img/Group.svg' />
+                                                                            <svg width="18" height="20" className='hover:fill-[#536DFE] duration-300 fill-[#7A8EA4] cursor-pointer min-w-[20px] mx-auto' viewBox="0 0 18 20" xmlns="http://www.w3.org/2000/svg">
+                                                                                <path d="M15 -0.000244141H3C2.20436 -0.000244141 1.44129 0.315826 0.878684 0.878436C0.316075 1.44104 4.71977e-06 2.20411 4.71977e-06 2.99976V17.7998C-0.000729577 18.1378 0.0842283 18.4705 0.246942 18.7668C0.409657 19.0631 0.644818 19.3133 0.930458 19.4941C1.2161 19.6749 1.5429 19.7803 1.88033 19.8005C2.21776 19.8207 2.55482 19.7551 2.86 19.6098C3.1 19.4898 3.31 19.3598 3.53 19.2298C3.95312 18.9121 4.47107 18.7465 5 18.7598C5.53201 18.7466 6.05309 18.912 6.48 19.2298C7.21843 19.7444 8.10003 20.0138 9 19.9998C9.90008 20.0145 10.7819 19.745 11.52 19.2298C11.9466 18.9113 12.4679 18.7458 13 18.7598C13.5292 18.7449 14.0476 18.9106 14.47 19.2298C14.6866 19.3649 14.9103 19.4884 15.14 19.5998C15.4444 19.7447 15.7806 19.8104 16.1172 19.7907C16.4538 19.7709 16.7799 19.6664 17.0653 19.4868C17.3507 19.3072 17.586 19.0583 17.7494 18.7634C17.9129 18.4684 17.9991 18.1369 18 17.7998V2.99976C18 2.20411 17.6839 1.44104 17.1213 0.878436C16.5587 0.315826 15.7957 -0.000244141 15 -0.000244141ZM9 13.9998H5C4.73479 13.9998 4.48043 13.8944 4.2929 13.7069C4.10536 13.5193 4 13.265 4 12.9998C4 12.7345 4.10536 12.4802 4.2929 12.2926C4.48043 12.1051 4.73479 11.9998 5 11.9998H9C9.26522 11.9998 9.51958 12.1051 9.70711 12.2926C9.89465 12.4802 10 12.7345 10 12.9998C10 13.265 9.89465 13.5193 9.70711 13.7069C9.51958 13.8944 9.26522 13.9998 9 13.9998ZM13 9.99976H5C4.73479 9.99976 4.48043 9.8944 4.2929 9.70686C4.10536 9.51933 4 9.26497 4 8.99976C4 8.73454 4.10536 8.48019 4.2929 8.29265C4.48043 8.10511 4.73479 7.99976 5 7.99976H13C13.2652 7.99976 13.5196 8.10511 13.7071 8.29265C13.8946 8.48019 14 8.73454 14 8.99976C14 9.26497 13.8946 9.51933 13.7071 9.70686C13.5196 9.8944 13.2652 9.99976 13 9.99976ZM13 5.99976H5C4.73479 5.99976 4.48043 5.8944 4.2929 5.70686C4.10536 5.51933 4 5.26497 4 4.99976C4 4.73454 4.10536 4.48019 4.2929 4.29265C4.48043 4.10511 4.73479 3.99976 5 3.99976H13C13.2652 3.99976 13.5196 4.10511 13.7071 4.29265C13.8946 4.48019 14 4.73454 14 4.99976C14 5.26497 13.8946 5.51933 13.7071 5.70686C13.5196 5.8944 13.2652 5.99976 13 5.99976Z" />
+                                                                            </svg>
                                                                         </div>
                                                                     }
 
@@ -1458,7 +1482,7 @@ const Payout = () => {
                                 ))}
                             </div>
                             <div className="flex justify-end my-4 mr-4">
-                                <button type='submit' className='bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                <button type='submit' className='bg-[#536DFE] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                     Завершить
                                 </button>
                             </div>
@@ -1777,7 +1801,7 @@ const Payout = () => {
                                             </div>
 
                                             <div className="flex justify-end pr-8 blur-0">
-                                                <button type='submit' className=' relative bg-[#2E70F5] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                                <button type='submit' className=' relative bg-[#536DFE] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                                     Отклонить
                                                 </button>
                                             </div>
@@ -1792,11 +1816,11 @@ const Payout = () => {
                                                     {(data.status === "pending") && (
                                                         <>
                                                             <div className='flex  max-[420px]:flex-col gap-4'>
-                                                                <button onClick={() => setCancel(!cancel)} className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                                                <button onClick={() => setCancel(!cancel)} className='text-[#536DFE] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                                                     Отклонить
                                                                 </button>
                                                                 <form onSubmit={handleAccept}>
-                                                                    <button type='submit' className='bg-[#2E70F5] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                                                    <button type='submit' className='bg-[#536DFE] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                                                         Взять в работу
                                                                     </button>
                                                                 </form>
@@ -1808,7 +1832,7 @@ const Payout = () => {
                                                             <button onClick={() => setCancel(!cancel)} className='text-[#2E70F5] border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                                                 Отклонить
                                                             </button>
-                                                            <button onClick={() => { setCancelCheck(!cancelCheck); setModal(!modal) }} type='submit' className='bg-[#2E70F5]  text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
+                                                            <button onClick={() => { setCancelCheck(!cancelCheck); setModal(!modal) }} type='submit' className='bg-[#536DFE]  text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                                                 Завершить
                                                             </button>
                                                         </div>
