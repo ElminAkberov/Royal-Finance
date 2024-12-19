@@ -374,11 +374,11 @@ const Deposit = () => {
 
               <div className="mb-8">
                 <h4 className={`text-[12px] mb-2 font-semibold ${isDarkMode ? "text-[#e7e7e7]" : ""}`}>Хеш</h4>
-                <input value={hash} onChange={(e) => { setHash(e.target.value) }} placeholder='Хеш' type="text" required className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
+                <input value={hash} onChange={(e) => { setHash(e.target.value) }} placeholder='Хеш' type="text" required className={`${isDarkMode ? "text-white" : ""} focus:outline-[#536cfe] bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4  rounded-[4px]`} />
               </div>
               <div className="">
                 <h4 className={`text-[12px] mb-2 font-semibold ${isDarkMode ? "text-[#e7e7e7]" : ""}`}>Cумма</h4>
-                <input value={amount} onChange={(e) => { setAmount(e.target.value) }} placeholder='Cумма' type="number" required className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
+                <input value={amount} onChange={(e) => { setAmount(e.target.value) }} placeholder='Cумма' type="number" required className={`${isDarkMode ? "text-white" : ""} focus:outline-[#536cfe] bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4  rounded-[4px]`} />
               </div>
               <div className="">
                 <h3 className={`text-[24px] mt-8 font-semibold ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Сканировать QR код</h3>
@@ -442,11 +442,11 @@ const Deposit = () => {
 
               <div className="mb-8">
                 <h4 className={`text-[12px] mb-2 font-semibold ${isDarkMode ? "text-[#e7e7e7]" : ""}`}>Код</h4>
-                <input value={hash} onChange={(e) => { setHash(e.target.value) }} placeholder='Код' type="text" required className={`${isDarkMode ? " text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
+                <input value={hash} onChange={(e) => { setHash(e.target.value) }} placeholder='Код' type="text" required className={`${isDarkMode ? " text-white" : ""} focus:outline-[#536cfe] bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4  rounded-[4px]`} />
               </div>
               <div className="">
                 <h4 className={`text-[12px] mb-2 font-semibold ${isDarkMode ? "text-[#e7e7e7]" : ""}`}>Cумма</h4>
-                <input value={amount} onChange={(e) => { setAmount(e.target.value) }} placeholder='Cумма' type="number" required className={`${isDarkMode ? "text-white" : ""} bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
+                <input value={amount} onChange={(e) => { setAmount(e.target.value) }} placeholder='Cумма' type="number" required className={`${isDarkMode ? "text-white" : ""} focus:outline-[#536cfe] bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4  rounded-[4px]`} />
               </div>
               <div className="flex w-full text-white justify-end">
                 <button type='submit' className='bg-[#536DFE] px-[37.5px] py-[10px] mt-[32px] font-normal text-[14px] rounded-[8px]'>

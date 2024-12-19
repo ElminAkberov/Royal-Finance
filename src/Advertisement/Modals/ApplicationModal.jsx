@@ -79,11 +79,11 @@ const ApplicationModal = ({ setModal, modal }) => {
                         </div>
                         <div className="modal_payout ">
                             <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} blur-0 mb-2`}>Мин сумма на выплату</h5>
-                            <input onChange={(e) => { setApplication((prevApp) => ({ ...prevApp, "minAmount": e.target.value })) }} value={application["minAmount"] || ""} style={{ caretColor: `${isDarkMode ? "#fff" : "#000"}` }} required placeholder='0' type="text" className={`${isDarkMode ? "text-white" : ""} blur-0 mb-2 bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
+                            <input onChange={(e) => { setApplication((prevApp) => ({ ...prevApp, "minAmount": e.target.value })) }} value={application["minAmount"] || ""} style={{ caretColor: `${isDarkMode ? "#fff" : "#000"}` }} required placeholder='0' type="text" className={`${isDarkMode ? "text-white" : ""} focus:outline-[#536cfe] blur-0 mb-2 bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4  rounded-[4px]`} />
                         </div>
                         <div className="modal_payout ">
                             <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} blur-0 mb-2`}>Макс сумма на выплату</h5>
-                            <input onChange={(e) => { setApplication((prevApp) => ({ ...prevApp, "maxAmount": e.target.value })) }} value={application["maxAmount"] || ""} style={{ caretColor: `${isDarkMode ? "#fff" : "#000"}` }} required placeholder='0' type="text" className={`${isDarkMode ? "text-white" : ""} blur-0 mb-2 bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 outline-none rounded-[4px]`} />
+                            <input onChange={(e) => { setApplication((prevApp) => ({ ...prevApp, "maxAmount": e.target.value })) }} value={application["maxAmount"] || ""} style={{ caretColor: `${isDarkMode ? "#fff" : "#000"}` }} required placeholder='0' type="text" className={`${isDarkMode ? "text-white" : ""} focus:outline-[#536cfe] blur-0 mb-2 bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4  rounded-[4px]`} />
                         </div>
                         <div className={`flex justify-end mt-2 text-white`}>
                             <button type='submit' className='bg-[#536DFE] px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
