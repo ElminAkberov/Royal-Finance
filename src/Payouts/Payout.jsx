@@ -468,7 +468,7 @@ const Payout = () => {
         e.preventDefault();
         try {
             const formData = new FormData();
-            formData.append('reason', reason); 
+            formData.append('reason', reason);
 
             if (otkImgDesc && otkImgDesc.length > 0) {
                 otkImgDesc.forEach((img, index) => {
@@ -496,7 +496,7 @@ const Payout = () => {
                 if (refreshResponse.ok) {
                     const refreshData = await refreshResponse.json();
                     localStorage.setItem("access", refreshData.access);
-                    return handleCancel(); 
+                    return handleCancel();
                 } else {
                     navigate("/login");
                 }
@@ -627,7 +627,7 @@ const Payout = () => {
     const handleDragLeave = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        setIsOver(false); 
+        setIsOver(false);
     };
     const fileInputRef = useRef(null);
 
@@ -1518,8 +1518,11 @@ const Payout = () => {
                                                                 className="mySwiper2 mb-2 cursor-pointer"
                                                             >
                                                                 {images?.map((item, index) => (
-                                                                    <SwiperSlide  key={index}>
-                                                                        <img src={item} alt={`Slide ${index}`} />
+                                                                    <SwiperSlide key={index}>
+                                                                        <img style={{
+                                                                            userSelect: 'none',
+                                                                            WebkitUserDrag: 'none',
+                                                                        }} src={item} alt={`Slide ${index}`} />
                                                                     </SwiperSlide>
                                                                 ))}
                                                             </Swiper>
