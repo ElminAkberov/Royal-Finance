@@ -23,6 +23,7 @@ import { PDFDocument } from 'pdf-lib';
 import * as pdfjsLib from 'pdfjs-dist';
 import 'pdfjs-dist/build/pdf.worker.entry';
 import { CiFilter } from 'react-icons/ci';
+import { GoUpload } from "react-icons/go";
 const Payout = () => {
     const abortControllerRef = useRef(null);
     const isPayoutPage = location.pathname == "/payout"
@@ -30,7 +31,6 @@ const Payout = () => {
     const mainSwiperRef = useRef(null);
     const thumbsContainerRef = useRef(null);
 
-    // Aktif indeks değiştiğinde, küçük resimleri kaydır
     useEffect(() => {
         if (thumbsContainerRef.current) {
             const thumbsContainer = thumbsContainerRef.current;
@@ -47,7 +47,6 @@ const Payout = () => {
     }, [swiperIndex]);
     const [currentSlide, setCurrentSlide] = useState(0);
 
-    // Main image slider (Keen Slider instance)
     const [sliderRef, instanceRef] = useKeenSlider({
         slides: {
             perView: 1,
@@ -80,7 +79,6 @@ const Payout = () => {
         }
     };
 
-    // Handle thumbnail click
     const handleThumbnailClick = (index) => {
         setCurrentSlide(index);
         if (instanceRef.current) {
@@ -297,14 +295,6 @@ const Payout = () => {
         };
     }, [currentPage, selectStatus, isPayoutPage]);
 
-    // useEffect(() => {
-    //     const accessToken = localStorage.getItem("access");
-
-    //     if (accessToken && location.pathname == "/payout") {
-    //         handleMethod();
-    //     }
-    // }, [currentPage, selectStatus]);
-
     useEffect(() => {
         if (currentPage) {
             handleFilter();
@@ -313,47 +303,54 @@ const Payout = () => {
 
 
     // lazm
-    const handleFileChange = async (e) => {
-        const files = Array.from(e.target.files);
-        if (files.length > 0) {
-            const filePreviews = [];
+    const handleDropOrFileChange = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
 
-            await Promise.all(
-                files.map(async (file) => {
-                    if (file.type === 'application/pdf') {
-                        try {
-                            const arrayBuffer = await file.arrayBuffer();
-                            const pdfDoc = await PDFDocument.load(arrayBuffer);
-                            const numPages = pdfDoc.getPages().length;
+        const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
+        if (files.length === 0) return;
 
-                            const blobs = [];
-                            for (let i = 0; i < numPages; i++) {
-                                const newPdfDoc = await PDFDocument.create();
-                                const [copiedPage] = await newPdfDoc.copyPages(pdfDoc, [i]);
-                                newPdfDoc.addPage(copiedPage);
+        const acceptedFiles = Array.from(files);
+        const filePreviews = [];
 
-                                const pdfBytes = await newPdfDoc.save();
-                                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-                                blobs.push(blob);
-                            }
-                            filePreviews.push(blobs);
-                        } catch (error) {
+        await Promise.all(
+            acceptedFiles.map(async (file) => {
+                if (file.type === "application/pdf") {
+                    try {
+                        const arrayBuffer = await file.arrayBuffer();
+                        if (!arrayBuffer) throw new Error("PDF dosyası geçerli değil.");
+
+                        const pdfDoc = await PDFDocument.load(arrayBuffer);
+                        const numPages = pdfDoc.getPages().length;
+                        const blobs = [];
+                        for (let i = 0; i < numPages; i++) {
+                            const newPdfDoc = await PDFDocument.create();
+                            const [copiedPage] = await newPdfDoc.copyPages(pdfDoc, [i]);
+                            newPdfDoc.addPage(copiedPage);
+
+                            const pdfBytes = await newPdfDoc.save();
+                            const blob = new Blob([pdfBytes], { type: "application/pdf" });
+                            blobs.push(blob);
                         }
-                    } else {
-                        const reader = new FileReader();
-                        const result = await new Promise((resolve) => {
-                            reader.onloadend = () => resolve(reader.result);
-                            reader.readAsDataURL(file);
-                        });
-                        filePreviews.push(result);
+                        filePreviews.push(blobs);
+                    } catch (error) {
+                        console.error("PDF işlenirken bir hata oluştu:", error);
                     }
-                })
-            );
-            setImageSrc((prev) => [...(prev || []), ...filePreviews]);
-            setDescribeImg((prev) => [...(prev || []), ...files]);
-            e.target.value = '';
-        }
-        // e.target.value = '';
+                } else if (file.type.startsWith("image/")) {
+                    const reader = new FileReader();
+                    const result = await new Promise((resolve) => {
+                        reader.onloadend = () => resolve(reader.result);
+                        reader.readAsDataURL(file);
+                    });
+                    filePreviews.push(result);
+                }
+            })
+        );
+
+        setOtkImg((prev) => [...(prev || []), ...filePreviews]);
+        setOtkImgDesc((prev) => [...(prev || []), ...acceptedFiles]);
+
+        if (e.target.files) e.target.value = '';
     };
     const [images, setImages] = useState([]);
 
@@ -367,7 +364,7 @@ const Payout = () => {
                 setPdfUrls(foundItem.receipts);
             }
         }
-    }, [data, id, zoom]); // Re-run when `data` or `id` changes
+    }, [data, id, zoom]);
 
     useEffect(() => {
         if (pdfUrls.length > 0) {
@@ -402,16 +399,13 @@ const Payout = () => {
 
                 for (const url of pdfUrls) {
                     if (url.endsWith(".pdf")) {
-                        // If it's a PDF, load it and push the pages to the array
                         const pdfImages = await loadPdf(url);
                         allImages.push(...pdfImages);
                     } else {
-                        // If it's an image, just push the image directly
                         allImages.push(url);
                     }
                 }
 
-                // Set all images (both PDFs and regular images)
                 setImages(allImages);
             };
 
@@ -421,7 +415,6 @@ const Payout = () => {
 
 
     const handleImageLoad = () => {
-        // Tüm görseller yüklendikten sonra slider yeniden ayarlanabilir
         instanceRef.current?.update();
         thumbnailInstanceRef.current?.update();
     };
@@ -430,7 +423,7 @@ const Payout = () => {
         e.preventDefault();
         try {
             const formData = new FormData();
-            describeImg.forEach((file, index) => {
+            otkImgDesc.forEach((file, index) => {
                 formData.append(`receipts[${index}]`, file);
             });
 
@@ -471,28 +464,24 @@ const Payout = () => {
             setStatus((prevError) => ({ ...prevError, "handleUpload": "error" }));
         }
     };
-
     const handleCancel = async (e) => {
         e.preventDefault();
         try {
             const formData = new FormData();
-            formData.append('reason', reason);  // Append the reason
+            formData.append('reason', reason); 
 
-            // Check if otkImgDesc has any images before appending them
             if (otkImgDesc && otkImgDesc.length > 0) {
                 otkImgDesc.forEach((img, index) => {
-                    formData.append(`receipts[${index}]`, img);  // Append each image to the FormData
+                    formData.append(`receipts[${index}]`, img);
                 });
             }
 
-            // Make the API request
             const response = await axios.post(`https://dev.royal-pay.org/api/v1/internal/payouts/deny/${id}/`, formData, {
                 headers: {
                     "Authorization": `Bearer ${localStorage.getItem("access")}`,
                 }
             });
 
-            // Handle the response
             if (response.status === 401) {
                 const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
                     method: "POST",
@@ -507,7 +496,7 @@ const Payout = () => {
                 if (refreshResponse.ok) {
                     const refreshData = await refreshResponse.json();
                     localStorage.setItem("access", refreshData.access);
-                    return handleCancel();  // Retry after refreshing the token
+                    return handleCancel(); 
                 } else {
                     navigate("/login");
                 }
@@ -622,48 +611,29 @@ const Payout = () => {
         setTime_2(cleanedValue);
     };
     // lazm
-    const handleFileClose = async (e) => {
-        const files = Array.from(e.target.files);
-        if (files.length > 0) {
-            const filePreviews = [];
+    const [isOver, setIsOver] = useState(false);
 
-            await Promise.all(
-                files.map(async (file) => {
-                    if (file.type === 'application/pdf') {
-                        try {
-                            const arrayBuffer = await file.arrayBuffer();
-                            const pdfDoc = await PDFDocument.load(arrayBuffer);
-                            const numPages = pdfDoc.getPages().length;
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
 
-                            const blobs = [];
-                            for (let i = 0; i < numPages; i++) {
-                                const newPdfDoc = await PDFDocument.create();
-                                const [copiedPage] = await newPdfDoc.copyPages(pdfDoc, [i]);
-                                newPdfDoc.addPage(copiedPage);
+    const handleDragEnter = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsOver(true);
+    };
 
-                                const pdfBytes = await newPdfDoc.save();
-                                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-                                blobs.push(blob);
-                            }
-                            filePreviews.push(blobs);
-                        } catch (error) {
-                        }
-                    } else {
-                        const reader = new FileReader();
-                        const result = await new Promise((resolve) => {
-                            reader.onloadend = () => resolve(reader.result);
-                            reader.readAsDataURL(file);
-                        });
-                        filePreviews.push(result);
-                    }
-                })
-            );
-            setOtkImg((prev) => [...(prev || []), ...filePreviews]); // Tüm dosyalar işlendiğinde ayarla
-            setOtkImgDesc((prev) => [...(prev || []), ...files]);
-            e.target.value = '';
-        }
-    }
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsOver(false); 
+    };
+    const fileInputRef = useRef(null);
 
+    const handleonClick = () => {
+        fileInputRef.current.click();
+    };
 
     const handleShow = (info) => {
         setDetails([info])
@@ -738,41 +708,27 @@ const Payout = () => {
             })
             .catch(err => "");
     };
-    const handleDeleteImage = (index, nestedIndex = null) => {
-        setImageSrc(prevImages => {
+
+    const handleDeleteImage_Otk = (index) => {
+        setOtkImg((prevImages) => {
             const updatedImages = prevImages.filter((_, i) => i !== index);
             if (updatedImages.length === 0) {
-                document.getElementById('fileInput').disabled = false;
+                const fileInput = document.getElementById('fileInput');
+                if (fileInput) fileInput.disabled = false;
             }
             return updatedImages;
         });
 
-        setDescribeImg(prevDescribe => {
+        setOtkImgDesc((prevDescribe) => {
             const updatedDescribe = prevDescribe.filter((_, i) => i !== index);
             if (updatedDescribe.length === 0) {
-                document.getElementById('fileInput').disabled = false;
+                const fileInput = document.getElementById('fileInput');
+                if (fileInput) fileInput.disabled = false;
             }
             return updatedDescribe;
         });
     };
 
-    const handleDeleteImage_Otk = (index, nestedIndex = null) => {
-        setOtkImg(prevImages => {
-            const updatedImages = prevImages.filter((_, i) => i !== index);
-            if (updatedImages.length === 0) {
-                document.getElementById('fileInput').disabled = false;
-            }
-            return updatedImages;
-        });
-
-        setOtkImgDesc(prevDescribe => {
-            const updatedDescribe = prevDescribe.filter((_, i) => i !== index);
-            if (updatedDescribe.length === 0) {
-                document.getElementById('fileInput').disabled = false;
-            }
-            return updatedDescribe;
-        });
-    };
     useEffect(() => {
         if (modal && mainSwiperRef.current && mainSwiperRef.current.swiper) {
             mainSwiperRef.current?.swiper.slideTo(0);
@@ -883,11 +839,11 @@ const Payout = () => {
                                     </svg>
                                 </div>
                             </div>
-                            <button onClick={handleDownload} className='text-[#2D54DD] text-[14px] max-md:hidden lg:mr-4 font-normal border-[#2D54DD] border-2 rounded-[8px] py-[8px] min-w-[145px]'>Скачать отчет</button>
+                            <button onClick={handleDownload} className='text-[#fff] text-[14px] max-md:hidden lg:mr-4 font-normal bg-[#536cfe] rounded-[8px] py-[8px] min-w-[156px]'>Скачать отчет</button>
                         </div>
                     </div>
                     {/* filterler */}
-                    <button onClick={() => setFilterHide(!filterHide)} className='text-[#2D54DD] mb-2 flex justify-center items-center gap-x-1 text-[14px] max-md:hidden font-normal border-[#2D54DD] border-2 rounded-[8px] py-[8px] min-w-[115px]'>
+                    <button onClick={() => setFilterHide(!filterHide)} className='text-[#fff] mb-2 flex justify-center items-center gap-x-1 text-[14px] max-md:hidden font-normal bg-[#536cfe] rounded-[8px] py-[8px] min-w-[115px]'>
                         <CiFilter size={20} />
                         {!filterHide ? "Открыть" : "Скрыть"}
                     </button>
@@ -923,7 +879,7 @@ const Payout = () => {
                             <div className={`flex items-center pl-[12px] rounded-[4px] w-[155px]  relative h-[40px] ${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC]"}`}>
                                 <div className="">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="#536cfe" className='absolute top-2' xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.78 7H11.72C11.32 7 11 7.32 11 7.72V12.44C11 12.79 11.18 13.12 11.49 13.3L15.64 15.79C15.98 15.99 16.42 15.89 16.62 15.55C16.83 15.21 16.72 14.76 16.37 14.56L12.5 12.26V7.72C12.5 7.32 12.18 7 11.78 7Z"  />
+                                        <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.78 7H11.72C11.32 7 11 7.32 11 7.72V12.44C11 12.79 11.18 13.12 11.49 13.3L15.64 15.79C15.98 15.99 16.42 15.89 16.62 15.55C16.83 15.21 16.72 14.76 16.37 14.56L12.5 12.26V7.72C12.5 7.32 12.18 7 11.78 7Z" />
                                     </svg>
                                 </div>
                                 <input value={time} onChange={handleStartTimeChange} type="text" className='bg-transparent outline-none pl-7 max-w-[75px]' placeholder='00:00' />
@@ -940,7 +896,7 @@ const Payout = () => {
                             <div className={`flex overflow-hidden items-center pl-[12px] relative rounded-[4px] w-[155px] h-[40px] ${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC]"}`}>
                                 <div className="">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="#536cfe" className='absolute top-2' xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.78 7H11.72C11.32 7 11 7.32 11 7.72V12.44C11 12.79 11.18 13.12 11.49 13.3L15.64 15.79C15.98 15.99 16.42 15.89 16.62 15.55C16.83 15.21 16.72 14.76 16.37 14.56L12.5 12.26V7.72C12.5 7.32 12.18 7 11.78 7Z"  />
+                                        <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM11.78 7H11.72C11.32 7 11 7.32 11 7.72V12.44C11 12.79 11.18 13.12 11.49 13.3L15.64 15.79C15.98 15.99 16.42 15.89 16.62 15.55C16.83 15.21 16.72 14.76 16.37 14.56L12.5 12.26V7.72C12.5 7.32 12.18 7 11.78 7Z" />
                                     </svg>
                                 </div>
                                 <input value={time_2} onChange={handleEndTimeChange} type="text" className='bg-transparent outline-none pl-7' placeholder='23:59' />
@@ -1190,7 +1146,7 @@ const Payout = () => {
                             ) :
                                 <div className={`max-h-[70dvh] overflow-y-scroll overflow-hidden ${isDarkMode ? "text-white" : ""}`}>
                                     {
-                                        data?.results.map((dashData, index) => (
+                                        data?.results?.map((dashData, index) => (
                                             <div className=''>
                                                 <div className={`p-2 border ${isDarkMode ? "border-black" : ""} `}>
                                                     <div className='text-xs mb-[2px]'><span className='text-[#616E90] '>ID </span><span className="selectable-text">{dashData.id}</span></div>
@@ -1394,12 +1350,12 @@ const Payout = () => {
                         }
                     </div>
                     {/* cek yuklemek ucun */}
-                    <div onClick={() => { setCancelCheck(!cancelCheck); setDescribeImg(null); setImageSrc(""); setStatus((prevError) => ({ ...prevError, handleUpload: null })); }} className={`${!cancelCheck && "hidden"} fixed inset-0 bg-[#2222224D] z-30`}></div>
+                    <div onClick={() => { setCancelCheck(!cancelCheck); setOtkImg(""); setOtkImgDesc(null); setStatus((prevError) => ({ ...prevError, handleUpload: null })); }} className={`${!cancelCheck && "hidden"} fixed inset-0 bg-[#2222224D] z-30`}></div>
                     <form onSubmit={handleUpload} className={`${!cancelCheck ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} pt-8 pl-8 pb-8 md:pr-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[763px]  overflow-y-hidden  rounded-[24px]`}>
                         <div className={`overflow-y-scroll max-h-[85vh] ${isDarkMode ? "scroll-black" : "scroll-white"} `}>
                             <div className="relative mb-8">
                                 <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Завершить</h3>
-                                <svg width="14" onClick={() => { setCancelCheck(!cancelCheck); setImageSrc(""); setStatus((prevError) => ({ ...prevError, handleUpload: null })); }} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-5`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <svg width="14" onClick={() => { setCancelCheck(!cancelCheck); setOtkImg(""); setOtkImgDesc(null); setStatus((prevError) => ({ ...prevError, handleUpload: null })); }} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-5`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
                                 </svg>
                                 <h5 className='text-[14px] text-[#60626C]'>Заполните информацию</h5>
@@ -1435,26 +1391,39 @@ const Payout = () => {
                             }
                             <div className="modal_payout mb-8 ">
                                 <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} mb-2`}>Чек</h5>
-                                <div
-                                    className='w-max text-[#2E70F5] cursor-pointer border-[#2E70F5] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'
-                                    onClick={() => document.getElementById('fileInput').click()}>
-                                    Прикрепить Чек
+                                <div onDragOver={handleDragOver}
+                                    onDragEnter={handleDragEnter}
+                                    onDragLeave={handleDragLeave}
+                                    onDrop={handleDropOrFileChange}
+                                    onClick={handleonClick}
+                                    className="mb-8 mr-8 blur-0 cursor-pointer text-[15px] rounded-[8px] border border-[#536cfe]  border-dashed h-40 flex items-center justify-center">
+                                    <div
+                                        className={`dropzone-container flex gap-x-1 items-center ${isDarkMode && "text-white"}`}
+                                    >
+                                        <GoUpload />
+                                        Прикрепить Чек
+                                        <input
+                                            type="file"
+                                            ref={fileInputRef}
+                                            multiple
+                                            style={{ display: 'none' }}
+                                            onChange={handleDropOrFileChange}
+                                        />
+                                    </div>
                                 </div>
-                                <input id="fileInput" multiple type="file" className="hidden" onChange={handleFileChange} accept="image/*,application/pdf" />
                             </div>
                             <div className=" flex flex-col items-center ">
-                                {imageSrc && imageSrc.flatMap((src, index) => (
+                                {otkImg && otkImg.flatMap((src, index) => (
                                     Array.isArray(src) ? src.map((nestedSrc, nestedIndex) => (
                                         <div key={nestedIndex + `${nestedSrc}`} className="relative m-2 flex items-center justify-center">
-                                            <div className='flex mx-auto justify-start relative right-[156px]'>
+                                            <div className='flex mx-auto  relative right-[156px] justify-start'>
                                                 <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
                                                     <Viewer fileUrl={URL.createObjectURL(nestedSrc)} defaultScale={.5} />
                                                 </Worker>
                                                 {nestedIndex === 0 && (
-                                                    <svg onClick={() => handleDeleteImage(index, nestedIndex)} width="24" className="cursor-pointer absolute right-[-335px] top-1/2 min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <svg onClick={() => handleDeleteImage_Otk(index, nestedIndex)} width="24" className="cursor-pointer absolute right-[-340px] top-1/2 min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                         <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
-                                                    </svg>)
-                                                }
+                                                    </svg>)}
                                             </div>
                                         </div>
                                     )) : (
@@ -1465,14 +1434,14 @@ const Payout = () => {
                                                         <Viewer fileUrl={URL.createObjectURL(src)} defaultScale={.5} />
                                                     </Worker>
                                                     {nestedIndex === 0 && (
-                                                        <svg onClick={() => handleDeleteImage(index)} width="24" className="cursor-pointer absolute right-[-335px] top-1/2 min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <svg onClick={() => handleDeleteImage_Otk(index)} width="24" className="cursor-pointer absolute right-[-340px] top-1/2 min-w-[24px]" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                             <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
                                                         </svg>)}
                                                 </div>
                                             ) : (
                                                 <>
                                                     <img src={src} alt={`Uploaded preview ${index + 1}`} className="mt-4 max-w-[300px] max-h-[400px]" />
-                                                    <svg onClick={() => handleDeleteImage(index)} width="24" className="cursor-pointer min-w-[24px] ml-2" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <svg onClick={() => handleDeleteImage_Otk(index)} width="24" className="cursor-pointer min-w-[24px] ml-2" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                         <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V9C18 7.9 17.1 7 16 7H8C6.9 7 6 7.9 6 9V19ZM18 4H15.5L14.79 3.29C14.61 3.11 14.35 3 14.09 3H9.91C9.65 3 9.39 3.11 9.21 3.29L8.5 4H6C5.45 4 5 4.45 5 5C5 5.55 5.45 6 6 6H18C18.55 6 19 5.55 19 5C19 4.45 18.55 4 18 4Z" fill="#CE2E2E" />
                                                     </svg>
                                                 </>
@@ -1490,7 +1459,7 @@ const Payout = () => {
                     </form>
 
                     <div className="">
-                        <div className={` ${!modal && "hidden"} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-50 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[763px]  ${!cancelCheck ? "  overflow-y-hidden h-[90vh]" : ""} `}>
+                        <div className={` ${!modal && "hidden"} ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} rounded-[24px] z-50 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-full max-w-[763px]  ${!cancelCheck ? "overflow-y-hidden h-[90vh]" : ""} `}>
                             <div className="p-8 overflow-y-scroll max-h-[90vh]">
                                 <div className="">
                                     <div className="mb-8 relative">
@@ -1531,7 +1500,7 @@ const Payout = () => {
                                     <div className="">
                                         {details?.map((data, index) => (
                                             <div key={index} className='grid grid-cols-2 gap-x-4 max-[500px]:grid-cols-1 '>
-                                                <div className="">
+                                                <div className="" >
                                                     {data?.receipts?.length > 0 ? (
                                                         <>
                                                             <Swiper
@@ -1543,13 +1512,14 @@ const Payout = () => {
                                                                 spaceBetween={10}
                                                                 navigation={true}
                                                                 initialSlide={0}
-                                                                onSlideChange={(swiper) => setSwiperIndex(swiper.activeIndex)} // Swiper değiştiğinde index'i güncelle
+                                                                preventClicksPropagation={true}
+                                                                onSlideChange={(swiper) => setSwiperIndex(swiper.activeIndex)}
                                                                 modules={[Navigation, Thumbs]}
-                                                                className="mySwiper2 mb-2"
+                                                                className="mySwiper2 mb-2 cursor-pointer"
                                                             >
                                                                 {images?.map((item, index) => (
-                                                                    <SwiperSlide key={index}>
-                                                                        <img src={item} />
+                                                                    <SwiperSlide  key={index}>
+                                                                        <img src={item} alt={`Slide ${index}`} />
                                                                     </SwiperSlide>
                                                                 ))}
                                                             </Swiper>
@@ -1710,11 +1680,11 @@ const Payout = () => {
                                     </div>
                                     {/* cancel modal */}
                                     <div onClick={() => { setOtkImg(""); setOtkImgDesc(null); setStatus((prevError) => ({ ...prevError, handleCancel: null })); setReason("") }} className={`${!cancel && "hidden"} fixed inset-0 h-[120vh] bg-[#2222224D] z-20`}></div>
-                                    <form onSubmit={handleCancel} className={`${!cancel ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} pt-8 pl-8 pb-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 shadow-sm shadow-black -translate-y-1/2 mx-auto w-full overflow-y-hidden  rounded-[24px]`}>
+                                    <form onSubmit={handleCancel} className={`${!cancel ? "hidden" : ""}  ${isDarkMode ? "bg-[#272727]" : "bg-[#F5F6FC]"} blur-0 pt-8 pl-8 pb-8 z-30 fixed top-1/2 left-1/2 transform -translate-x-1/2 shadow-sm shadow-black -translate-y-1/2 mx-auto w-full overflow-y-hidden  rounded-[24px] `}>
                                         <div className={`${isDarkMode ? "scroll-black" : "scroll-white"} overflow-y-scroll max-h-[80vh]`}>
                                             <div className="relative mb-8 mr-8">
                                                 <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Отклонить выплату</h3>
-                                                <svg width="14" onClick={() => { setCancel(!cancel); setOtkImg(""); setReason(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })) }} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <svg width="14" onClick={() => { setCancel(!cancel); setOtkImg(""); setOtkImgDesc(null); setReason(""); setStatus((prevError) => ({ ...prevError, handleCancel: null })) }} height="15" className={`${isDarkMode ? "fill-white" : "fill-black"} absolute cursor-pointer top-0 right-0`} viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" />
                                                 </svg>
                                                 <h5 className='text-[14px] text-[#60626C]'>Укажите причину</h5>
@@ -1753,13 +1723,25 @@ const Payout = () => {
                                                 <h5 className={`${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"} mb-2`}>Описание</h5>
                                                 <input onChange={(e) => setReason(e.target.value)} style={{ caretColor: `${isDarkMode ? "#fff" : "#000"}` }} value={reason} required placeholder='Описание' type="text" className={`${isDarkMode ? "text-white" : ""}  bg-transparent border placeholder:text-[14px] border-[#6C6E86] w-full py-[10px] px-4 focus:outline-[#536cfe] rounded-[4px]`} />
                                             </div>
-                                            <div className="mb-8 blur-0">
+                                            <div onDragOver={handleDragOver}
+                                                onDragEnter={handleDragEnter}
+                                                onDragLeave={handleDragLeave}
+                                                onDrop={handleDropOrFileChange}
+                                                onClick={handleonClick}
+                                                className="mb-8 mr-8 blur-0 cursor-pointer text-[15px] rounded-[8px] border border-[#536cfe]  border-dashed h-40 flex items-center justify-center">
                                                 <div
-                                                    className='blur-0 w-max text-[#2E70F5] cursor-pointer border-[#2E70F5] mt-4 border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'
-                                                    onClick={() => document.getElementById('fileInputs').click()}>
+                                                    className={`dropzone-container flex gap-x-1 items-center ${isDarkMode && "text-white"}`}
+                                                >
+                                                    <GoUpload />
                                                     Прикрепить Чек
+                                                    <input
+                                                        type="file"
+                                                        ref={fileInputRef}
+                                                        multiple
+                                                        style={{ display: 'none' }}
+                                                        onChange={handleDropOrFileChange}
+                                                    />
                                                 </div>
-                                                <input accept="image/*,application/pdf" multiple id="fileInputs" type="file" className="hidden" onChange={handleFileClose} />
                                             </div>
                                             <div className=" flex flex-col items-center mr-8 blur-0">
                                                 {otkImg && otkImg.flatMap((src, index) => (

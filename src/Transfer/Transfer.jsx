@@ -421,12 +421,12 @@ const Transfer = () => {
                                     </svg>
                                 </div>
                             </div>
-                            <button onClick={handleDownload} className='text-[#2D54DD] max-lg:mb-2 text-[14px] max-md:hidden font-normal border-[#2D54DD] border-2 rounded-[8px] py-[8px] min-w-[145px] '>Скачать отчет</button>
+                            <button onClick={handleDownload} className='text-[#fff] max-lg:mb-2 text-[14px] max-md:hidden font-normal bg-[#536cfe] rounded-[8px] py-[9.5px] min-w-[156px] '>Скачать отчет</button>
                         </div>
                         <button onClick={() => { setModal(!modal) }} className='bg-[#536DFE] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px] max-md:hidden'>Новый перевод</button>
                     </div>
                     {/* filter */}
-                    <button onClick={() => setFilterHide(!filterHide)} className='text-[#2D54DD] mb-2 flex justify-center items-center gap-x-1 text-[14px] max-md:hidden font-normal border-[#2D54DD] border-2 rounded-[8px] py-[8px] min-w-[115px]'>
+                    <button onClick={() => setFilterHide(!filterHide)} className='text-[#fff] mb-2 flex justify-center items-center gap-x-1 text-[14px] max-md:hidden font-normal bg-[#536cfe] rounded-[8px] py-[8px] min-w-[115px]'>
                         <CiFilter size={20} />
                         {!filterHide ? "Открыть" : "Скрыть"}
                     </button>

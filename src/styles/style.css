@@ -187,7 +187,9 @@ input[type="number"]::-webkit-inner-spin-button {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-
+form {
+  filter: none !important;
+}
 ::-webkit-scrollbar {
   width: 7px;
 }
