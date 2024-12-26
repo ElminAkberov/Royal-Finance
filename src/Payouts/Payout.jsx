@@ -24,6 +24,7 @@ import * as pdfjsLib from 'pdfjs-dist';
 import 'pdfjs-dist/build/pdf.worker.entry';
 import { CiFilter } from 'react-icons/ci';
 import { GoUpload } from "react-icons/go";
+import Sidebar from '../Sidebar/Sidebar';
 const Payout = () => {
     const abortControllerRef = useRef(null);
     const isPayoutPage = location.pathname == "/payout"
@@ -743,67 +744,7 @@ const Payout = () => {
     return (
         <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border`}>
             <div className='flex'>
-                <div className={`max-md:hidden`}>
-                    <div className={`${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5] border"}  min-h-[100vh] h-full z-20  relative `}>
-                        <h3 className={`py-[15px] flex items-center justify-start ml-[8px] font-medium px-[8px] ${isDarkMode ? "text-white" : "text-black"}`}><img className='max-w-[40px]' src={`/assets/logo/${isDarkMode ? "Logo_dark.svg" : "Logo_light.svg"}`} /></h3>
-                        <div className={`  transition-all duration-300`}>
-                            <Header />
-                        </div>
-                    </div>
-                </div>
-                <div className={`flex w-full md:justify-end max-md:px-4 ${isDarkMode ? "bg-[#1F1F1F] " : "bg-[#F5F6FC] border-[#F4F4F5]"} absolute right-0 pr-[16px] py-2 items-center `}>
-                    <div className="flex max-md:w-full items-center justify-between">
-                        <div className="mr-[16px] max-md:hidden">
-                            <h4 className={`text-[14px] font-normal ${!isDarkMode ? "text-[#18181B]" : "text-[#E7E7E7]"} capitalize `}>{localStorage.getItem("username") && localStorage.getItem("username").split("_").join(' ')}</h4>
-                            <p className='text-[14px] font-normal text-[#60626C]'>{localStorage.getItem("role") == "admin" ? "Админ" : localStorage.getItem("role") == "merchant" ? "Мерчант" : "Трейдер"}</p>
-                        </div>
-                        <div className="flex items-center  cursor-pointer justify-between">
-                            {/* profile */}
-                            <div className='max-md:flex  items-center justify-between'>
-                                <div onClick={() => setDropDown(!dropDown)} className="bg-[#4CAF50] uppercase rounded-[100px] text-white w-[48px] h-[48px] flex items-center justify-center">
-                                    {(localStorage.getItem("username") && localStorage.getItem("username") !== "undefined") ? (
-                                        <>
-                                            {localStorage.getItem("username").split("_")[0][0]}
-                                            {localStorage.getItem("username").split("_")[1][0]}
-                                        </>
-                                    ) : ""}
-                                </div>
-                            </div>
-                            <div onClick={() => setDropDown(!dropDown)} className="cursor-pointer ">
-                                <svg width="16" height="10" viewBox="0 0 12 6" fill="none" className={`ml-2 my-4 ${dropDown ? "rotate-180" : ""} duration-300 `} xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M5.57143 6C5.39315 6 5.21485 5.93469 5.07905 5.80469L0.204221 1.13817C-0.0680735 0.877514 -0.0680735 0.456152 0.204221 0.195494C0.476514 -0.0651646 0.916685 -0.0651646 1.18898 0.195494L5.57143 4.39068L9.95388 0.195494C10.2262 -0.0651646 10.6663 -0.0651646 10.9386 0.195494C11.2109 0.456152 11.2109 0.877514 10.9386 1.13817L6.06381 5.80469C5.92801 5.93469 5.74971 6 5.57143 6Z" fill="#60626C" />
-                                </svg>
-                            </div>
-                        </div>
-                        {/* hamburger button */}
-                        {
-                            !navBtn ?
-                                <div onClick={() => setNavBtn(!navBtn)} className="md:hidden">
-                                    <svg width="18" height="12" viewBox="0 0 18 12" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M1 12H17C17.55 12 18 11.55 18 11C18 10.45 17.55 10 17 10H1C0.45 10 0 10.45 0 11C0 11.55 0.45 12 1 12ZM1 7H17C17.55 7 18 6.55 18 6C18 5.45 17.55 5 17 5H1C0.45 5 0 5.45 0 6C0 6.55 0.45 7 1 7ZM0 1C0 1.55 0.45 2 1 2H17C17.55 2 18 1.55 18 1C18 0.45 17.55 0 17 0H1C0.45 0 0 0.45 0 1Z" fill={`${isDarkMode ? "#fff" : "#272727"}`} />
-                                    </svg>
-                                </div>
-                                :
-                                <div onClick={() => setNavBtn(!navBtn)} className="md:hidden">
-                                    <svg width="14" height="15" viewBox="0 0 14 15" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" fill={`${isDarkMode ? "#fff" : "#272727"}`} />
-                                    </svg>
-                                </div>
-                        }
-                        {/* darkmode */}
-                        <div style={{ boxShadow: "0px 4px 12px 1px #0000001A" }} className={` w-full absolute text-[14px] font-normal z-50 md:w-[250px] p-4 ${isDarkMode ? "bg-[#1F1F1F] text-[#E7E7E7]" : "bg-white"} right-0 md:right-2 top-16 rounded-[12px] h-[84px] duration-300 ${dropDown ? "opacity-100" : "opacity-0 invisible"}  `}>
-                            <div className="flex mb-[12px] justify-between">
-                                <h4>Тема</h4>
-                                <Dark />
-                            </div>
-                            <NavLink to={"/login"} onClick={() => { localStorage.removeItem("access"); localStorage.removeItem("username"); localStorage.removeItem("refresh"); localStorage.removeItem("role") }}>Выйти</NavLink>
-                        </div>
-                        {/* links */}
-                        <div className={` w-full absolute text-[14px] font-normal z-50 p-4 ${isDarkMode ? "bg-[#1F1F1F] text-[#E7E7E7]" : "bg-white shadow-xl"} right-0 top-16 rounded-[12px]  duration-300 ${navBtn ? "opacity-100" : "opacity-0 invisible"}  `}>
-                            <Header_md />
-                        </div>
-                    </div>
-                </div>
+                <Sidebar />
                 <div className={`mt-[94px] max-md:mt-[50px] w-full rounded-[24px] pr-[32px] pl-[32px] max-md:pl-4 max-md:pr-0 pt-[32px] ${isDarkMode ? "md:bg-[#1F1F1F]" : "md:bg-[#F5F6FC]"} overflow-x-auto md:mr-[40px] md:mx-[32px]   `}>
                     <div className="flex max-lg:flex-col mb-4 gap-x-2 justify-between items-center">
                         <div className="flex max-[270px]:flex-wrap items-center justify-between w-full ">
@@ -1193,7 +1134,6 @@ const Payout = () => {
                                                                             </svg>
                                                                         </div>
                                                                     }
-
                                                                 </>
                                                             }
                                                         </div>
