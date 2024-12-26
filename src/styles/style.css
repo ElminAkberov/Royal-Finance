@@ -99,19 +99,24 @@ td {
 }
 
 .dataTableRow:hover {
-  background-color: #f0f0f0; 
+  background-color: #f0f0f0;
   transition: background-color 0.3s ease;
 }
-input,select {
+input,
+select {
   color: #4e4f56;
 }
 
 .dark_mode .dataTableRow:hover {
-  background-color: #333; 
+  background-color: #333;
 }
 button:active {
-  transform: scale(0.99); 
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+  transform: scale(0.99);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+button.no-click:active {
+  transform: none;
+  box-shadow: none;
 }
 .light_mode .dataTableRow:hover {
   background-color: #ffffff;

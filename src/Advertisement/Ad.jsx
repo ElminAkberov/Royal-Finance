@@ -603,6 +603,7 @@ const Ad = () => {
                                                     }}
                                                 >
                                                     <button
+                                                        className='no-click'
                                                         onClick={() => {
                                                             setId(rowData.id)
                                                             setIs_Active((prevAct) => ({ ...prevAct, [rowData.id]: !prevAct[rowData.id] }));
