@@ -197,6 +197,42 @@ const Ad = () => {
             console.warn(error)
         }
     };
+    const handleDelete = async (e, id) => {
+        e.preventDefault();
+        try {
+            const res = await fetch(`https://dev.royal-pay.org/api/v1/applications/${id}/`, {
+                method: "DELETE",
+                headers: {
+                    "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
+                    "Content-Type": "application/json"
+                }
+            });
+            if (res.status) {
+                window.location.reload()
+            } else if (res.status === 401) {
+                const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        refresh: localStorage.getItem("refresh"),
+                    }),
+                });
+
+                if (refreshResponse.ok) {
+                    const refreshData = await refreshResponse.json();
+                    localStorage.setItem("access", refreshData.access);
+                    return handleActiveStatus(e);
+                } else {
+                    navigate("/login");
+                }
+            }
+        } catch (error) {
+            console.warn(error)
+        }
+    };
+
     return (
         <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border `}>
             <div className='flex'>
@@ -458,7 +494,10 @@ const Ad = () => {
                                                         <path d="M0 14.4595V17.4995C0 17.7795 0.22 17.9995 0.5 17.9995H3.54C3.67 17.9995 3.8 17.9495 3.89 17.8495L14.81 6.93951L11.06 3.18951L0.15 14.0995C0.0500001 14.1995 0 14.3195 0 14.4595ZM17.71 4.03951C17.8027 3.947 17.8762 3.83711 17.9264 3.71614C17.9766 3.59517 18.0024 3.46548 18.0024 3.33451C18.0024 3.20355 17.9766 3.07386 17.9264 2.95289C17.8762 2.83192 17.8027 2.72203 17.71 2.62951L15.37 0.289514C15.2775 0.196811 15.1676 0.123263 15.0466 0.0730817C14.9257 0.0229003 14.796 -0.00292969 14.665 -0.00292969C14.534 -0.00292969 14.4043 0.0229003 14.2834 0.0730817C14.1624 0.123263 14.0525 0.196811 13.96 0.289514L12.13 2.11951L15.88 5.86951L17.71 4.03951Z" />
                                                     </svg>
                                                 </div>
-                                                <div className="" onClick={() => setConverterModal(!detailModal)}>
+
+                                                <div className="" onClick={(e) => {
+                                                    handleDelete(e, rowData.id);
+                                                }}>
                                                     <svg width="16" height="18" viewBox="0 0 16 18" className='cursor-pointer max-w mx-auto min-w-[18px] hover:fill-[#CE2E2E] duration-300 fill-[#7A8EA4]' xmlns="http://www.w3.org/2000/svg">
                                                         <path d="M3 18C2.45 18 1.97933 17.8043 1.588 17.413C1.19667 17.0217 1.00067 16.5507 1 16V3H0V1H5V0H11V1H16V3H15V16C15 16.55 14.8043 17.021 14.413 17.413C14.0217 17.805 13.5507 18.0007 13 18H3ZM5 14H7V5H5V14ZM9 14H11V5H9V14Z" />
                                                     </svg>
@@ -561,8 +600,8 @@ const Ad = () => {
                     </div>
                 </div>
 
-            </div>
-        </div>
+            </div >
+        </div >
     )
 }
 

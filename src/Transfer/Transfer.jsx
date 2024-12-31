@@ -29,7 +29,6 @@ const Transfer = () => {
     let [trader, setTrader] = useState("")
     let [externalId, setExternalId] = useState("")
     let [selectStatus, setSelectStatus] = useState("")
-
     const [time, setTime] = useState('');
     const [time_2, setTime_2] = useState('');
     let navigate = useNavigate()
@@ -82,7 +81,7 @@ const Transfer = () => {
     const handleFilter = async () => {
         setLoading(true)
         try {
-            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/retransfer/?q=${query}&transaction_id=${externalId}&status=${selectStatus && selectStatus}&created_at_before=${time_2 ? endDate + "T" + time_2 : endDate}&created_at_after=${time ? startDate + "T" + time : startDate}&page=${currentPage === "" ? 1 : currentPage}`, {
+            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/retransfer/?q=${query}&trader=${trader}&transaction_id=${externalId}&status=${selectStatus && selectStatus}&created_at_before=${time_2 ? endDate + "T" + time_2 : endDate}&created_at_after=${time ? startDate + "T" + time : startDate}&page=${currentPage === "" ? 1 : currentPage}`, {
                 method: "GET",
                 headers: {
                     "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
@@ -513,7 +512,7 @@ const Transfer = () => {
                             <form onSubmit={handleReTransfer} className="blur-0">
                                 <div className="mb-8">
                                     <h3 className={`text-[32px] ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`}>Новый перевод </h3>
-                                    <svg onClick={() => { setModal(!modal); setSendAmount(""); setStatus("") }} className='absolute right-2 top-2 cursor-pointer' width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <svg onClick={() => { setModal(!modal); setSendAmount(""); setStatus("") }} className='absolute right-8 top-8 cursor-pointer' width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M1.4 14.5L0 13.1L5.6 7.5L0 1.9L1.4 0.5L7 6.1L12.6 0.5L14 1.9L8.4 7.5L14 13.1L12.6 14.5L7 8.9L1.4 14.5Z" fill={`${isDarkMode ? "#fff" : "#222222"} `} />
                                     </svg>
                                     <h5 className='text-[14px] text-[#60626C]'>Заполните форму</h5>
