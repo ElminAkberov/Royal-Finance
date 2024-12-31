@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from 'react'
 import { Context } from '../context/ContextProvider'
-import { NavLink, useNavigate } from 'react-router-dom'
-import Dark from '../Dark'
+import { useNavigate } from 'react-router-dom'
 import { LuCopy } from 'react-icons/lu'
 import Sidebar from '../Sidebar/Sidebar'
 

@@ -1,30 +1,27 @@
-import { useEffect, useState, useRef, useContext } from 'react'
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import Dark from '../Dark';
-import { Context } from '../context/ContextProvider';
-import axios from 'axios';
-import { LuCopy } from "react-icons/lu";
-import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
-import Loading from '../Loading/Loading';
-import Header from '../Header/Header';
-import Header_md from '../Header/Header-md';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { useKeenSlider } from 'keen-slider/react'
 import 'swiper/css';
+import axios from 'axios';
+import 'swiper/css/thumbs';
 import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
-import 'swiper/css/thumbs';
 import 'swiper/swiper-bundle.css';
-import { Navigation, Thumbs } from 'swiper/modules';
-import { Viewer, Worker } from '@react-pdf-viewer/core';
 import { PDFDocument } from 'pdf-lib';
 import * as pdfjsLib from 'pdfjs-dist';
-import 'pdfjs-dist/build/pdf.worker.entry';
+import { LuCopy } from "react-icons/lu";
+import Sidebar from '../Sidebar/Sidebar';
+import Loading from '../Loading/Loading';
 import { CiFilter } from 'react-icons/ci';
 import { GoUpload } from "react-icons/go";
-import Sidebar from '../Sidebar/Sidebar';
+import { Column } from 'primereact/column';
+import 'pdfjs-dist/build/pdf.worker.entry';
+import { useNavigate } from 'react-router-dom';
+import { DataTable } from 'primereact/datatable';
+import { useKeenSlider } from 'keen-slider/react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Thumbs } from 'swiper/modules';
+import { Context } from '../context/ContextProvider';
+import { Viewer, Worker } from '@react-pdf-viewer/core';
+import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
+import { useEffect, useState, useRef, useContext } from 'react';
 const Payout = () => {
     const abortControllerRef = useRef(null);
     const isPayoutPage = location.pathname == "/payout"
@@ -91,8 +88,6 @@ const Payout = () => {
 
     const [thumbsSwiper, setThumbsSwiper] = useState(null);
     let [status, setStatus] = useState({ "handleCancel": null, "handleUpload": null, "handleAccept": null })
-    const [imageSrc, setImageSrc] = useState(null);
-    const [describeImg, setDescribeImg] = useState(null)
     const [loading, setLoading] = useState(true);
     let [dropDown, setDropDown] = useState(false)
     let { isDarkMode } = useContext(Context)
@@ -106,9 +101,7 @@ const Payout = () => {
     const endDateRef = useRef(null);
     let [query, setQuery] = useState("")
     let [details, setDetails] = useState([])
-    // 1ci action
     const [modal, setModal] = useState(false)
-    // 2ci action
     const [modalChek, setModalChek] = useState(false)
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -302,8 +295,6 @@ const Payout = () => {
         }
     }, [currentPage]);
 
-
-    // lazm
     const handleDropOrFileChange = async (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -353,8 +344,8 @@ const Payout = () => {
 
         if (e.target.files) e.target.value = '';
     };
-    const [images, setImages] = useState([]);
 
+    const [images, setImages] = useState([]);
     const [pdfUrls, setPdfUrls] = useState([])
     let [zoom, setZoom] = useState(false)
 
@@ -562,7 +553,7 @@ const Payout = () => {
         } catch (error) {
         }
     };
-    // payout
+    
     let [cancel, setCancel] = useState(false)
     let [cancelCheck, setCancelCheck] = useState(false)
     const handleStartTimeChange = (e) => {
@@ -611,8 +602,6 @@ const Payout = () => {
 
         setTime_2(cleanedValue);
     };
-    // lazm
-    const [isOver, setIsOver] = useState(false);
 
     const handleDragOver = (e) => {
         e.preventDefault();
@@ -622,13 +611,11 @@ const Payout = () => {
     const handleDragEnter = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        setIsOver(true);
     };
 
     const handleDragLeave = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        setIsOver(false);
     };
     const fileInputRef = useRef(null);
 
@@ -783,7 +770,7 @@ const Payout = () => {
                             <button onClick={handleDownload} className='text-[#fff] text-[14px] max-md:hidden lg:mr-4 font-normal bg-[#536cfe] rounded-[8px] py-[8px] min-w-[156px]'>Скачать отчет</button>
                         </div>
                     </div>
-                    {/* filterler */}
+                    {/* filters */}
                     <button onClick={() => setFilterHide(!filterHide)} className='text-[#fff] mb-2 flex justify-center items-center gap-x-1 text-[14px] max-md:hidden font-normal bg-[#536cfe] rounded-[8px] py-[8px] min-w-[115px]'>
                         <CiFilter size={20} />
                         {!filterHide ? "Открыть" : "Скрыть"}
@@ -1724,13 +1711,11 @@ const Payout = () => {
                                                     )
                                                 ))}
                                             </div>
-
                                             <div className="flex justify-end pr-8 blur-0">
                                                 <button type='submit' className=' relative bg-[#536DFE] text-[#fff] border px-[37.5px] py-[10px] font-normal text-[14px] rounded-[8px]'>
                                                     Отклонить
                                                 </button>
                                             </div>
-
                                         </div>
                                     </form>
                                     {/* buttonlar */}
@@ -1767,12 +1752,10 @@ const Payout = () => {
                                         })}
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div >
     )

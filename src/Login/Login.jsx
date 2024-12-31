@@ -16,7 +16,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  let { isDarkMode, toggleDarkMode } = useContext(Context);
+  let { isDarkMode } = useContext(Context);
   let [errorInfo, setErrorInfo] = useState("")
   const handleSubmit = (e) => {
     e.preventDefault();

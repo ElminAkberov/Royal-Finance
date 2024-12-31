@@ -1,12 +1,9 @@
 import React, { useEffect, useState, useRef, useContext } from 'react'
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { Navigate, NavLink, useNavigate } from 'react-router-dom';
-import Dark from '../Dark';
+import { useNavigate } from 'react-router-dom';
 import { Context } from '../context/ContextProvider';
-import { FaAngleLeft, FaAngleRight, FaArrowDownShortWide, FaArrowDownWideShort } from "react-icons/fa6";
 import Loading from '../Loading/Loading';
-import { LuArrowDownUp, LuCopy } from 'react-icons/lu';
 import { CiFilter } from 'react-icons/ci';
 import Success from '../StatusMessage/Success';
 import Error from '../StatusMessage/Error';
@@ -15,10 +12,8 @@ import Sidebar from '../Sidebar/Sidebar';
 
 const Transfer = () => {
     const [sendAmount, setSendAmount] = useState("")
-    let [arrows, setArrow] = useState("sent")
     const [status, setStatus] = useState(null)
     const [loading, setLoading] = useState(true);
-    let [copy, setCopy] = useState(false)
     let [dropDown, setDropDown] = useState(false)
     let { isDarkMode } = useContext(Context)
     const [filterHide, setFilterHide] = useState(false)
@@ -26,13 +21,11 @@ const Transfer = () => {
     const startDateRef = useRef(null);
     const endDateRef = useRef(null);
 
-    let [open, setOpen] = useState(true)
     let [query, setQuery] = useState("")
     let [details, setDetails] = useState([])
     const [modal, setModal] = useState(false)
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
-    let [selectMethod, setSelectMethod] = useState("")
     let [trader, setTrader] = useState("")
     let [externalId, setExternalId] = useState("")
     let [selectStatus, setSelectStatus] = useState("")
@@ -89,7 +82,7 @@ const Transfer = () => {
     const handleFilter = async () => {
         setLoading(true)
         try {
-            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/retransfer/?q=${query}&transaction_id=${externalId}&o=${arrows}_amount&status=${selectStatus && selectStatus}&created_at_before=${time_2 ? endDate + "T" + time_2 : endDate}&created_at_after=${time ? startDate + "T" + time : startDate}&page=${currentPage === "" ? 1 : currentPage}`, {
+            const response = await fetch(`https://dev.royal-pay.org/api/v1/internal/retransfer/?q=${query}&transaction_id=${externalId}&status=${selectStatus && selectStatus}&created_at_before=${time_2 ? endDate + "T" + time_2 : endDate}&created_at_after=${time ? startDate + "T" + time : startDate}&page=${currentPage === "" ? 1 : currentPage}`, {
                 method: "GET",
                 headers: {
                     "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
@@ -180,9 +173,6 @@ const Transfer = () => {
         setTime_2(cleanedValue);
         setEndTime(cleanedValue);
     };
-    const handleShow = (info) => {
-        setDetails([info])
-    }
     const handleDownload = () => {
         fetch("https://dev.royal-pay.org/api/v1/internal/retransfer/download", {
             method: "POST",
@@ -253,9 +243,6 @@ const Transfer = () => {
             setStatus("error");
         }
     };
-    useEffect(() => {
-        handleFilter();
-    }, [arrows]);
     return (
         <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border `}>
             <div className='flex'>
@@ -369,10 +356,6 @@ const Transfer = () => {
                             </div>
                             <button onClick={() => { setModal(!modal) }} className='bg-[#536DFE] text-[#fff] min-w-[156px] py-[9.5px] font-normal  text-[14px] rounded-[8px]'>Новый перевод</button>
                         </div>
-                    </div>
-                    <div className={`fixed ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2  -translate-x-1/2 z-50 ${copy ? "top-20" : "top-[-200px] "} duration-300 mx-auto left-1/2 `}>
-                        <LuCopy size={18} color={`${isDarkMode ? "#E7E7E7" : "#18181B"}`} />
-                        <h4 className={`text-sm ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`} >Ссылка скопирована</h4>
                     </div>
                     <div className={`${!loading ? (isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]") : ""}`}>
                         <div className="hidden max-md:block">

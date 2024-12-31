@@ -1,10 +1,9 @@
 import { useEffect, useState, useRef, useContext } from 'react'
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { NavLink, useNavigate } from 'react-router-dom';
-import Dark from '../Dark';
+import { useNavigate } from 'react-router-dom';
 import { Context } from '../context/ContextProvider';
-import { FaAngleLeft, FaAngleRight, FaArrowDownShortWide, FaArrowDownWideShort } from "react-icons/fa6";
+import { FaArrowDownShortWide, FaArrowDownWideShort } from "react-icons/fa6";
 import { CiFilter } from "react-icons/ci";
 import Loading from '../Loading/Loading';
 import { LuCopy } from 'react-icons/lu';
@@ -589,7 +588,6 @@ const Dashboard = () => {
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     )

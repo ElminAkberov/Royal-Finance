@@ -1,11 +1,9 @@
 import React, { useEffect, useState, useRef, useContext } from 'react'
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { NavLink, useNavigate } from 'react-router-dom';
-import Dark from '../Dark';
+import { useNavigate } from 'react-router-dom';
 import { Context } from '../context/ContextProvider';
 import Loading from '../Loading/Loading';
-import { LuCopy } from 'react-icons/lu';
 import { ConfigProvider, Switch } from 'antd';
 import { CiFilter } from 'react-icons/ci';
 import ApplicationModal from './Modals/ApplicationModal';
@@ -15,17 +13,12 @@ import Pagination from '../Pagination/Pagination';
 import Sidebar from '../Sidebar/Sidebar';
 
 const Ad = () => {
-    let [arrows, setArrow] = useState("amount")
     const [loading, setLoading] = useState(true);
-    let [copy, setCopy] = useState(false)
     let [dropDown, setDropDown] = useState(false)
     let { isDarkMode } = useContext(Context)
     let [query, setQuery] = useState("")
 
     const startDateRef = useRef(null);
-    const endDateRef = useRef(null);
-
-    let [details, setDetails] = useState([])
     const [filterHide, setFilterHide] = useState(false)
 
     const [application, setApplication] = useState("")
@@ -33,15 +26,14 @@ const Ad = () => {
     const [detailModal, setDetailModal] = useState(false)
     const [converterModal, setConverterModal] = useState(false)
     const [modal, setModal] = useState(false)
-    const [startDate, setStartDate] = useState("");
-    const [endDate, setEndDate] = useState("");
     const [amount, setAmount] = useState({ min: "", max: "" })
     const [active, setActive] = useState("")
     const [allowed, setAllowed] = useState("")
     const [is_active, setIs_Active] = useState({})
     const [id, setId] = useState("")
+    const [startDate, setStartDate] = useState("")
     let [selectMethod, setSelectMethod] = useState("")
-    let [hash, setHash] = useState("")
+    let [trader, setTrader] = useState("")
     let [selectStatus, setSelectStatus] = useState("")
 
     const [time, setTime] = useState('');
@@ -169,75 +161,6 @@ const Ad = () => {
         setTime(cleanedValue);
 
     };
-    const handleEndTimeChange = (e) => {
-        const value = e.target.value.replace(/[^0-9]/g, '');
-        let cleanedValue = value;
-
-        if (cleanedValue.length >= 3) {
-            cleanedValue = cleanedValue.slice(0, 2) + ':' + cleanedValue.slice(2);
-        }
-
-        const timeParts = cleanedValue.split(':');
-        if (timeParts[0] && parseInt(timeParts[0], 10) > 23) {
-            cleanedValue = '23:' + (timeParts[1] ? timeParts[1] : '00');
-        }
-
-        if (timeParts[1] && parseInt(timeParts[1], 10) > 59) {
-            cleanedValue = timeParts[0] + ':59';
-        }
-        if (cleanedValue.endsWith(':000')) {
-            cleanedValue = cleanedValue.slice(0, -1);
-        }
-
-        setTime_2(cleanedValue);
-        setEndTime(cleanedValue);
-    };
-    const handleShow = (info) => {
-        setDetails([info])
-    }
-    const handleApplication = async (e) => {
-        e.preventDefault();
-        try {
-            const res = await fetch("https://dev.royal-pay.org/api/v1/applications", {
-                method: "POST",
-                headers: {
-                    "AUTHORIZATION": `Bearer ${localStorage.getItem("access")}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    allowed_transfer_methods: [setApplication["allowedMethod"]],
-                    min_payouts_amount: setApplication["minAmount"],
-                    max_payouts_amount: setApplication["maxAmount"]
-                })
-            });
-            if (res.status === 401) {
-                const refreshResponse = await fetch("https://dev.royal-pay.org/api/v1/auth/refresh/", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        refresh: localStorage.getItem("refresh"),
-                    }),
-                });
-
-                if (refreshResponse.ok) {
-                    const refreshData = await refreshResponse.json();
-                    localStorage.setItem("access", refreshData.access);
-                    return handleApplication(e);
-                } else {
-                    navigate("/login");
-                }
-            } else if (res.status == 400) {
-                setStatus("error");
-            } else {
-                setStatus("success");
-            }
-        } catch (error) {
-            console.warn(error)
-            setStatus("error");
-        }
-    };
     const handleActiveStatus = async (e) => {
         e.preventDefault();
         try {
@@ -274,10 +197,6 @@ const Ad = () => {
             console.warn(error)
         }
     };
-    useEffect(() => {
-        handleFilter();
-    }, [arrows]);
-
     return (
         <div onClick={() => { dropDown ? setDropDown(!dropDown) : ""; navBtn ? setNavBtn(!navBtn) : ""; }} className={`${isDarkMode ? "bg-[#000] border-black" : "bg-[#E9EBF7] border-[#F4F4F5] border"} min-h-[100vh]  relative  border `}>
             <div className='flex'>
@@ -325,7 +244,7 @@ const Ad = () => {
                     </button>
                     <div className={`${!filterHide ? 'md:hidden' : ''}`}>
                         <div className={`${!filterBtn && "max-md:hidden"} flex max-md:grid max-md:grid-cols-2 max-md:justify-items-center max-[450px]:grid-cols-1  max-[1200px]:justify-center flex-wrap py-[24px] pr-4 text-[14px] gap-2 text-[#717380]`}>
-                            <input onChange={(e) => setHash(e.target.value)} placeholder='Трейдер' type="text" className={`focus:outline-[#536cfe] pl-[12px] w-[149.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
+                            <input onChange={(e) => setTrader(e.target.value)} placeholder='Трейдер' type="text" className={`focus:outline-[#536cfe] pl-[12px] w-[149.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
                             <input onChange={(e) => setAmount((prevAmount) => ({ ...prevAmount, min: e.target.value }))} placeholder='Мин cумма' type="number" className={`focus:outline-[#536cfe] pl-[12px] w-[149.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
                             <input onChange={(e) => setAmount((prevAmount) => ({ ...prevAmount, max: e.target.value }))} placeholder='Макс cумма' type="number" className={`focus:outline-[#536cfe] pl-[12px] w-[149.5px] h-[40px] rounded-[4px] ${isDarkMode ? "bg-[#121212]   text-[#E7E7E7]" : "bg-[#DFDFEC]"} `} />
                             <select onChange={(e) => setAllowed(e.target.value)} className={`${isDarkMode ? "bg-[#121212] placeholder:text-[#E7E7E7] text-[#E7E7E7]" : "bg-[#DFDFEC]"} pl-[12px] outline-none rounded-[4px] min-w-[149.5px] max-w-[149.5px] h-[40px]`} name="" id="">
@@ -404,10 +323,6 @@ const Ad = () => {
                         </div>
                     </div>
 
-                    <div className={`fixed ${isDarkMode ? "bg-[#1F1F1F] shadow-lg" : "bg-[#E9EBF7] shadow-lg"} w-max p-3 rounded-md flex gap-x-2  -translate-x-1/2 z-50 ${copy ? "top-20" : "top-[-200px] "} duration-300 mx-auto left-1/2 `}>
-                        <LuCopy size={18} color={`${isDarkMode ? "#E7E7E7" : "#18181B"}`} />
-                        <h4 className={`text-sm ${isDarkMode ? "text-[#E7E7E7]" : "text-[#18181B]"}`} >Ссылка скопирована</h4>
-                    </div>
                     <div className={`${!loading ? (isDarkMode ? "bg-[#1F1F1F]" : "bg-[#F5F6FC]") : ""}`}>
                         <div className="hidden max-md:block">
                             <style >

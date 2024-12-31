@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useEffect, useState } from 'react';
+import React, { createContext, useState } from 'react';
 
 let Context = createContext();
 const ContextProvider = ({ children }) => {
@@ -10,7 +10,6 @@ const ContextProvider = ({ children }) => {
     const toggleDarkMode = (checked) => {
         setIsDarkMode(checked);
         localStorage.setItem("dark", checked);
-        // fetchData()
     };
 
     return (

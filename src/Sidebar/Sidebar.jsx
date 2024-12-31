@@ -1,7 +1,7 @@
-import React, { useContext, useMemo, useState } from 'react'
-import { NavLink, useLocation } from 'react-router-dom';
-import { Context } from '../context/ContextProvider';
 import Dark from '../Dark';
+import { Context } from '../context/ContextProvider';
+import { NavLink, useLocation } from 'react-router-dom';
+import React, { useContext, useMemo, useState } from 'react'
 
 const Sidebar = () => {
     let location = useLocation()
