@@ -276,7 +276,10 @@ const Dashboard = () => {
                                 <svg width="24" height="24" className='text-[#536cfe] ' viewBox="0 0 24 24" fill={`#536cfe`} xmlns="http://www.w3.org/2000/svg">
                                     <path d="M20 3H19V2C19 1.45 18.55 1 18 1C17.45 1 17 1.45 17 2V3H7V2C7 1.45 6.55 1 6 1C5.45 1 5 1.45 5 2V3H4C2.9 3 2 3.9 2 5V21C2 22.1 2.9 23 4 23H20C21.1 23 22 22.1 22 21V5C22 3.9 21.1 3 20 3ZM19 21H5C4.45 21 4 20.55 4 20V8H20V20C20 20.55 19.55 21 19 21Z" />
                                 </svg>
-                                <input ref={startDateRef} type="date" name="" id="date-picker" min="2023-01-01" className='bg-transparent outline-none relative mt-1 ml-1 w-full cursor-pointer ' onChange={(e) => setStartDate(e.target.value)} defaultValue={"2024-10-16"} />
+                                <div className="w-max relative">
+                                    <div className="absolute h-6 w-4 bg-[#DFDFEC] z-40 right-0 top-0"></div>
+                                    <input ref={startDateRef} type="date" name="" id="date-picker" min="2023-01-01" className='bg-transparent outline-none relative mt-1 ml-1 w-full cursor-pointer ' onChange={(e) => setStartDate(e.target.value)} defaultValue={"2024-10-16"} />
+                                </div>
                             </div>
 
                             <div className={`flex items-center pl-[12px] rounded-[4px] w-[149.5px] relative h-[40px] ${isDarkMode ? "bg-[#121212] " : "bg-[#DFDFEC]"}`}>
@@ -291,7 +294,8 @@ const Dashboard = () => {
                                 <svg width="24" height="24" className='text-[#536cfe] ' viewBox="0 0 24 24" fill={`#536cfe`} xmlns="http://www.w3.org/2000/svg">
                                     <path d="M20 3H19V2C19 1.45 18.55 1 18 1C17.45 1 17 1.45 17 2V3H7V2C7 1.45 6.55 1 6 1C5.45 1 5 1.45 5 2V3H4C2.9 3 2 3.9 2 5V21C2 22.1 2.9 23 4 23H20C21.1 23 22 22.1 22 21V5C22 3.9 21.1 3 20 3ZM19 21H5C4.45 21 4 20.55 4 20V8H20V20C20 20.55 19.55 21 19 21Z" />
                                 </svg>
-                                <div className="">
+                                <div className="w-max relative">
+                                    <div className="absolute h-6 w-5 bg-[#DFDFEC] z-40 right-0 top-0"></div>
                                     <input ref={endDateRef} type="date" name="" id="" min="2024-01-01" className='bg-transparent outline-none mt-1 ml-1 ]' onChange={(e) => setEndDate(e.target.value)} defaultValue={"2024-12-12"} />
                                 </div>
                             </div>
